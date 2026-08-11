@@ -1,5 +1,5 @@
 @echo off
-rem ASCII 경로 강제 (한글 사용자명 머신) — TEMP은 flutter test 필수
+rem ASCII-path env vars for Korean-username machine; TEMP override is required for flutter test
 set PUB_CACHE=C:\flutter\.pub-cache
 set GRADLE_USER_HOME=C:\workAndroid\gradle-home-ascii
 set TEMP=C:\workAndroid\tmp-ascii
