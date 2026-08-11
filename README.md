@@ -1,17 +1,23 @@
-# ghostmanor
+# 기묘한 유령 저택 (GhostManor)
 
-A new Flutter project.
+세로 화면 포인트앤클릭 방탈출. 코믹+으스스한 유령 저택, 챕터 1.
 
-## Getting Started
+## 빌드 (한글 사용자명 머신 — 반드시 래퍼 사용)
 
-This project is a starting point for a Flutter application.
+- 모든 flutter 명령: `.\tool\f.cmd <args>` (ASCII 경로 환경변수 자동 설정)
+- 테스트: `.\tool\f.cmd test` — 래퍼 없이 직접 실행하면 TEMP 한글 경로로 flutter_tester가 0xC0000409로 죽는다
+- APK: `.\tool\f.cmd build apk --release`
+- `C:\workAndroid\gradle-user-ascii`는 한글 홈 정션 — 사용 금지 (진짜는 gradle-home-ascii)
 
-A few resources to get you started if this is your first Flutter project:
+## 구조
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+- `lib/core/` — 엔진 (GameState 플래그 상태머신, 세이브+백업, SceneView, 인벤토리/조합, 3단계 힌트+광고)
+- `lib/rooms/roomN_*.dart` — 방 하나 = 파일 하나. 방 추가: 파일 작성 → `rooms.dart` 목록에 추가 → 정답 시퀀스 테스트 필수
+- `art/` — Codex 생성 의뢰 문서. 이미지 파일을 `assets/`에 넣으면 코드 수정 없이 반영 (없으면 라벨 색 블록)
+- 스펙: `docs/superpowers/specs/`, 계획: `docs/superpowers/plans/`
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 남은 일 (v1 출시까지)
+
+- 방 2~6 (거실·서재·주방·지하실·다락방) — 방마다 별도 콘텐츠 계획
+- 현관 아트/효과음 도착 시 핫스팟 좌표를 실제 그림에 맞게 미세조정
+- 출시 단계: 실제 AdMob ID 교체, 서명 키, 스토어 등록 (문구에 광고·결제 언급 금지)
