@@ -54,7 +54,7 @@ class InventoryBar extends StatelessWidget {
         child: Column(children: [
           Expanded(
             child: Image.asset(item.icon,
-                errorBuilder: (_, __, ___) => Center(
+                errorBuilder: (_, _, _) => Center(
                     child: Text(item.name,
                         style: const TextStyle(
                             color: Colors.white70, fontSize: 10)))),

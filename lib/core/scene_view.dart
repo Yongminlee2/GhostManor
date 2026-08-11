@@ -5,7 +5,7 @@ import 'models.dart';
 Widget gameImage(String path) => Image.asset(
       path,
       fit: BoxFit.fill,
-      errorBuilder: (_, __, ___) => Container(
+      errorBuilder: (_, _, _) => Container(
         color: const Color(0xFF3A2E4F),
         alignment: Alignment.center,
         child: Text(path.split('/').last,
