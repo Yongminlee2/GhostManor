@@ -43,6 +43,8 @@ void main() {
     s.select('match');
     s.goRoom(1);
     s.goScene(2);
+    s.openCloseup('drawer');
+    s.say('임시 대사');
     final r = GameState.fromJson(s.toJson());
     expect(r.flag('got_key'), 1);
     expect(r.inventory, ['match']);
@@ -50,5 +52,6 @@ void main() {
     expect(r.roomIndex, 1);
     expect(r.sceneIndex, 2);
     expect(r.closeupId, isNull);
+    expect(r.dialog, isNull);
   });
 }
