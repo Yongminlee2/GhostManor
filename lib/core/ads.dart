@@ -35,7 +35,7 @@ Future<bool> showRewardedAd() async {
         if (!closed.isCompleted) closed.complete();
       },
     );
-    await ad.show(onUserEarnedReward: (_, __) => rewarded = true);
+    await ad.show(onUserEarnedReward: (_, _) => rewarded = true);
     await closed.future;
     return rewarded;
   } catch (_) {

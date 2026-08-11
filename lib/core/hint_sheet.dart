@@ -44,7 +44,7 @@ void showHintSheet(BuildContext context, Room room, HintService hints) {
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text(strAdFailed)));
                       }
-                      setState(() {});
+                      if (context.mounted) setState(() {});
                     },
                     child: Text(hints.unlocked(h.puzzleId) == 0
                         ? strHintFree
