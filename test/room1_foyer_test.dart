@@ -52,22 +52,28 @@ void main() {
     expect(s.closeupId, isNull);
 
     // 액자 먼지 → 시계 3시 단서 (제스처 로직 함수)
+    tap('foyer_a', 'frame');
+    expect(room.closeups.containsKey(s.closeupId), isTrue);
+    s.closeCloseup();
     finishRubbing(s);
-    expect(s.flag('dust_cleaned'), 1);
+    expect(s.flag('foyer_dust_cleaned'), 1);
 
     // 벽시계 12→1→2→3
+    tap('foyer_b', 'clock');
+    expect(room.closeups.containsKey(s.closeupId), isTrue);
+    s.closeCloseup();
     tapClockHand(s);
     tapClockHand(s);
     tapClockHand(s);
-    expect(s.flag('clock_hour'), 3);
-    expect(s.flag('drawer_unlocked'), 1);
+    expect(s.flag('foyer_clock_hour'), 3);
+    expect(s.flag('foyer_drawer_unlocked'), 1);
 
     // 서랍: 열림 → 어두움 → 촛불 → 열쇠
     tap('foyer_a', 'drawer');
     expect(s.closeupId, 'drawer');
     s.select('lit_candle');
     tap('drawer', 'drawer_dark');
-    expect(s.flag('drawer_lit'), 1);
+    expect(s.flag('foyer_drawer_lit'), 1);
     tap('drawer', 'drawer_key');
     expect(s.has('key_foyer'), isTrue);
 
@@ -75,34 +81,35 @@ void main() {
     expect(room.cleared(s), isFalse);
     s.select('key_foyer');
     tap('foyer_a', 'inner_door');
-    expect(s.flag('inner_door_open'), 1);
+    expect(s.flag('foyer_inner_door_open'), 1);
     expect(s.has('key_foyer'), isFalse); // 열쇠 소모
     tap('foyer_a', 'inner_door');
     expect(room.cleared(s), isTrue);
   });
 
   test('순서 강제: 촛불 없이 서랍 안은 안 보임, 열쇠 없인 문 안 열림', () {
-    s.setFlag('drawer_unlocked', 1);
+    s.setFlag('foyer_drawer_unlocked', 1);
     tap('foyer_a', 'drawer');
     tap('drawer', 'drawer_dark'); // 촛불 미선택
-    expect(s.flag('drawer_lit'), 0);
+    expect(s.flag('foyer_drawer_lit'), 0);
     tap('foyer_a', 'inner_door'); // 열쇠 없음
-    expect(s.flag('inner_door_open'), 0);
+    expect(s.flag('foyer_inner_door_open'), 0);
   });
 
   test('시계는 12시간 순환', () {
     for (var i = 0; i < 12; i++) {
       tapClockHand(s);
     }
-    expect(s.flag('clock_hour'), 12);
+    expect(s.flag('foyer_clock_hour'), 12);
     tapClockHand(s);
-    expect(s.flag('clock_hour'), 1);
+    expect(s.flag('foyer_clock_hour'), 1);
   });
 
   test('힌트 3개: 단계 3개씩 + solved 조건 배선', () {
     expect(room.hints.length, 3);
-    expect(room.hints.map((h) => h.puzzleId), ['p_light', 'p_clock', 'p_door']);
-    s.setFlag('drawer_lit', 1);
+    expect(room.hints.map((h) => h.puzzleId),
+        ['p_foyer_light', 'p_foyer_clock', 'p_foyer_door']);
+    s.setFlag('foyer_drawer_lit', 1);
     expect(room.hints[0].solved!(s), isTrue);
   });
 
@@ -119,7 +126,7 @@ void main() {
       await t.tap(find.byKey(const Key('clock_tap')));
       await t.pump();
     }
-    expect(s.flag('drawer_unlocked'), 1);
+    expect(s.flag('foyer_drawer_unlocked'), 1);
   });
 
   testWidgets('액자 위젯: 문지르면 먼지 제거', (t) async {
@@ -130,6 +137,6 @@ void main() {
           warnIfMissed: false);
       await t.pump();
     }
-    expect(s.flag('dust_cleaned'), 1);
+    expect(s.flag('foyer_dust_cleaned'), 1);
   });
 }

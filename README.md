@@ -12,7 +12,7 @@
 ## 구조
 
 - `lib/core/` — 엔진 (GameState 플래그 상태머신, 세이브+백업, SceneView, 인벤토리/조합, 3단계 힌트+광고)
-- `lib/rooms/roomN_*.dart` — 방 하나 = 파일 하나. 방 추가: 파일 작성 → `rooms.dart` 목록에 추가 → 정답 시퀀스 테스트 필수
+- `lib/rooms/roomN_*.dart` — 방 하나 = 파일 하나. 방 추가: 파일 작성 → `rooms.dart` 목록에 추가 → 정답 시퀀스 테스트 필수. 플래그·퍼즐 id는 방 접두어(예: foyer_)로 전역 유일하게 짓는다(세이브가 방 사이에 공유되므로).
 - `art/` — Codex 생성 의뢰 문서. 이미지 파일을 `assets/`에 넣으면 코드 수정 없이 반영 (없으면 라벨 색 블록)
 - 스펙: `docs/superpowers/specs/`, 계획: `docs/superpowers/plans/`
 

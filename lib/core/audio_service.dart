@@ -10,11 +10,16 @@ class AudioService {
 
   Future<void> play(String name) async {
     if (!enabled || muted) return;
+    AudioPlayer? p;
     try {
-      final p = AudioPlayer();
-      p.onPlayerComplete.listen((_) => p.dispose());
+      p = AudioPlayer();
+      p.onPlayerComplete.listen((_) => p?.dispose());
       await p.play(AssetSource('audio/$name.mp3'));
-    } catch (_) {/* 에셋 미도착·기기 문제 → 무음 진행 */}
+    } catch (_) {
+      try {
+        await p?.dispose();
+      } catch (_) {/* 소리 정리 실패도 무시 */}
+    }
   }
 
   Future<void> playBgm(String name) async {

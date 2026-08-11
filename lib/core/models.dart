@@ -89,5 +89,7 @@ class Room {
     this.hints = const [],
     required this.cleared,
     this.onEnter,
-  });
+  }) : assert(
+          closeups.entries.every((e) => e.key == e.value.id),
+          'closeups의 key는 Scene.id와 일치해야 한다 (SceneView가 key로 조회)');
 }

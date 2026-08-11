@@ -35,6 +35,16 @@ void main() {
     expect(find.text(strChapterEnd), findsOneWidget); // 방 1개뿐이라 엔딩
   });
 
+  testWidgets('챕터 완료 상태로 재개하면 엔딩 화면', (t) async {
+    final s = GameState()
+      ..setFlag('entered_foyer', 1)
+      ..setFlag('foyer_done', 1)
+      ..setFlag('cleared_shown_foyer', 1);
+    await t.pumpWidget(app(state: s));
+    await t.pumpAndSettle();
+    expect(find.text(strChapterEnd), findsOneWidget);
+  });
+
   testWidgets('설정: 진행 초기화 → 타이틀로 + 세이브 삭제', (t) async {
     final s = GameState()..setFlag('entered_foyer', 1);
     await t.pumpWidget(app(state: s));

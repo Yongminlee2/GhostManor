@@ -252,7 +252,7 @@ class _RoomScreenState extends State<RoomScreen> {
                 _precacheRoomImages();
                 _enterRoomIfFirst();
               } else {
-                setState(() => _ended = true);
+                setState(() {});
               }
             },
             child: const Text(strNextRoom),
@@ -262,7 +262,12 @@ class _RoomScreenState extends State<RoomScreen> {
     );
   }
 
-  bool _ended = false;
+  bool get _ended {
+    final s = widget.state;
+    return s.roomIndex + 1 >= widget.rooms.length &&
+        room.cleared(s) &&
+        s.flag('cleared_shown_${room.id}') >= 1;
+  }
 
   Future<void> _openSettings() async {
     final s = widget.state;
