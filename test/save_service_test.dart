@@ -50,4 +50,14 @@ void main() {
     final r = await svc.load();
     expect(r!.flag('x'), 7);
   });
+
+  test('dispose는 대기 중 자동 저장을 취소', () async {
+    final svc = SaveService();
+    final s = GameState();
+    svc.attach(s);
+    s.setFlag('x', 7);
+    svc.dispose();
+    await Future<void>.delayed(const Duration(milliseconds: 700));
+    expect(await svc.load(), isNull);
+  });
 }

@@ -19,3 +19,19 @@ const strFoyerDrawerDark = '서랍 속이 너무 어두워서 아무것도 안 �
 const strFoyerKeyFound = '낡은 열쇠를 얻었다! 고스포가 아쉬운 표정을 짓는다.';
 const strFoyerDoorOpened = '철컥! 문이 열렸다. 저택 안쪽으로 들어가자.';
 const strFoyerClockSet = '똑딱… 철컥! 어디선가 잠금이 풀리는 소리가 났다.';
+
+// ── 앱 셸 ──
+const strAppTitle = '기묘한 유령 저택';
+const strContinue = '이어하기';
+const strNewGame = '처음부터';
+const strNewGameConfirm = '저장된 진행이 삭제됩니다. 처음부터 시작할까요?';
+const strSettings = '설정';
+const strMute = '소리 끄기';
+const strResetProgress = '진행 초기화';
+const strResetConfirm = '정말 모든 진행을 삭제할까요?';
+const strRoomClear = '방 탈출 성공!';
+const strNextRoom = '다음 방으로';
+const strChapterEnd = '챕터 1 클리어!\n저택의 더 깊은 곳은 준비 중…';
+const strBackToTitle = '처음으로';
+const strCancel = '취소';
+const strOk = '확인';

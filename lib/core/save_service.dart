@@ -43,4 +43,7 @@ class SaveService {
       _debounce = Timer(const Duration(milliseconds: 500), () => save(s));
     });
   }
+
+  /// 대기 중인 디바운스 저장 취소 (위젯 teardown용).
+  void dispose() => _debounce?.cancel();
 }
