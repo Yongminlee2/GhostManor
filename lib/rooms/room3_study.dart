@@ -28,16 +28,16 @@ Room buildStudy() {
   Cond flagSet(String k) => (s) => s.flag(k) >= 1;
   Cond flagZero(String k) => (s) => s.flag(k) == 0;
 
-  const bookRedArea = Rect.fromLTWH(0.10, 0.30, 0.10, 0.16);
-  const bookBlueArea = Rect.fromLTWH(0.30, 0.30, 0.10, 0.16);
-  const bookYellowArea = Rect.fromLTWH(0.54, 0.30, 0.10, 0.16);
-  const bookGreenArea = Rect.fromLTWH(0.76, 0.30, 0.10, 0.16);
-  const nookArea = Rect.fromLTWH(0.40, 0.52, 0.20, 0.18);
+  const bookRedArea = Rect.fromLTWH(0.16, 0.22, 0.10, 0.11);
+  const bookBlueArea = Rect.fromLTWH(0.35, 0.22, 0.10, 0.11);
+  const bookYellowArea = Rect.fromLTWH(0.56, 0.22, 0.10, 0.11);
+  const bookGreenArea = Rect.fromLTWH(0.75, 0.22, 0.10, 0.11);
+  const nookArea = Rect.fromLTWH(0.40, 0.46, 0.20, 0.18);
   const nedArea = Rect.fromLTWH(0.72, 0.60, 0.18, 0.26);
-  const paperArea = Rect.fromLTWH(0.08, 0.56, 0.16, 0.12);
-  const globeArea = Rect.fromLTWH(0.30, 0.44, 0.18, 0.20);
+  const paperArea = Rect.fromLTWH(0.02, 0.62, 0.26, 0.12);
+  const globeArea = Rect.fromLTWH(0.16, 0.40, 0.26, 0.22);
   const doorArea = Rect.fromLTWH(0.62, 0.24, 0.26, 0.46);
-  const deskArea = Rect.fromLTWH(0.04, 0.66, 0.24, 0.18);
+  const deskArea = Rect.fromLTWH(0.04, 0.74, 0.24, 0.12);
 
   // 책 4권 공용: tapBook 진행 + 클릭음, 리셋되면 대사, nook 완성 순간 추가 피드백.
   void tapBookSpot(GameCtx c, int i) {
@@ -110,7 +110,7 @@ Room buildStudy() {
       Scene(id: 'study_b', image: 'assets/scenes/study_b.png', overlays: [
         SceneOverlay(
             image: 'assets/scenes/study_b_globe_open.png',
-            area: globeArea,
+            area: Rect.fromLTWH(0.17, 0.42, 0.18, 0.20),
             when: flagSet('study_globe_open')),
         SceneOverlay(
             image: 'assets/scenes/study_b_door_open.png',
