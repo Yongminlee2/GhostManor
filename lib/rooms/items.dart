@@ -13,6 +13,10 @@ const Map<String, Item> itemsById = {
   'candle': Item('candle', '양초'),
   'lit_candle': Item('lit_candle', '불 켠 초'),
   'key_foyer': Item('key_foyer', '낡은 열쇠'),
+  'remote': Item('remote', '리모컨'),
+  'key_living': Item('key_living', '거실 열쇠'),
+  'note1': Item('note1', '음표 카드 ♪달'),
+  'oil': Item('oil', '기름병'),
 };
 
 /// 키 = 두 id를 사전순 정렬해 '+'로 연결.

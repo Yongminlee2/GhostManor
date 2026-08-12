@@ -22,7 +22,7 @@ void main() {
     expect(find.textContaining('고스포'), findsOneWidget); // onEnter 인트로
   });
 
-  testWidgets('클리어 흐름: foyer_done → 클리어 다이얼로그 → (마지막 방) 엔딩', (t) async {
+  testWidgets('클리어 흐름: foyer_done → 클리어 다이얼로그 → 다음 방 → 거실 클리어 → 엔딩', (t) async {
     final s = GameState()..setFlag('entered_foyer', 1);
     await t.pumpWidget(app(state: s));
     await t.pumpAndSettle();
@@ -32,14 +32,25 @@ void main() {
     expect(find.text(strRoomClear), findsOneWidget);
     await t.tap(find.text(strNextRoom));
     await t.pumpAndSettle();
-    expect(find.text(strChapterEnd), findsOneWidget); // 방 1개뿐이라 엔딩
+    expect(find.text('거실'), findsOneWidget); // 방 2개째 — 아직 안 끝남
+
+    s.setFlag('living_done', 1);
+    await t.pumpAndSettle();
+    expect(find.text(strRoomClear), findsOneWidget);
+    await t.tap(find.text(strNextRoom));
+    await t.pumpAndSettle();
+    expect(find.text(strChapterEnd), findsOneWidget); // 마지막 방 클리어 → 엔딩
   });
 
   testWidgets('챕터 완료 상태로 재개하면 엔딩 화면', (t) async {
     final s = GameState()
       ..setFlag('entered_foyer', 1)
       ..setFlag('foyer_done', 1)
-      ..setFlag('cleared_shown_foyer', 1);
+      ..setFlag('cleared_shown_foyer', 1)
+      ..roomIndex = 1
+      ..setFlag('entered_living', 1)
+      ..setFlag('living_done', 1)
+      ..setFlag('cleared_shown_living', 1);
     await t.pumpWidget(app(state: s));
     await t.pumpAndSettle();
     expect(find.text(strChapterEnd), findsOneWidget);

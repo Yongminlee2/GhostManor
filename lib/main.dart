@@ -251,9 +251,8 @@ class _RoomScreenState extends State<RoomScreen> {
                 s.goRoom(s.roomIndex + 1);
                 _precacheRoomImages();
                 _enterRoomIfFirst();
-              } else {
-                setState(() {});
               }
+              setState(() {}); // 방 전환/엔딩 모두 재빌드 필요 (room getter가 roomIndex에 의존)
             },
             child: const Text(strNextRoom),
           ),

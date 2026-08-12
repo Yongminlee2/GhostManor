@@ -20,6 +20,24 @@ const strFoyerKeyFound = '낡은 열쇠를 얻었다! 고스포가 아쉬운 표
 const strFoyerDoorOpened = '철컥! 문이 열렸다. 저택 안쪽으로 들어가자.';
 const strFoyerClockSet = '똑딱… 철컥! 어디선가 잠금이 풀리는 소리가 났다.';
 
+// ── 거실 (room2_living) ──
+const strLivingIntro = '"드, 들어오지 마! 여긴 겁주기 담당 부우 님의 구역이다!" …문 앞의 작은 유령이 이불을 뒤집어쓰고 떨고 있다.';
+const strLivingBooScare = '"부우~! 무, 무섭지?! …안 무서워? 하아, 오늘 드라마 재방송도 놓쳤는데."';
+const strLivingBooBlocks = '부우가 문 앞을 막고 있다. 뭔가 몹시 시무룩해 보인다. TV 이야기를 중얼거리는데…';
+const strLivingBooHappy = '"오오, 3화부터구나!! 넌 좋은 인간이야. 문? 마음대로 해." 부우가 소파에 파묻혀 TV에 빠져 있다.';
+const strLivingCushion = '쿠션 밑에서 리모컨을 찾았다! 유령도 리모컨은 숨기는구나.';
+const strLivingCushionEmpty = '쿠션 밑엔 이제 과자 부스러기뿐이다.';
+const strLivingTvOff = '낡은 TV. 전원이 꺼져 있다. 리모컨이 있어야겠는데.';
+const strLivingTvOn = '지지직… TV가 켜졌다! 기묘한 방송이 나온다. 화면을 자세히 봐 두자.';
+const strLivingMantel = '벽난로 위 선반. 벽돌 하나가 헐거워 보이는데, 지금은 꿈쩍도 안 한다. 벽난로에 불이 붙으면 어떨까?';
+const strLivingFireplaceCold = '차갑게 식은 벽난로. 촛대들과 뭔가 연결되어 있는 것 같다.';
+const strLivingFireplaceLit = '벽난로가 활활 타오른다. 훈훈하다 못해 조금 으스스하게 따뜻하다.';
+const strLivingFireLit = '화르륵! 촛불의 배열에 맞춰 벽난로에 불이 붙었다! 위쪽 벽돌이 덜컹 열렸다.';
+const strLivingSecretFound = '비밀칸에서 거실 열쇠, 달 그림 음표 카드, 기름병을 찾았다!';
+const strLivingSecretEmpty = '비밀칸은 이제 비어 있다.';
+const strLivingDoorLocked = '잠겨 있다. 열쇠 구멍이 반짝인다.';
+const strLivingDoorOpened = '철컥! 다음 방으로 가는 문이 열렸다.';
+
 // ── 앱 셸 ──
 const strAppTitle = '기묘한 유령 저택';
 const strContinue = '이어하기';
