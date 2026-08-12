@@ -21,7 +21,7 @@ Room buildKitchen() {
   // 속이 꽉 찬 찬장 문(1·3·4) 공용: 둔탁한 노크음+대사만 반복(스펙 §3.3-6 —
   // 소리로 구분되는 단서는 대사로도 묘사해 음소거 유저도 구분 가능해야 함).
   void knockDull(GameCtx c) {
-    c.sfx('locked');
+    c.sfx('wood_knock_dull');
     c.say(strKitchenKnockDull);
   }
 
@@ -40,6 +40,7 @@ Room buildKitchen() {
               if (c.s.flag('kitchen_got_bottle') == 0) {
                 c.s.setFlag('kitchen_got_bottle', 1);
                 c.give('empty_bottle');
+                c.sfx('glass_clink');
                 c.say(strKitchenBottle);
               } else {
                 c.say(strKitchenCounterEmpty);
@@ -59,6 +60,7 @@ Room buildKitchen() {
                 s.setFlag('kitchen_ghost_fed', 1);
                 c.give('key_kitchen');
                 c.give('note3');
+                c.sfx('liquid_pour');
                 c.sfx('sparkle');
                 c.say(strKitchenFed);
               } else if (s.flag('kitchen_ghost_fed') >= 1) {
@@ -75,6 +77,7 @@ Room buildKitchen() {
               if (c.s.flag('kitchen_got_mushroom') == 0) {
                 c.s.setFlag('kitchen_got_mushroom', 1);
                 c.give('mushroom');
+                c.sfx('ceramic_clink');
                 c.say(strKitchenJar);
               } else {
                 c.say(strKitchenJarEmpty);
@@ -99,7 +102,7 @@ Room buildKitchen() {
               if (c.using('empty_bottle')) {
                 c.consume('empty_bottle');
                 c.give('water_bottle');
-                c.sfx('sparkle');
+                c.sfx('bottle_fill');
                 c.say(strKitchenFill);
               } else {
                 c.say(strKitchenSink);
@@ -113,12 +116,13 @@ Room buildKitchen() {
               final s = c.s;
               if (s.flag('kitchen_hollow_found') == 0) {
                 s.setFlag('kitchen_hollow_found', 1);
-                c.sfx('unlock');
+                c.sfx('wood_knock_hollow');
                 c.say(strKitchenKnockHollow);
               } else if (s.flag('kitchen_got_kettle') == 0 &&
                   s.flag('kitchen_hollow_found') == 1) {
                 s.setFlag('kitchen_got_kettle', 1);
                 c.give('kettle_singing');
+                c.sfx('metal_click');
                 c.say(strKitchenKettle);
               } else {
                 c.say(strKitchenCupboardEmpty);
@@ -136,7 +140,7 @@ Room buildKitchen() {
                 s.setFlag('kitchen_done', 1);
               } else if (c.using('key_kitchen')) {
                 c.consume('key_kitchen');
-                c.sfx('unlock');
+                c.sfx('metal_key');
                 s.setFlag('kitchen_door_open', 1);
                 c.say(strKitchenDoorOpened);
               } else {

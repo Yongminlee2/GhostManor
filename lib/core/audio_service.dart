@@ -5,6 +5,7 @@ class AudioService {
   final bool enabled; // 테스트에서 false: 플러그인 자체를 건드리지 않음
   bool muted = false;
   AudioPlayer? _bgm;
+  AudioPlayer? _ambient;
 
   AudioService({this.enabled = true});
 
@@ -31,13 +32,24 @@ class AudioService {
     } catch (_) {}
   }
 
+  Future<void> playAmbient(String name) async {
+    if (!enabled) return;
+    try {
+      _ambient ??= AudioPlayer()..setReleaseMode(ReleaseMode.loop);
+      await _ambient!.play(AssetSource('audio/$name.wav'));
+      if (muted) await _ambient!.pause();
+    } catch (_) {}
+  }
+
   Future<void> setMuted(bool m) async {
     muted = m;
     try {
       if (m) {
         await _bgm?.pause();
+        await _ambient?.pause();
       } else {
         await _bgm?.resume();
+        await _ambient?.resume();
       }
     } catch (_) {}
   }

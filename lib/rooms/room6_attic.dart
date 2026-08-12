@@ -42,10 +42,10 @@ class OrganKeys extends StatelessWidget {
     tapOrganKey(s, i);
     ctx.sfx('note$i');
     if (!wasPlayed && s.flag('attic_organ_played') >= 1) {
-      ctx.sfx('unlock');
+      ctx.sfx('organ_chord');
       ctx.say(strAtticOrganPlayed);
     } else if (s.flag('attic_organ_seq') == 0 && beforeSeq > 0) {
-      ctx.sfx('locked');
+      ctx.sfx('organ_wrong');
       ctx.say(strAtticOrganWrong);
     }
   }
@@ -120,6 +120,7 @@ Room buildAttic() {
               }
               c.consume(note);
               s.addFlag('attic_cards_placed');
+              c.sfx('paper_rustle');
               if (s.flag('attic_cards_placed') >= 4) {
                 c.sfx('sparkle');
                 c.say(strAtticCardsAll);
@@ -161,6 +162,7 @@ Room buildAttic() {
                 c.sfx('door_open');
                 c.say(strAtticWill);
               } else {
+                c.sfx('wood_creak_open');
                 s.setFlag('attic_done', 1);
               }
             }),

@@ -36,9 +36,9 @@ Room buildLiving() {
   void tapCandle(GameCtx c, int i) {
     final wasLit = c.s.flag('living_fireplace_lit') >= 1;
     toggleCandle(c.s, i);
-    c.sfx('clock_tick');
+    c.sfx('metal_click');
     if (!wasLit && c.s.flag('living_fireplace_lit') >= 1) {
-      c.sfx('sparkle');
+      c.sfx('fire_ignite');
       c.say(strLivingFireLit);
     }
   }
@@ -112,6 +112,7 @@ Room buildLiving() {
               if (s.flag('living_fireplace_lit') == 0) {
                 c.say(strLivingMantel);
               } else if (s.flag('living_got_key') == 0) {
+                c.sfx('wood_creak_open');
                 c.give('key_living');
                 c.give('note1');
                 c.give('oil');
@@ -148,6 +149,7 @@ Room buildLiving() {
               if (c.s.flag('living_got_remote') == 0) {
                 c.s.setFlag('living_got_remote', 1);
                 c.give('remote');
+                c.sfx('cloth_rub');
                 c.say(strLivingCushion);
               } else {
                 c.say(strLivingCushionEmpty);
@@ -162,7 +164,7 @@ Room buildLiving() {
               } else if (c.using('remote')) {
                 c.consume('remote');
                 c.s.setFlag('living_tv_on', 1);
-                c.sfx('sparkle');
+                c.sfx('tv_static');
                 c.say(strLivingTvOn);
               } else {
                 c.say(strLivingTvOff);
@@ -183,7 +185,7 @@ Room buildLiving() {
                 s.setFlag('living_done', 1);
               } else if (c.using('key_living')) {
                 c.consume('key_living');
-                c.sfx('unlock');
+                c.sfx('metal_key');
                 s.setFlag('living_door_open', 1);
                 c.say(strLivingDoorOpened);
               } else {

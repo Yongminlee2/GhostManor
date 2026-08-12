@@ -44,7 +44,7 @@ Room buildStudy() {
     final beforeSeq = c.s.flag('study_book_seq');
     final wasOpen = c.s.flag('study_nook_open') >= 1;
     tapBook(c.s, i);
-    c.sfx('clock_tick');
+    c.sfx('book_flip');
     if (!wasOpen && c.s.flag('study_nook_open') >= 1) {
       c.sfx('unlock');
       c.say(strStudyNookOpen);
@@ -93,6 +93,7 @@ Room buildStudy() {
                 s.flag('study_nook_open') >= 1 &&
                 s.flag('study_got_crank') == 0,
             onTap: (c) {
+              c.sfx('wood_slide');
               c.give('crank');
               c.give('note2');
               c.s.setFlag('study_got_crank', 1);
@@ -118,7 +119,12 @@ Room buildStudy() {
             when: flagSet('study_done')),
       ], hotspots: [
         Hotspot(
-            id: 'paper', area: paperArea, onTap: (c) => c.openCloseup('paper')),
+            id: 'paper',
+            area: paperArea,
+            onTap: (c) {
+              c.sfx('paper_rustle');
+              c.openCloseup('paper');
+            }),
         Hotspot(
             id: 'globe',
             area: globeArea,
@@ -126,12 +132,13 @@ Room buildStudy() {
               final s = c.s;
               if (s.flag('study_globe_open') >= 1 &&
                   s.flag('study_got_key') == 0) {
+                c.sfx('metal_key');
                 c.give('key_study');
                 s.setFlag('study_got_key', 1);
                 c.say(strStudyGlobeKey);
               } else if (c.using('crank')) {
                 c.consume('crank');
-                c.sfx('unlock');
+                c.sfx('metal_click');
                 s.setFlag('study_globe_open', 1);
                 c.say(strStudyGlobeOpen);
               } else {
@@ -150,11 +157,12 @@ Room buildStudy() {
                 s.setFlag('study_done', 1);
               } else if (c.using('key_study')) {
                 c.consume('key_study');
-                c.sfx('unlock');
+                c.sfx('metal_key');
                 s.setFlag('study_door_unlocked', 1);
                 c.say(strStudyDoorUnlocked);
               } else if (c.using('oil')) {
                 c.consume('oil');
+                c.sfx('liquid_pour');
                 s.setFlag('study_door_oiled', 1);
                 c.say(strStudyDoorOiled);
               } else if (unlocked && !oiled) {

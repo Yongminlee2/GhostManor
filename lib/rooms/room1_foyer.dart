@@ -131,7 +131,7 @@ Room buildFoyer() {
                 s.setFlag('foyer_done', 1);
               } else if (c.using('key_foyer')) {
                 c.consume('key_foyer');
-                c.sfx('unlock');
+                c.sfx('metal_key');
                 s.setFlag('foyer_inner_door_open', 1);
                 c.say(strFoyerDoorOpened);
               } else {
@@ -156,6 +156,7 @@ Room buildFoyer() {
             area: const Rect.fromLTWH(0.64, 0.52, 0.28, 0.16),
             onTap: (c) {
               if (c.s.flag('foyer_drawer_unlocked') >= 1) {
+                c.sfx('wood_slide');
                 c.openCloseup('drawer');
               } else {
                 c.sfx('locked');
@@ -176,6 +177,7 @@ Room buildFoyer() {
               if (c.s.flag('foyer_got_match') == 0) {
                 c.s.setFlag('foyer_got_match', 1);
                 c.give('match');
+                c.sfx('cloth_rub');
                 c.say(strFoyerCoatMatch);
               } else {
                 c.say(strFoyerCoatEmpty);
@@ -192,7 +194,10 @@ Room buildFoyer() {
         Hotspot(
             id: 'shoe_cabinet',
             area: const Rect.fromLTWH(0.66, 0.56, 0.30, 0.26),
-            onTap: (c) => c.openCloseup('shoes')),
+            onTap: (c) {
+              c.sfx('wood_slide');
+              c.openCloseup('shoes');
+            }),
       ]),
     ],
     closeups: {
@@ -241,6 +246,7 @@ Room buildFoyer() {
                 onTap: (c) {
                   c.s.setFlag('foyer_got_key', 1);
                   c.give('key_foyer');
+                  c.sfx('metal_key');
                   c.say(strFoyerKeyFound);
                 }),
           ]),

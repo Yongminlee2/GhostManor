@@ -193,6 +193,7 @@ class _RoomScreenState extends State<RoomScreen> {
   void initState() {
     super.initState();
     widget.audio.playBgm('bgm_manor');
+    widget.audio.playAmbient('ambient_${room.id}');
     widget.state.addListener(_onStateChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _selfHealStrandedClear();
@@ -211,6 +212,7 @@ class _RoomScreenState extends State<RoomScreen> {
         s.flag('cleared_shown_${room.id}') >= 1 &&
         s.roomIndex + 1 < widget.rooms.length) {
       s.goRoom(s.roomIndex + 1);
+      widget.audio.playAmbient('ambient_${room.id}');
       setState(() {}); // room getter가 roomIndex 의존 — 아래 precache/enter가 새 방을 보게
     }
   }
@@ -273,6 +275,7 @@ class _RoomScreenState extends State<RoomScreen> {
     final s = widget.state;
     if (s.roomIndex + 1 < widget.rooms.length) {
       s.goRoom(s.roomIndex + 1);
+      widget.audio.playAmbient('ambient_${room.id}');
       _precacheRoomImages();
       _enterRoomIfFirst();
     }

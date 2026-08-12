@@ -60,7 +60,7 @@ class BarrelDrag extends StatelessWidget {
                     final before = s.flag('cellar_barrel_moved');
                     moveBarrel(s, d.delta.dx.abs());
                     if (before == 0 && s.flag('cellar_barrel_moved') >= 1) {
-                      ctx.sfx('door_open');
+                      ctx.sfx('stone_drag');
                       ctx.say(strCellarBarrelDone);
                     }
                   },
@@ -107,7 +107,7 @@ class _ShelfShakeState extends State<ShelfShake> {
     final before = s.flag('cellar_key_dropped');
     action();
     if (before == 0 && s.flag('cellar_key_dropped') >= 1) {
-      widget.ctx.sfx('unlock');
+      widget.ctx.sfx('metal_drop');
       widget.ctx.say(strCellarKeyDrop);
     }
   }
@@ -166,6 +166,7 @@ Room buildCellar() {
               final s = c.s;
               if (s.flag('cellar_light') == 0) {
                 s.setFlag('cellar_got_fuse', 1);
+                c.sfx('wood_creak_open');
                 c.give('fuse');
                 c.give('note4');
                 c.say(strCellarGlowBox);
@@ -201,6 +202,7 @@ Room buildCellar() {
                 s.flag('cellar_key_dropped') == 1 &&
                 s.flag('cellar_got_key') == 0,
             onTap: (c) {
+              c.sfx('metal_key');
               c.give('key_cellar');
               c.s.setFlag('cellar_got_key', 1);
               c.say(strCellarKeyTaken);
@@ -228,7 +230,7 @@ Room buildCellar() {
               if (c.using('fuse')) {
                 c.consume('fuse');
                 c.s.setFlag('cellar_fuse_installed', 1);
-                c.sfx('unlock');
+                c.sfx('metal_click');
                 c.say(strCellarFuseIn);
               } else {
                 c.say(strCellarFusebox);
@@ -244,7 +246,7 @@ Room buildCellar() {
               } else {
                 final turningOn = s.flag('cellar_light') == 0;
                 s.setFlag('cellar_light', turningOn ? 1 : 0);
-                c.sfx('clock_tick');
+                c.sfx('switch_click');
                 if (turningOn) c.say(strCellarLightOn);
               }
             }),
@@ -272,7 +274,7 @@ Room buildCellar() {
                 s.setFlag('cellar_done', 1);
               } else if (c.using('key_cellar')) {
                 c.consume('key_cellar');
-                c.sfx('unlock');
+                c.sfx('metal_key');
                 s.setFlag('cellar_door_open', 1);
                 c.say(strCellarDoorOpened);
               } else {
