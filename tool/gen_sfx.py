@@ -60,7 +60,21 @@ def cat(*parts):
     return out
 
 
+# 실음원(CC0)으로 교체된 슬롯 — 다시 생성하지 않는다 (출처: docs/CREDITS.md)
+REPLACED_BY_REAL = {
+    "ceramic_clink", "clock_tick", "cloth_rub", "combine", "door_open",
+    "glass_clink", "metal_click", "metal_drop", "pickup", "switch_click",
+    "wood_creak_open", "wood_knock_dull", "wood_knock_hollow",
+    "book_flip", "bottle_fill", "fire_ignite", "liquid_pour", "locked",
+    "metal_key", "paper_rustle", "sparkle", "unlock", "wood_slide",
+    "ambient_foyer", "ambient_living", "ambient_study", "ambient_kitchen",
+    "ambient_cellar", "ambient_attic", "bgm_manor",
+}
+
+
 def write(name, samples):
+    if name in REPLACED_BY_REAL:
+        return
     path = os.path.join(OUT, name + ".wav")
     with wave.open(path, "wb") as w:
         w.setnchannels(1)
