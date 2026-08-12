@@ -69,17 +69,35 @@ void main() {
     expect(s.flag('tapped'), 0);
   });
 
-  testWidgets('화살표로 벽면 순환, 클로즈업 열면 화살표 숨김+X로 닫기', (t) async {
+  testWidgets('화살표는 경계에서 잘림(순환 없음), 클로즈업 열면 둘 다 숨김+X로 닫기',
+      (t) async {
     await pump(t, SceneView(room: _testRoom(), ctx: c));
+    expect(find.byKey(const Key('arrow_left')), findsNothing);
+    expect(find.byKey(const Key('arrow_right')), findsOneWidget);
     await t.tap(find.byKey(const Key('arrow_right')));
     await t.pump();
     expect(s.sceneIndex, 1);
+    expect(find.byKey(const Key('arrow_right')), findsNothing);
+    expect(find.byKey(const Key('arrow_left')), findsOneWidget);
+    await t.tap(find.byKey(const Key('arrow_left')));
+    await t.pump();
+    expect(s.sceneIndex, 0);
     s.openCloseup('cu');
     await t.pump();
+    expect(find.byKey(const Key('arrow_left')), findsNothing);
     expect(find.byKey(const Key('arrow_right')), findsNothing);
     await t.tap(find.byKey(const Key('closeup_close')));
     await t.pump();
     expect(s.closeupId, isNull);
+  });
+
+  testWidgets('리플 레이어가 있어도 핫스팟 탭은 정상 처리된다', (t) async {
+    await pump(t, SceneView(room: _testRoom(), ctx: c));
+    final origin = t.getTopLeft(find.byType(SceneView));
+    await t.tapAt(origin + const Offset(200, 300)); // (0.5, 0.5) → 'big' 핫스팟
+    await t.pump();
+    expect(s.flag('tapped'), 1);
+    expect(find.byType(SceneView), findsOneWidget);
   });
 
   testWidgets('없는 에셋은 파일명 라벨 색 블록 (스펙 §7)', (t) async {

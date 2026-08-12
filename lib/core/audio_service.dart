@@ -14,7 +14,7 @@ class AudioService {
     try {
       p = AudioPlayer();
       p.onPlayerComplete.listen((_) => p?.dispose());
-      await p.play(AssetSource('audio/$name.mp3'));
+      await p.play(AssetSource('audio/$name.wav'));
     } catch (_) {
       try {
         await p?.dispose();
@@ -26,7 +26,7 @@ class AudioService {
     if (!enabled) return;
     try {
       _bgm ??= AudioPlayer()..setReleaseMode(ReleaseMode.loop);
-      await _bgm!.play(AssetSource('audio/$name.mp3'));
+      await _bgm!.play(AssetSource('audio/$name.wav'));
       if (muted) await _bgm!.pause();
     } catch (_) {}
   }
