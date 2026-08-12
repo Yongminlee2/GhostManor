@@ -116,6 +116,9 @@ Room buildKitchen() {
         item != null &&
         _potOrder.contains(item)) {
       c.sfx('locked');
+      // 오답 프레임이 보이도록 클로즈업을 연다 — 여기서 안 열면
+      // kitchen_pot_wrong 오버레이는 어떤 경로로도 화면에 못 나온다.
+      c.openCloseup('pot');
       c.say(strKitchenRPotWrong);
     } else {
       c.openCloseup('pot');

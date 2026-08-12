@@ -55,7 +55,16 @@ void main() {
     tap('kitchen_a', 'pot');
     expect(s.flag('kitchen_r_pot_stage'), 0);
     expect(s.flag('kitchen_r_pot_wrong'), 1);
+    expect(s.closeupId, 'pot',
+        reason: '오답 프레임이 보이려면 오답 탭이 클로즈업을 열어야 한다');
     expect(s.dialog, strKitchenRPotWrong);
+
+    // 다음 냄비 상호작용(선택 없음 재탭)에서 오답 프레임은 해제된다
+    s.select(null);
+    s.closeCloseup();
+    tap('kitchen_a', 'pot');
+    expect(s.flag('kitchen_r_pot_wrong'), 0);
+    expect(s.closeupId, 'pot');
   });
 
   test('부정: 안 달군 부지깽이로 언 자물쇠를 문질러도 전용 리액션만(진행 없음)', () {
