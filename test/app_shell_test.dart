@@ -23,7 +23,7 @@ void main() {
   });
 
   testWidgets(
-      '클리어 흐름: foyer_done → 다음 방 → living_done → 다음 방 → study_done → 다음 방 → kitchen_done → 다음 방 → cellar_done → 다음 방 → 다락방 클리어 → 엔딩',
+      '클리어 흐름: foyer_r_done → 다음 방 → living_r_done → 다음 방 → study_r_done → 다음 방 → kitchen_r_done → 다음 방 → cellar_r_done → 다음 방 → 다락방 클리어 → 엔딩',
       (t) async {
     final s = GameState()..setFlag('entered_foyer', 1);
     await t.pumpWidget(app(state: s));

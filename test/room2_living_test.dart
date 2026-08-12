@@ -48,6 +48,12 @@ void main() {
       final h = findHotspot(room, 'living_c', id);
       expect(h.when?.call(s) ?? true, isTrue, reason: '$id는 프레시 상태에서 활성이어야 함');
     }
+    // T2(촛대→벽난로)도 진입 직후 착수 가능해야 병렬 3스레드가 완성된다.
+    for (var i = 1; i <= 4; i++) {
+      final candle = findHotspot(room, 'living_a', 'candle$i');
+      expect(candle.when?.call(s) ?? true, isTrue,
+          reason: 'candle$i는 프레시 상태에서 활성이어야 함');
+    }
   });
 
   test('벽면 핫스팟 총수 ≥15 (하드코어 게이트)', () {
