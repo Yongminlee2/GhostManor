@@ -143,7 +143,8 @@ Room buildAttic() {
         SceneOverlay(
             image: 'assets/scenes/attic_b_trunk_open.png',
             area: const Rect.fromLTWH(0.36, 0.54, 0.34, 0.28),
-            when: (s) => s.flag('attic_organ_played') == 1),
+            when: (s) => s.flag('attic_organ_played') == 1,
+            motion: OverlayMotion.grow),
       ], hotspots: [
         Hotspot(
             id: 'embroidery',

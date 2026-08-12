@@ -34,11 +34,29 @@ class Hotspot {
       : assert(area.width >= 0.08, '픽셀 헌팅 금지: 핫스팟 폭은 화면의 8% 이상 (스펙 §3.4)');
 }
 
+/// 오버레이 등장 모션. 기본은 fade — 방마다 지정한 것만 slideDown/grow (스펙 §3).
+enum OverlayMotion { fade, slideDown, grow }
+
 class SceneOverlay {
   final String image; // assets/scenes/...
   final Rect area; // 비율 좌표. 전체 덮기는 Rect.fromLTWH(0,0,1,1)
   final Cond when;
-  const SceneOverlay({required this.image, required this.area, required this.when});
+  final OverlayMotion motion;
+  const SceneOverlay({
+    required this.image,
+    required this.area,
+    required this.when,
+    this.motion = OverlayMotion.fade,
+  });
+}
+
+/// 씬 위를 은은히 떠다니는 유령 스프라이트 (탭 불가, 장식용). area는 비율 좌표.
+class IdleSprite {
+  final String image;
+  final Rect area;
+  final Cond? when; // null이면 항상 표시
+  final double bobPx; // 위아래로 떠다니는 폭(픽셀)
+  IdleSprite({required this.image, required this.area, this.when, this.bobPx = 6});
 }
 
 class Scene {
@@ -46,6 +64,7 @@ class Scene {
   final String? image; // assets/scenes/... (custom 씬은 생략 가능)
   final List<SceneOverlay> overlays;
   final List<Hotspot> hotspots;
+  final List<IdleSprite> idles;
 
   /// escape hatch: 지정 시 이미지·오버레이·핫스팟 대신 위젯에 전체 위임 (스펙 §4.3)
   final Widget Function(BuildContext context, GameCtx ctx)? custom;
@@ -55,6 +74,7 @@ class Scene {
     this.image,
     this.overlays = const [],
     this.hotspots = const [],
+    this.idles = const [],
     this.custom,
   }) : assert(custom != null || image != null, '씬은 image나 custom 중 하나 필수');
 }

@@ -115,11 +115,14 @@ Room buildFoyer() {
         SceneOverlay(
             image: 'assets/scenes/foyer_a_door_open.png',
             area: const Rect.fromLTWH(0.36, 0.28, 0.28, 0.44),
-            when: flagSet('foyer_inner_door_open')),
-        SceneOverlay(
+            when: flagSet('foyer_inner_door_open'),
+            motion: OverlayMotion.grow),
+      ], idles: [
+        IdleSprite(
             image: 'assets/scenes/ghost_butler.png',
             area: const Rect.fromLTWH(0.02, 0.34, 0.20, 0.30),
-            when: (s) => s.flag('foyer_done') == 0),
+            when: (s) => s.flag('foyer_done') == 0,
+            bobPx: 7),
       ], hotspots: [
         Hotspot(
             id: 'inner_door',
@@ -224,7 +227,8 @@ Room buildFoyer() {
             SceneOverlay(
                 image: 'assets/scenes/foyer_drawer_lit.png',
                 area: const Rect.fromLTWH(0, 0, 1, 1),
-                when: flagSet('foyer_drawer_lit')),
+                when: flagSet('foyer_drawer_lit'),
+                motion: OverlayMotion.grow),
           ],
           hotspots: [
             Hotspot(

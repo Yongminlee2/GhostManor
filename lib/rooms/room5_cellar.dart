@@ -221,7 +221,8 @@ Room buildCellar() {
         SceneOverlay(
             image: 'assets/scenes/cellar_b_barrel_moved.png',
             area: const Rect.fromLTWH(0.50, 0.36, 0.34, 0.44),
-            when: flagSet('cellar_barrel_moved')),
+            when: flagSet('cellar_barrel_moved'),
+            motion: OverlayMotion.grow),
       ], hotspots: [
         Hotspot(
             id: 'fusebox',

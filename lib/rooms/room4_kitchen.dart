@@ -89,11 +89,13 @@ Room buildKitchen() {
         SceneOverlay(
             image: 'assets/scenes/kitchen_b_cup2_open.png',
             area: cupboard2Area,
-            when: flagSet('kitchen_hollow_found')),
+            when: flagSet('kitchen_hollow_found'),
+            motion: OverlayMotion.slideDown),
         SceneOverlay(
             image: 'assets/scenes/kitchen_b_door_open.png',
             area: backdoorArea,
-            when: flagSet('kitchen_door_open')),
+            when: flagSet('kitchen_door_open'),
+            motion: OverlayMotion.grow),
       ], hotspots: [
         Hotspot(
             id: 'sink',

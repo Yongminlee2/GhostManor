@@ -9,6 +9,8 @@ class GameState extends ChangeNotifier {
   int sceneIndex = 0;
   String? closeupId; // 일시 상태 — 저장 안 함
   String? dialog; // 일시 상태 — 저장 안 함
+  String? flyItem; // 일시 상태 — 저장 안 함 (인벤토리 플라이 연출용)
+  int flySeq = 0; // 일시 상태 — 저장 안 함 (증가할 때마다 새 플라이 트리거)
 
   int flag(String key) => flags[key] ?? 0;
 
@@ -23,6 +25,8 @@ class GameState extends ChangeNotifier {
 
   void give(String itemId) {
     inventory.add(itemId);
+    flyItem = itemId;
+    flySeq++;
     notifyListeners();
   }
 

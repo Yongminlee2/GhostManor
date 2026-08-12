@@ -54,27 +54,33 @@ Room buildLiving() {
         SceneOverlay(
             image: 'assets/scenes/living_a_candle1_on.png',
             area: candle1Area,
-            when: flagSet('living_candle1')),
+            when: flagSet('living_candle1'),
+            motion: OverlayMotion.grow),
         SceneOverlay(
             image: 'assets/scenes/living_a_candle2_on.png',
             area: candle2Area,
-            when: flagSet('living_candle2')),
+            when: flagSet('living_candle2'),
+            motion: OverlayMotion.grow),
         SceneOverlay(
             image: 'assets/scenes/living_a_candle3_on.png',
             area: candle3Area,
-            when: flagSet('living_candle3')),
+            when: flagSet('living_candle3'),
+            motion: OverlayMotion.grow),
         SceneOverlay(
             image: 'assets/scenes/living_a_candle4_on.png',
             area: candle4Area,
-            when: flagSet('living_candle4')),
+            when: flagSet('living_candle4'),
+            motion: OverlayMotion.grow),
         SceneOverlay(
             image: 'assets/scenes/living_a_fire.png',
             area: fireplaceArea,
-            when: flagSet('living_fireplace_lit')),
+            when: flagSet('living_fireplace_lit'),
+            motion: OverlayMotion.grow),
         SceneOverlay(
             image: 'assets/scenes/living_a_nook_open.png',
             area: nookArea,
-            when: flagSet('living_fireplace_lit')),
+            when: flagSet('living_fireplace_lit'),
+            motion: OverlayMotion.slideDown),
       ], hotspots: [
         // fireplace는 큰 배경 rect라 목록 맨 앞(= 탭 우선순위 최하) 선언 —
         // 뒤에 오는 candle2/candle3와 겹쳐도 촛대가 항상 이긴다 (최종 리뷰 Finding 1).
@@ -126,21 +132,25 @@ Room buildLiving() {
       // 벽면 B: 소파·TV·문 벽
       Scene(id: 'living_b', image: 'assets/scenes/living_b.png', overlays: [
         SceneOverlay(
-            image: 'assets/scenes/living_b_boo_door.png',
-            area: const Rect.fromLTWH(0.60, 0.28, 0.24, 0.34),
-            when: flagZero('living_tv_on')),
-        SceneOverlay(
-            image: 'assets/scenes/living_b_boo_sofa.png',
-            area: booSofaArea,
-            when: flagSet('living_tv_on')),
-        SceneOverlay(
             image: 'assets/scenes/living_b_tv_on.png',
             area: tvArea,
             when: flagSet('living_tv_on')),
         SceneOverlay(
             image: 'assets/scenes/living_b_door_open.png',
             area: doorArea,
-            when: flagSet('living_door_open')),
+            when: flagSet('living_door_open'),
+            motion: OverlayMotion.grow),
+      ], idles: [
+        IdleSprite(
+            image: 'assets/scenes/living_b_boo_door.png',
+            area: const Rect.fromLTWH(0.60, 0.28, 0.24, 0.34),
+            when: flagZero('living_tv_on'),
+            bobPx: 8),
+        IdleSprite(
+            image: 'assets/scenes/living_b_boo_sofa.png',
+            area: booSofaArea,
+            when: flagSet('living_tv_on'),
+            bobPx: 5),
       ], hotspots: [
         Hotspot(
             id: 'cushion',

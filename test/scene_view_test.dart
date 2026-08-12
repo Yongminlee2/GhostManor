@@ -16,6 +16,11 @@ Room _testRoom() => Room(
               image: 'assets/scenes/ov.png',
               area: const Rect.fromLTWH(0, 0, 1, 1),
               when: (s) => s.flag('ov') == 1),
+        ], idles: [
+          IdleSprite(
+              image: 'assets/scenes/idle_ghost.png',
+              area: const Rect.fromLTWH(0.05, 0.05, 0.15, 0.15),
+              when: (s) => s.flag('idle_on') == 1),
         ], hotspots: [
           Hotspot(
               id: 'big',
@@ -26,6 +31,10 @@ Room _testRoom() => Room(
               area: const Rect.fromLTWH(0.25, 0.25, 0.5, 0.5),
               when: (s) => s.flag('gate') == 1,
               onTap: (c) => c.s.addFlag('gated_tapped')),
+          Hotspot(
+              id: 'give_candle',
+              area: const Rect.fromLTWH(0.02, 0.85, 0.12, 0.12),
+              onTap: (c) => c.give('candle')),
         ]),
         Scene(id: 'b', image: 'assets/scenes/wall_b.png'),
       ],
@@ -124,6 +133,27 @@ void main() {
     await t.tap(find.text('으스스한 인사'));
     await t.pump();
     expect(s.dialog, isNull);
+  });
+
+  testWidgets('유령 둥실(IdleSprite): cond 충족시에만 렌더 + 에셋 없으면 파일명 라벨', (t) async {
+    await pump(t, SceneView(room: _testRoom(), ctx: c));
+    await t.pump();
+    expect(find.text('idle_ghost.png'), findsNothing);
+    s.setFlag('idle_on', 1);
+    await t.pump();
+    await t.pump(); // 새로 마운트된 이미지의 errorBuilder 해석에 한 프레임 더 필요
+    expect(find.text('idle_ghost.png'), findsOneWidget);
+  });
+
+  testWidgets('아이템 지급 시 인벤토리로 날아가는 연출이 나타났다 사라진다', (t) async {
+    await pump(t, SceneView(room: _testRoom(), ctx: c));
+    final origin = t.getTopLeft(find.byType(SceneView));
+    await t.tapAt(origin + const Offset(32, 546)); // (0.08, 0.91) → give_candle
+    await t.pump();
+    expect(s.has('candle'), isTrue);
+    expect(find.byKey(const ValueKey('fly_1')), findsOneWidget);
+    await t.pump(const Duration(milliseconds: 700));
+    expect(find.byKey(const ValueKey('fly_1')), findsNothing);
   });
 
   testWidgets('인벤토리: 선택 → 조합 성공, 실패 시 선택 이동', (t) async {

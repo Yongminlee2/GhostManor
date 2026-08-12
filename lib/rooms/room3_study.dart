@@ -64,7 +64,8 @@ Room buildStudy() {
         SceneOverlay(
             image: 'assets/scenes/study_a_nook_open.png',
             area: nookArea,
-            when: flagSet('study_nook_open')),
+            when: flagSet('study_nook_open'),
+            motion: OverlayMotion.slideDown),
       ], hotspots: [
         Hotspot(
             id: 'book_red',
@@ -112,11 +113,13 @@ Room buildStudy() {
         SceneOverlay(
             image: 'assets/scenes/study_b_globe_open.png',
             area: Rect.fromLTWH(0.17, 0.42, 0.18, 0.20),
-            when: flagSet('study_globe_open')),
+            when: flagSet('study_globe_open'),
+            motion: OverlayMotion.grow),
         SceneOverlay(
             image: 'assets/scenes/study_b_door_open.png',
             area: doorArea,
-            when: flagSet('study_done')),
+            when: flagSet('study_done'),
+            motion: OverlayMotion.grow),
       ], hotspots: [
         Hotspot(
             id: 'paper',
