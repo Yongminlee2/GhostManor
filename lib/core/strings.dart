@@ -195,7 +195,23 @@ const strAtticOrganWrong = '삐끗! 오르간이 불쾌한 화음을 낸다. 처
 const strAtticOrganPlayed = '웅장한 화음이 다락을 가득 채운다…! 트렁크의 자물쇠가 저절로 풀렸다.';
 const strAtticTrunkLocked = '삼촌의 트렁크. 자물쇠에 열쇠 구멍이 없다. 음표 문양만 새겨져 있다.';
 const strAtticWill = '유언장을 찾았다! "축하한다, 조카야. 시험을 통과했으니 저택은 네 것이다. 참, 말 안 했던가? 나도 300년 전부터 유령이란다. 앞으로 잘 부탁한다 — 2층에서 만나자꾸나. ― 삼촌" …잠깐, 뭐라고요?';
-const strAtticWindow = '둥근 창으로 달빛이 쏟아진다. 마당의 허수아비가 손을 흔든… 기분 탓이겠지.';
+const strAtticWindow =
+    '둥근 창으로 달빛이 쏟아진다. 마당의 허수아비가 손을 흔든… 기분 탓이겠지. 창틀을 세어본다… 넷.';
+
+// ── 다락방 리마스터 신규 (room6_attic, attic_r_ 플래그) ──
+const strAtticRChestWrong = '"주인님은 숫자를 셋만 기억하셨지. 나는… 하나도 기억 못 하네."';
+const strAtticRChestOpen = '경첩이 삐걱, 궤짝이 열린다. 빛바랜 천 조각이 들어 있다 — 무언가의 나머지 반쪽 같다.';
+const strAtticRChestEmpty = '궤짝 속은 이제 비어 있다.';
+const strAtticREmbroideryFull = '조각을 자수에 가만히 대어본다. 꼭 맞는다. 찢겼던 그림이 다시 이어진다 — 달, 해, 별, 구름.';
+const strAtticRCandleHolder = '촛대에 꽂힌 초를 세어본다… 셋.';
+const strAtticRBooksPile = '쌓인 책을 세어본다… 둘.';
+const strAtticRMirror = '금이 간 큰 거울. 표면이 뿌옇게 흐려져 얼굴이 잘 비치지 않는다.';
+const strAtticRHatboxes = '색 바랜 모자 상자들이 층층이 쌓여 있다. 리본이 삭아 손대면 바스러질 것 같다.';
+const strAtticRMusicBox = '태엽이 녹슨 오르골. 손잡이를 돌려도 이제는 소리가 나지 않는다.';
+const strAtticRRockingHorse = '칠이 벗겨진 목마가 삐걱, 홀로 흔들린다. 아무도 타지 않았는데.';
+const strAtticRDoll = '단추 눈이 한쪽 떨어진 낡은 인형. 어쩐지 이쪽을 보는 것 같다.';
+const strAtticRGhospoC =
+    '고스포가 잡동사니 사이에서 서성인다. "이것도 저것도… 다 주인님 손때가 묻은 것들이지. 나는 그저 먼지나 털었을 뿐인데." 옅은 한숨을 쉰다.';
 
 // ── 앱 셸 ──
 const strAppTitle = '기묘한 유령 저택';

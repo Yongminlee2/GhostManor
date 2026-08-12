@@ -470,41 +470,88 @@ int solveCellar(GameState s, GameCtx c, Room room) {
   return steps;
 }
 
-/// 다락방 정답 시퀀스 (room6_attic_test.dart의 해피패스와 동일 절차).
-/// 전제: 방 2~5(거실·서재·주방·지하실)를 모두 클리어해 note1~4를 이미 보유한
-/// 상태 — 이 함수는 카드를 지급하지 않는다. 방 단독 테스트는 setUp에서
-/// note1~4를 지급한 뒤 이 함수를 호출한다.
-void solveAttic(GameState s, GameCtx c, Room room) {
+/// 다락방 정답 시퀀스 (room6_attic_test.dart의 해피패스와 동일 절차, 스텝
+/// 카운팅 — solveFoyer/solveLiving/solveStudy/solveKitchen/solveCellar와 동일
+/// 관례). 전제: 방 2~5(거실·서재·주방·지하실)를 모두 클리어해 note1~4를 이미
+/// 보유한 상태 — 이 함수는 카드를 지급하지 않는다. 방 단독 테스트는 setUp에서
+/// note1~4를 지급한 뒤 이 함수를 호출한다. T2(궤짝, 342) → shred 획득 → T1
+/// 자수 액자에 장착(교차 잠금 실증)까지 정공법 그대로 거친 뒤 연주한다 — 두
+/// 단서(쪽지·자수)가 게이트가 아님은 room6_attic_test.dart의 별도 부정
+/// 테스트가 증명한다. 다른 방 테스트가 "다락은 이미 클리어됐다"는 전제로
+/// 재사용한다(반환값은 무시해도 컴파일·동작에 지장 없음).
+int solveAttic(GameState s, GameCtx c, Room room) {
+  var steps = 0;
+  void tap(String sceneId, String hotspotId) {
+    tapSpot(room, s, c, sceneId, hotspotId);
+    steps++;
+  }
+
+  void pure(void Function() fn) {
+    fn();
+    steps++;
+  }
+
   // 카드 4장을 보면대에 배치(순서 무관 — 보면대는 개수만 센다)
   for (final note in ['note1', 'note2', 'note3', 'note4']) {
     s.select(note);
-    tapSpot(room, s, c, 'attic_a', 'music_stand');
+    tap('attic_a', 'music_stand');
     expect(s.has(note), isFalse); // 카드 소모
   }
-  expect(s.flag('attic_cards_placed'), 4);
+  expect(s.flag('attic_r_cards_placed'), 4);
 
-  // 자수 클로즈업(관찰 전용) 확인
-  tapSpot(room, s, c, 'attic_b', 'embroidery');
-  expect(s.closeupId, 'embroidery');
-  s.closeCloseup();
-
-  // 오르간 클로즈업 확인
-  tapSpot(room, s, c, 'attic_a', 'organ');
+  // 오르간 클로즈업 확인(카드 완비 후에야 열림)
+  tap('attic_a', 'organ');
   expect(s.closeupId, 'organ');
   s.closeCloseup();
 
+  // T2 착수: 쪽지(지식) 확인 → 궤짝 다이얼 342 입력 → shred 획득
+  tap('attic_c', 'old_note');
+  expect(s.closeupId, 'old_note');
+  s.closeCloseup();
+
+  tap('attic_c', 'chest');
+  expect(s.closeupId, 'chest');
+
+  void dialTo(int wheel, int times) {
+    for (var i = 0; i < times; i++) {
+      pure(() => tapDialWheel(s, 'attic_r_chest', wheel));
+    }
+  }
+
+  dialTo(0, 3);
+  dialTo(1, 4);
+  dialTo(2, 2);
+  expect(checkDialCode(s, 'attic_r_chest', '342'), isTrue);
+
+  pure(() => openChest(c));
+  expect(s.flag('attic_r_chest_open'), 1);
+  expect(s.has('shred'), isTrue);
+  s.closeCloseup();
+
+  // T1 완성: 자수 클로즈업(찢긴 상태) 확인 → shred를 액자에 장착(교차 잠금)
+  tap('attic_b', 'embroidery');
+  expect(s.closeupId, 'embroidery');
+  s.closeCloseup();
+
+  s.select('shred');
+  tap('attic_b', 'embroidery');
+  expect(s.flag('attic_r_embroidery_full'), 1);
+  expect(s.has('shred'), isFalse); // 조각 소모
+
   // 정답 순서로 연주: 도미레파 = 건반 1,3,2,4
-  tapOrganKey(s, 1);
-  tapOrganKey(s, 3);
-  tapOrganKey(s, 2);
-  tapOrganKey(s, 4);
-  expect(s.flag('attic_organ_played'), 1);
+  pure(() => tapOrganKey(s, 1));
+  pure(() => tapOrganKey(s, 3));
+  pure(() => tapOrganKey(s, 2));
+  pure(() => tapOrganKey(s, 4));
+  expect(s.flag('attic_r_organ_played'), 1);
 
   // 트렁크: 첫 탭은 유언장, 두 번째 탭에 탈출
-  tapSpot(room, s, c, 'attic_b', 'trunk');
-  expect(s.flag('attic_got_will'), 1);
-  expect(s.flag('attic_done'), 0);
+  tap('attic_b', 'trunk');
+  expect(s.flag('attic_r_got_will'), 1);
+  expect(s.flag('attic_r_done'), 0);
 
-  tapSpot(room, s, c, 'attic_b', 'trunk');
-  expect(s.flag('attic_done'), 1);
+  tap('attic_b', 'trunk');
+  expect(s.flag('attic_r_done'), 1);
+
+  return steps;
 }

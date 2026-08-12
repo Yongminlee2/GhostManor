@@ -54,6 +54,6 @@ void main() {
     room = rooms[5];
     solveAttic(s, c, room);
     expect(room.cleared(s), isTrue);
-    expect(s.flag('attic_done'), 1);
+    expect(s.flag('attic_r_done'), 1);
   });
 }
