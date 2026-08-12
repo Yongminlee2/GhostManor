@@ -7,10 +7,10 @@ import '../core/strings.dart';
 Room buildKitchen() {
   Cond flagSet(String k) => (s) => s.flag(k) >= 1;
 
-  const counterArea = Rect.fromLTWH(0.06, 0.60, 0.20, 0.14);
-  const stoveArea = Rect.fromLTWH(0.34, 0.50, 0.26, 0.26);
+  const counterArea = Rect.fromLTWH(0.04, 0.48, 0.18, 0.18);
+  const stoveArea = Rect.fromLTWH(0.20, 0.42, 0.28, 0.30);
   const gukjaArea = Rect.fromLTWH(0.68, 0.34, 0.22, 0.36);
-  const jarArea = Rect.fromLTWH(0.34, 0.20, 0.14, 0.16);
+  const jarArea = Rect.fromLTWH(0.05, 0.12, 0.16, 0.14);
   const sinkArea = Rect.fromLTWH(0.06, 0.52, 0.20, 0.18);
   const cupboard1Area = Rect.fromLTWH(0.34, 0.28, 0.10, 0.14);
   const cupboard2Area = Rect.fromLTWH(0.46, 0.28, 0.10, 0.14);

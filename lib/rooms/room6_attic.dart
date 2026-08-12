@@ -92,12 +92,22 @@ Room buildAttic() {
       Scene(id: 'attic_a', image: 'assets/scenes/attic_a.png', overlays: [
         SceneOverlay(
             image: 'assets/scenes/attic_a_cards.png',
-            area: const Rect.fromLTWH(0.36, 0.30, 0.28, 0.14),
+            area: const Rect.fromLTWH(0.36, 0.50, 0.28, 0.14),
             when: (s) => s.flag('attic_cards_placed') >= 4),
       ], hotspots: [
         Hotspot(
+            id: 'organ',
+            area: const Rect.fromLTWH(0.24, 0.44, 0.52, 0.34),
+            onTap: (c) {
+              if (c.s.flag('attic_cards_placed') < 4) {
+                c.say(strAtticOrganNoCards);
+              } else {
+                c.openCloseup('organ');
+              }
+            }),
+        Hotspot(
             id: 'music_stand',
-            area: const Rect.fromLTWH(0.36, 0.30, 0.28, 0.14),
+            area: const Rect.fromLTWH(0.30, 0.50, 0.40, 0.10),
             onTap: (c) {
               final s = c.s;
               final note = const ['note1', 'note2', 'note3', 'note4']
@@ -115,16 +125,6 @@ Room buildAttic() {
                 c.say(strAtticCardsAll);
               } else {
                 c.say(strAtticCardPlaced);
-              }
-            }),
-        Hotspot(
-            id: 'organ',
-            area: const Rect.fromLTWH(0.24, 0.44, 0.52, 0.34),
-            onTap: (c) {
-              if (c.s.flag('attic_cards_placed') < 4) {
-                c.say(strAtticOrganNoCards);
-              } else {
-                c.openCloseup('organ');
               }
             }),
         Hotspot(
@@ -146,7 +146,7 @@ Room buildAttic() {
       ], hotspots: [
         Hotspot(
             id: 'embroidery',
-            area: const Rect.fromLTWH(0.10, 0.24, 0.22, 0.20),
+            area: const Rect.fromLTWH(0.26, 0.19, 0.36, 0.28),
             onTap: (c) => c.openCloseup('embroidery')),
         Hotspot(
             id: 'trunk',

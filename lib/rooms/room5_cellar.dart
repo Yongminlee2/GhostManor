@@ -236,7 +236,7 @@ Room buildCellar() {
             }),
         Hotspot(
             id: 'light_switch',
-            area: const Rect.fromLTWH(0.30, 0.30, 0.10, 0.12),
+            area: const Rect.fromLTWH(0.80, 0.33, 0.16, 0.14),
             onTap: (c) {
               final s = c.s;
               if (s.flag('cellar_fuse_installed') == 0) {
@@ -250,7 +250,7 @@ Room buildCellar() {
             }),
         Hotspot(
             id: 'barrel',
-            area: const Rect.fromLTWH(0.50, 0.44, 0.30, 0.36),
+            area: const Rect.fromLTWH(0.30, 0.40, 0.50, 0.40),
             onTap: (c) {
               final s = c.s;
               if (s.flag('cellar_light') == 0) {
