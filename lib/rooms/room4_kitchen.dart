@@ -88,12 +88,16 @@ Room buildKitchen() {
 
   // 벽 C(신규 저장실): 빙실 함·레시피판·부지깽이 걸이는 브리프 binding 좌표,
   // 소시지·항아리 3개는 리액션 전용이라 서로 겹치지 않는 빈 자리에 배치.
-  const iceArea = Rect.fromLTWH(0.34, 0.40, 0.32, 0.30);
-  const recipeArea = Rect.fromLTWH(0.06, 0.16, 0.24, 0.26);
-  const pokerRackArea = Rect.fromLTWH(0.74, 0.30, 0.18, 0.34);
-  const sausagesArea = Rect.fromLTWH(0.36, 0.04, 0.28, 0.14);
-  const jarPicklesArea = Rect.fromLTWH(0.06, 0.70, 0.22, 0.22);
-  const jarFlourArea = Rect.fromLTWH(0.36, 0.74, 0.30, 0.20);
+  // 벽 C — kitchen_c.png 실측: 빙실 함은 좌측 대형, 레시피판 중앙, 걸이 우측.
+  // ice1~3 크롭은 의뢰서 rect 그대로 잘려 왔으므로 오버레이는 원 크롭 rect에
+  // 고정해야 원본과 픽셀이 이어진다(핫스팟만 실물 위치로 이동).
+  const iceArea = Rect.fromLTWH(0.04, 0.32, 0.37, 0.42);
+  const iceCropArea = Rect.fromLTWH(0.34, 0.40, 0.32, 0.30);
+  const recipeArea = Rect.fromLTWH(0.47, 0.30, 0.28, 0.22);
+  const pokerRackArea = Rect.fromLTWH(0.76, 0.20, 0.17, 0.35);
+  const sausagesArea = Rect.fromLTWH(0.36, 0.13, 0.40, 0.17);
+  const jarPicklesArea = Rect.fromLTWH(0.45, 0.56, 0.20, 0.14);
+  const jarFlourArea = Rect.fromLTWH(0.66, 0.56, 0.22, 0.14);
 
   // 속이 꽉 찬 찬장 문(1·3·4) 공용: 둔탁한 노크음+대사만 반복(스펙 §3.3-6 —
   // 소리로 구분되는 단서는 대사로도 묘사해 음소거 유저도 구분 가능해야 함).
@@ -296,17 +300,16 @@ Room buildKitchen() {
       Scene(id: 'kitchen_c', image: 'assets/scenes/kitchen_c.png', overlays: [
         SceneOverlay(
             image: 'assets/scenes/kitchen_c_ice1.png',
-            area: iceArea,
+            area: iceCropArea,
             when: (s) => s.flag('kitchen_r_ice_stage') == 1),
         SceneOverlay(
             image: 'assets/scenes/kitchen_c_ice2.png',
-            area: iceArea,
+            area: iceCropArea,
             when: (s) => s.flag('kitchen_r_ice_stage') == 2),
         SceneOverlay(
             image: 'assets/scenes/kitchen_c_ice3.png',
-            area: iceArea,
-            when: (s) => s.flag('kitchen_r_ice_stage') >= 3,
-            motion: OverlayMotion.grow),
+            area: iceCropArea,
+            when: (s) => s.flag('kitchen_r_ice_stage') >= 3),
       ], hotspots: [
         Hotspot(id: 'icebox', area: iceArea, onTap: tapIcebox),
         Hotspot(

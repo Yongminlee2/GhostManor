@@ -108,16 +108,19 @@ Room buildAttic() {
   // 벽C 잡동사니 다락 — 브리프 binding 좌표(궤짝·쪽지)는 그대로, 나머지
   // 소품은 좌표 미정(아트 의뢰서 비고)이라 서로 겹치지 않게 배치
   // (hotspot_resolution_test 예외 불필요하도록).
-  const chestArea = Rect.fromLTWH(0.36, 0.50, 0.26, 0.22);
-  const oldNoteArea = Rect.fromLTWH(0.08, 0.28, 0.16, 0.12);
-  const mirrorArea = Rect.fromLTWH(0.06, 0.04, 0.18, 0.20);
-  const candleHolderArea = Rect.fromLTWH(0.42, 0.06, 0.16, 0.20);
-  const hatboxesArea = Rect.fromLTWH(0.78, 0.06, 0.18, 0.22);
-  const musicBoxArea = Rect.fromLTWH(0.66, 0.30, 0.16, 0.16);
-  const booksPileArea = Rect.fromLTWH(0.06, 0.62, 0.18, 0.16);
-  const rockingHorseArea = Rect.fromLTWH(0.64, 0.50, 0.16, 0.30);
-  const dollArea = Rect.fromLTWH(0.06, 0.80, 0.16, 0.16);
-  const ghospoCArea = Rect.fromLTWH(0.84, 0.50, 0.16, 0.34);
+  // 벽 C rect — attic_c.png 실측: 궤짝(다이얼 자물쇠)은 좌하단, 쪽지는 바닥
+  // 종이, 촛대(양초 셋)는 좌중단, 책 2권은 우하단. 아트에 없는 소품(거울·
+  // 모자상자·오르골·목마)은 실물(달 창·자수틀·둥근 탁자·깔개)로 교체.
+  const chestArea = Rect.fromLTWH(0.16, 0.70, 0.28, 0.19);
+  const oldNoteArea = Rect.fromLTWH(0.02, 0.79, 0.17, 0.10);
+  const candleHolderArea = Rect.fromLTWH(0.01, 0.44, 0.19, 0.20);
+  const booksPileArea = Rect.fromLTWH(0.71, 0.77, 0.22, 0.13);
+  const dollArea = Rect.fromLTWH(0.01, 0.10, 0.14, 0.14);
+  const roundWindowArea = Rect.fromLTWH(0.66, 0.04, 0.32, 0.40);
+  const stitchFrameArea = Rect.fromLTWH(0.27, 0.18, 0.32, 0.34);
+  const roundTableArea = Rect.fromLTWH(0.79, 0.55, 0.20, 0.20);
+  const rugArea = Rect.fromLTWH(0.12, 0.86, 0.30, 0.11);
+  const ghospoCArea = Rect.fromLTWH(0.46, 0.54, 0.16, 0.16);
 
   return Room(
     id: 'attic',
@@ -257,19 +260,19 @@ Room buildAttic() {
             id: 'books_pile',
             area: booksPileArea,
             onTap: (c) => c.say(strAtticRBooksPile)),
-        Hotspot(id: 'mirror', area: mirrorArea, onTap: (c) => c.say(strAtticRMirror)),
         Hotspot(
-            id: 'hatboxes',
-            area: hatboxesArea,
-            onTap: (c) => c.say(strAtticRHatboxes)),
+            id: 'round_window',
+            area: roundWindowArea,
+            onTap: (c) => c.say(strAtticRWindowMoon)),
         Hotspot(
-            id: 'music_box',
-            area: musicBoxArea,
-            onTap: (c) => c.say(strAtticRMusicBox)),
+            id: 'stitch_frame',
+            area: stitchFrameArea,
+            onTap: (c) => c.say(strAtticRStitchFrame)),
         Hotspot(
-            id: 'rocking_horse',
-            area: rockingHorseArea,
-            onTap: (c) => c.say(strAtticRRockingHorse)),
+            id: 'round_table',
+            area: roundTableArea,
+            onTap: (c) => c.say(strAtticRRoundTable)),
+        Hotspot(id: 'rug', area: rugArea, onTap: (c) => c.say(strAtticRRug)),
         Hotspot(id: 'doll', area: dollArea, onTap: (c) => c.say(strAtticRDoll)),
         Hotspot(
             id: 'ghospo_c',

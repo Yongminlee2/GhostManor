@@ -58,20 +58,26 @@ Room buildStudy() {
   const doorArea = Rect.fromLTWH(0.62, 0.24, 0.26, 0.46);
   const deskArea = Rect.fromLTWH(0.04, 0.74, 0.24, 0.12);
   const shelfTopArea = Rect.fromLTWH(0.02, 0.04, 0.50, 0.14);
-  const telescopeArea = Rect.fromLTWH(0.30, 0.36, 0.30, 0.34);
-  const starmapArea = Rect.fromLTWH(0.68, 0.20, 0.26, 0.28);
-  const windowArea = Rect.fromLTWH(0.02, 0.06, 0.24, 0.36);
-  const globeReplicaArea = Rect.fromLTWH(0.02, 0.68, 0.20, 0.22);
+  // 벽 C rect — study_c.png 실측(망원경 좌중앙, 지도 액자 좌상단, 창 중앙,
+  // 지구의 모형은 책상 위). 창은 큰 풍미 rect라 선언을 앞에 둔다(z순서).
+  const telescopeArea = Rect.fromLTWH(0.19, 0.38, 0.30, 0.28);
+  const starmapArea = Rect.fromLTWH(0.02, 0.13, 0.24, 0.25);
+  const windowArea = Rect.fromLTWH(0.36, 0.08, 0.36, 0.48);
+  const globeReplicaArea = Rect.fromLTWH(0.55, 0.46, 0.16, 0.15);
 
   // 지구본 반쪽 2개(SceneObject) — 닫힘 위치는 리마스터 전 지구본 핫스팟 rect
   // (0.16,0.40,0.26,0.22)에서 유도: 그 중심(x=0.29)에서 좌우로 스프라이트
   // 실측 비율(184×307px → 벽 1024×1536 기준 폭 0.18·높이 0.20)만큼 맞닿게
   // 배치한다. 개방(taps==3)되면 ±0.06 벌어져 study_b_plate.png에 미리 그려진
   // 열쇠가 틈으로 드러난다.
+  // study_b_plate.png 실측 보정: 받침대 아치 폭 ~0.20에 맞춰 반쪽 폭을 0.13으로
+  // (합계 0.26 = 리마스터 전 지구본 rect와 동일). 높이는 스프라이트 비율
+  // (184×307, 벽 1024×1536 기준 h=1.112w)을 유지. 닫힘 상태가 플레이트에 미리
+  // 그려진 열쇠(y≈0.46~0.53)를 온전히 덮는 것을 실측으로 확인함.
   const globeCenterX = 0.29;
-  const globeTop = 0.40;
-  const globeHalfW = 0.18;
-  const globeHalfH = 0.20;
+  const globeTop = 0.43;
+  const globeHalfW = 0.13;
+  const globeHalfH = 0.145;
   const globeGapPx = 0.06;
   bool globeOpen(GameState s) => s.flag('study_r_globe_taps') == 3;
   Rect globeLeftRect(GameState s) => Rect.fromLTWH(
@@ -86,11 +92,11 @@ Room buildStudy() {
       globeHalfH);
   // 화살표(회전 탭) 핫스팟 — 반쪽 이동 범위 전체를 덮는 고정 영역(닫힘·열림
   // 어느 위치에서도 탭 가능).
-  const globeArrowArea = Rect.fromLTWH(0.11, 0.40, 0.36, 0.08);
+  const globeArrowArea = Rect.fromLTWH(0.11, 0.42, 0.36, 0.08);
   // 열렸을 때(taps==3)만 드러나는 중앙 틈 — 여기를 탭해야 열쇠를 꺼낸다.
   // 화살표와 달리 이 탭은 taps를 건드리지 않아, 화살표를 한 번 더 눌러
   // "4번째"를 만들어 버리는 실수와 분리된다.
-  const globeGapArea = Rect.fromLTWH(0.23, 0.40, 0.12, 0.20);
+  const globeGapArea = Rect.fromLTWH(0.23, 0.43, 0.12, 0.15);
 
   // 책 4권 공용: tapBook 진행 + 클릭음, 리셋되면 대사, nook 완성 순간 추가 피드백.
   void tapBookSpot(GameCtx c, int i) {
@@ -280,6 +286,9 @@ Room buildStudy() {
           ]),
       // 벽면 C: 관측 창가 (신규)
       Scene(id: 'study_c', image: 'assets/scenes/study_c.png', hotspots: [
+        // 창(큰 풍미 rect)을 먼저 — 뒤 선언인 망원경·지구의가 겹침에서 이긴다.
+        Hotspot(
+            id: 'window', area: windowArea, onTap: (c) => c.say(strStudyRWindow)),
         Hotspot(
             id: 'telescope',
             area: telescopeArea,
@@ -303,8 +312,6 @@ Room buildStudy() {
               c.sfx('paper_rustle');
               c.openCloseup('starmap');
             }),
-        Hotspot(
-            id: 'window', area: windowArea, onTap: (c) => c.say(strStudyRWindow)),
         Hotspot(
             id: 'globe_replica',
             area: globeReplicaArea,

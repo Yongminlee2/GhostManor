@@ -66,6 +66,8 @@ int solveFoyer(GameState s, GameCtx c, Room room) {
   s.closeCloseup();
 
   tap('foyer_c', 'mailbox');
+  expect(s.closeupId, 'mailbox');
+  tap('mailbox', 'letter_in_box');
   expect(s.has('letter1'), isTrue);
   expect(s.closeupId, 'letter1');
   s.closeCloseup();

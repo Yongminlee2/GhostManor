@@ -34,6 +34,8 @@ const strFoyerRPortrait2 =
     '화사한 드레스 차림의 귀부인 초상화. 고스포: "사모님이시지. 그림 속에서도 나를 흘겨보시는 것 같단 말이야… 기분 탓이겠지?"';
 const strFoyerRMirror = '먼지 낀 거울. 고스포가 무심코 들여다보다 화들짝 놀란다. "으악, 내가 없어! …아, 맞다. 유령이었지. 이거 매번 놀란다니까."';
 const strFoyerRRug = '낡은 양탄자. 밟을 때마다 먼지가 풀썩인다. 고스포: "그 밑에 뭐 있나 궁금하지? 없다, 진짜 없어. 왜 자꾸 들춰보려고 그러나."';
+const strFoyerRLandingDoor =
+    '해골 장식이 달린 육중한 문. 밀어도 두드려도 꿈쩍 않는다. 고스포: "그 문 말인가. …300년째 나도 어디로 이어지는지 모른다네."';
 const strFoyerRCandlestick = '벽에 붙은 장식용 촛대. 초는 꽂혀 있지만 불붙은 흔적은 없다. 고스포: "장식이다, 장식. …뭐, 만져본다고 뭐라 안 한다."';
 const strFoyerRLetter1 = '저녁 식사는 셋째 시계의 시각에 — E.G.';
 const strFoyerRDrawerLocked = '서랍이 꿈쩍도 안 한다. 어디선가 시계 초침 소리만 크게 들린다…';
@@ -59,13 +61,13 @@ const strLivingDoorOpened = '철컥! 다음 방으로 가는 문이 열렸다.';
 // ── 거실 리마스터 신규 (room2_living, living_r_ 플래그) ──
 const strLivingRNookKnob = '비밀칸에서 낡은 다이얼 손잡이를 찾았다! 부우: "그거 원래 저기 있었나? …몰랐다."';
 const strLivingRPortraitBaby =
-    '포동포동한 아기 초상화. 작은 눈이 지그시 한쪽을 향해 있다. 부우: "얘도 나만큼 이 집에 오래 있었을걸. …계속 아기인 채로 말이야."';
+    '포동포동한 아기 초상화. 그림 구석, 아기 곁 협탁에 줄무늬 갓 램프가 함께 그려져 있다. 부우: "얘도 나만큼 이 집에 오래 있었을걸. …계속 아기인 채로 말이야."';
 const strLivingRPortraitYouth =
-    '형형한 눈빛의 청년 초상화. 시선이 또렷하게 한 방향에 고정돼 있다. 부우: "저 눈빛, 좀 무섭지 않냐? …나만 그런가."';
+    '형형한 눈빛의 청년 초상화. 등 뒤로 길쭉한 괘종시계가 그려져 있다. 부우: "저 눈빛, 좀 무섭지 않냐? …나만 그런가."';
 const strLivingRPortraitMiddle =
-    '그윽한 눈매의 중년 초상화. 무언가를 오래도록 응시하고 있다. 부우: "근엄하지? 근데 콧수염이 좀 웃기지 않아?"';
+    '그윽한 눈매의 중년 초상화. 팔꿈치 옆 탁자에 꽃병이 놓여 있다. 부우: "근엄하지? 근데 콧수염이 좀 웃기지 않아?"';
 const strLivingRPortraitOld =
-    '주름진 눈가의 노인 초상화. 시선이 흔들림 없이 한곳에 머물러 있다. 부우: "이분이 제일 오래 보셨을 텐데… 뭘 보시는진 나도 모른다."';
+    '주름진 눈가의 노인 초상화. 무릎 위에 책 몇 권이 포개져 있다. 부우: "이분이 제일 오래 보셨을 텐데… 뭘 읽으셨는진 나도 모른다."';
 const strLivingRLamp = '갓의 줄무늬를 세어본다… 셋.';
 const strLivingRPendulum = '추가 둘.';
 const strLivingRVase = '꽃이 일곱 송이.';
@@ -206,10 +208,12 @@ const strAtticRChestEmpty = '궤짝 속은 이제 비어 있다.';
 const strAtticREmbroideryFull = '조각을 자수에 가만히 대어본다. 꼭 맞는다. 찢겼던 그림이 다시 이어진다 — 달, 해, 별, 구름.';
 const strAtticRCandleHolder = '촛대에 꽂힌 초를 세어본다… 셋.';
 const strAtticRBooksPile = '쌓인 책을 세어본다… 둘.';
-const strAtticRMirror = '금이 간 큰 거울. 표면이 뿌옇게 흐려져 얼굴이 잘 비치지 않는다.';
-const strAtticRHatboxes = '색 바랜 모자 상자들이 층층이 쌓여 있다. 리본이 삭아 손대면 바스러질 것 같다.';
-const strAtticRMusicBox = '태엽이 녹슨 오르골. 손잡이를 돌려도 이제는 소리가 나지 않는다.';
-const strAtticRRockingHorse = '칠이 벗겨진 목마가 삐걱, 홀로 흔들린다. 아무도 타지 않았는데.';
+const strAtticRWindowMoon =
+    '둥근 창 너머로 보름달이 떠 있다. 들판의 허수아비가… 방금 손을 흔들었나? 고스포: "…모른 척하게. 서로 그게 편하다네."';
+const strAtticRStitchFrame =
+    '나무 한 그루를 수놓은 자수틀. 한 땀 한 땀 정성이다. 고스포: "마님의 솜씨라네. 저택보다 오래된 솜씨지."';
+const strAtticRRoundTable = '레이스가 덮인 둥근 탁자. 먼지가 도톰하게 쌓였다. 고스포: "티타임이 멈춘 지도 오래됐군."';
+const strAtticRRug = '해진 깔개. 밟을 때마다 먼지가 폴싹 인다.';
 const strAtticRDoll = '단추 눈이 한쪽 떨어진 낡은 인형. 어쩐지 이쪽을 보는 것 같다.';
 const strAtticRGhospoC =
     '고스포가 잡동사니 사이에서 서성인다. "이것도 저것도… 다 주인님 손때가 묻은 것들이지. 나는 그저 먼지나 털었을 뿐인데." 옅은 한숨을 쉰다.';

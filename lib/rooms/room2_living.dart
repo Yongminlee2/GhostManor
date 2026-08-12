@@ -51,18 +51,23 @@ Room buildLiving() {
   const doorArea = Rect.fromLTWH(0.62, 0.26, 0.26, 0.44);
   const booSofaArea = Rect.fromLTWH(0.34, 0.56, 0.18, 0.22);
 
-  // 벽 C: 초상화 4점(브리프 binding 좌표) + 그 시선이 향하는 소품 4개(좌표
-  // 미정 — 각 초상화 바로 아래 배치해 "이 초상화가 이 소품과 짝"이라는 시각
-  // 관계를 암시하되, 실제 시선 방향 표현은 아트 도착 후 담당) + 금고.
-  const portraitBabyArea = Rect.fromLTWH(0.06, 0.10, 0.18, 0.22);
-  const portraitYouthArea = Rect.fromLTWH(0.28, 0.10, 0.18, 0.22);
-  const portraitMiddleArea = Rect.fromLTWH(0.56, 0.10, 0.18, 0.22);
-  const portraitOldArea = Rect.fromLTWH(0.78, 0.10, 0.18, 0.22);
-  const lampArea = Rect.fromLTWH(0.06, 0.34, 0.18, 0.08);
-  const pendulumArea = Rect.fromLTWH(0.28, 0.34, 0.18, 0.08);
-  const vaseArea = Rect.fromLTWH(0.56, 0.34, 0.18, 0.08);
-  const booksArea = Rect.fromLTWH(0.78, 0.34, 0.18, 0.08);
-  const safeArea = Rect.fromLTWH(0.36, 0.44, 0.28, 0.24);
+  // 벽 C rect — living_c.png 실측으로 재조정 완료. 초상화→소품 매핑은
+  // 그림이 시선을 구분해 주지 못해(4점 모두 같은 방향) 초상화 리액션이
+  // "그림 속에 함께 그려진 물건"을 묘사하는 방식으로 전달한다(개수·순서는
+  // 여전히 비공개 — 소품 탭 개수 × TV 나이순 조합은 그대로).
+  const portraitBabyArea = Rect.fromLTWH(0.09, 0.04, 0.16, 0.15);
+  const portraitYouthArea = Rect.fromLTWH(0.31, 0.04, 0.16, 0.15);
+  const portraitMiddleArea = Rect.fromLTWH(0.53, 0.04, 0.16, 0.15);
+  const portraitOldArea = Rect.fromLTWH(0.75, 0.04, 0.16, 0.15);
+  // 초상화 아래 랜턴 4개 — 전부 같은 램프 리액션(어느 것을 세든 "셋").
+  const lamp1Area = Rect.fromLTWH(0.12, 0.20, 0.09, 0.11);
+  const lamp2Area = Rect.fromLTWH(0.34, 0.20, 0.09, 0.11);
+  const lamp3Area = Rect.fromLTWH(0.56, 0.20, 0.10, 0.11);
+  const lamp4Area = Rect.fromLTWH(0.78, 0.20, 0.10, 0.11);
+  const safeArea = Rect.fromLTWH(0.06, 0.30, 0.24, 0.20);
+  const vaseArea = Rect.fromLTWH(0.12, 0.50, 0.19, 0.14);
+  const booksArea = Rect.fromLTWH(0.33, 0.63, 0.19, 0.12);
+  const pendulumArea = Rect.fromLTWH(0.76, 0.42, 0.20, 0.28);
 
   // 촛대 4개 공용: 토글 + 클릭음, 새로 점화됐으면 반짝임음+대사.
   void tapCandle(GameCtx c, int i) {
@@ -250,22 +255,21 @@ Room buildLiving() {
               c.say(strLivingBooHappy);
             }),
       ]),
-      // 벽면 C: 서가·금고 벽 (신규) — 초상화 4점이 각각 아기/청년/중년/노인,
-      // 시선이 향하는 소품(램프/괘종/꽃병/책더미)의 개수 × 나이순(TV가 알려줌)
-      // = 금고 코드 3274.
+      // 벽면 C: 서가·금고 벽 (신규) — 초상화 4점(그림 속 소품이 매핑 단서),
+      // 소품 개수 × 나이순(TV) = 금고 코드 3274.
+      // safe_knob/safe_open은 원본 전체를 edit한 풀프레임(1024×1536)이라
+      // 전체 rect로 깔아야 한다 — 소rect에 넣으면 벽 전체가 찌그러져 들어간다.
       Scene(id: 'living_c', image: 'assets/scenes/living_c.png', overlays: [
         SceneOverlay(
             image: 'assets/scenes/living_c_safe_knob.png',
-            area: safeArea,
+            area: const Rect.fromLTWH(0, 0, 1, 1),
             when: (s) =>
                 s.flag('living_r_safe_knob') >= 1 &&
-                s.flag('living_r_safe_open') == 0,
-            motion: OverlayMotion.grow),
+                s.flag('living_r_safe_open') == 0),
         SceneOverlay(
             image: 'assets/scenes/living_c_safe_open.png',
-            area: safeArea,
-            when: flagSet('living_r_safe_open'),
-            motion: OverlayMotion.grow),
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: flagSet('living_r_safe_open')),
       ], hotspots: [
         Hotspot(
             id: 'portrait_baby',
@@ -283,7 +287,14 @@ Room buildLiving() {
             id: 'portrait_old',
             area: portraitOldArea,
             onTap: (c) => c.say(strLivingRPortraitOld)),
-        Hotspot(id: 'lamp', area: lampArea, onTap: (c) => c.say(strLivingRLamp)),
+        Hotspot(
+            id: 'lamp', area: lamp1Area, onTap: (c) => c.say(strLivingRLamp)),
+        Hotspot(
+            id: 'lamp2', area: lamp2Area, onTap: (c) => c.say(strLivingRLamp)),
+        Hotspot(
+            id: 'lamp3', area: lamp3Area, onTap: (c) => c.say(strLivingRLamp)),
+        Hotspot(
+            id: 'lamp4', area: lamp4Area, onTap: (c) => c.say(strLivingRLamp)),
         Hotspot(
             id: 'pendulum',
             area: pendulumArea,
@@ -346,9 +357,9 @@ Room buildLiving() {
               ])),
     },
     hints: [
-      PuzzleHint(puzzleId: 'p_living_r_safe', title: '초상화의 시선', steps: [
-        '금고 숫자는 이 방의 "보는 것"과 "세는 것"에서 나와요.',
-        '초상화들이 어딜 보는지, 그 물건의 개수를 세요. 순서는 TV가 알려줘요.',
+      PuzzleHint(puzzleId: 'p_living_r_safe', title: '초상화 속 물건', steps: [
+        '금고 숫자는 이 방의 "그림"과 "세는 것"에서 나와요.',
+        '초상화마다 함께 그려진 물건이 있어요 — 그 물건의 개수를 세요. 순서는 TV가 알려줘요.',
         '정답: 나이순 3·2·7·4 → 3274.',
       ], solved: (s) => s.flag('living_r_safe_open') >= 1),
       PuzzleHint(puzzleId: 'p_living_r_candle', title: '촛대와 벽난로', steps: [

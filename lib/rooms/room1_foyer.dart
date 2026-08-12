@@ -93,14 +93,15 @@ class _HandPainter extends CustomPainter {
 Room buildFoyer() {
   Cond flagSet(String k) => (s) => s.flag(k) >= 1;
 
-  // 벽면 C(계단참) 핫스팟 rect — mailbox/mirror는 브리프 binding 좌표, 나머지는
-  // 서로 겹치지 않게 배치(hotspot_resolution_test 예외 불필요하도록).
-  const mailboxArea = Rect.fromLTWH(0.10, 0.30, 0.18, 0.16);
-  const mirrorArea = Rect.fromLTWH(0.62, 0.24, 0.22, 0.30);
-  const portrait1Area = Rect.fromLTWH(0.08, 0.04, 0.22, 0.18);
-  const portrait2Area = Rect.fromLTWH(0.60, 0.04, 0.24, 0.18);
-  const candlestickArea = Rect.fromLTWH(0.40, 0.14, 0.14, 0.20);
-  const rugArea = Rect.fromLTWH(0.24, 0.70, 0.52, 0.22);
+  // 벽면 C(계단참) 핫스팟 rect — foyer_c.png 실측(우편함 좌중단, 거울 우측,
+  // 초상화 2점 상단, 촛대 장식은 거울 아래, 중앙엔 어디로도 안 이어지는 장식 문).
+  const mailboxArea = Rect.fromLTWH(0.06, 0.40, 0.19, 0.17);
+  const mirrorArea = Rect.fromLTWH(0.70, 0.29, 0.24, 0.25);
+  const portrait1Area = Rect.fromLTWH(0.10, 0.09, 0.24, 0.20);
+  const portrait2Area = Rect.fromLTWH(0.65, 0.08, 0.24, 0.20);
+  const candlestickArea = Rect.fromLTWH(0.72, 0.52, 0.19, 0.16);
+  const landingDoorArea = Rect.fromLTWH(0.30, 0.15, 0.38, 0.58);
+  const rugArea = Rect.fromLTWH(0.10, 0.76, 0.80, 0.20);
 
   // shoes 클로즈업의 양초 rect — 기존 실제 아트(foyer_shoes_candle.png) 위치 그대로
   // 재사용(신규 shoe1/shoe2는 그 왼쪽 빈 공간에 배치).
@@ -195,8 +196,15 @@ Room buildFoyer() {
               c.openCloseup('shoes');
             }),
       ]),
-      // 벽면 C: 계단참 (신규 — 아트 도착 전이라 라벨 블록으로 대체됨)
+      // 벽면 C: 계단참 — 우편함은 함 클로즈업을 먼저 열고, 그 안의 편지를
+      // 탭해야 편지 클로즈업(상호작용 밀도 + 납품된 foyer_mailbox.png 사용).
       Scene(id: 'foyer_c', image: 'assets/scenes/foyer_c.png', hotspots: [
+        // 큰 풍미 rect(장식 문·깔개)를 먼저 — 뒤 선언이 겹침에서 이긴다.
+        Hotspot(
+            id: 'landing_door',
+            area: landingDoorArea,
+            onTap: (c) => c.say(strFoyerRLandingDoor)),
+        Hotspot(id: 'rug', area: rugArea, onTap: (c) => c.say(strFoyerRRug)),
         Hotspot(
             id: 'portrait1',
             area: portrait1Area,
@@ -209,7 +217,6 @@ Room buildFoyer() {
             id: 'candlestick_deco',
             area: candlestickArea,
             onTap: (c) => c.say(strFoyerRCandlestick)),
-        Hotspot(id: 'rug', area: rugArea, onTap: (c) => c.say(strFoyerRRug)),
         Hotspot(
             id: 'mirror',
             area: mirrorArea,
@@ -218,17 +225,29 @@ Room buildFoyer() {
             id: 'mailbox',
             area: mailboxArea,
             onTap: (c) {
-              if (c.s.flag('foyer_r_got_letter') == 0) {
-                c.s.setFlag('foyer_r_got_letter', 1);
-                c.give('letter1');
-                c.sfx('paper_rustle');
-              }
-              c.openCloseup('letter1');
-              c.say(strFoyerRLetter1);
+              c.sfx('wood_creak_open');
+              c.openCloseup('mailbox');
             }),
       ]),
     ],
     closeups: {
+      'mailbox': Scene(
+          id: 'mailbox',
+          image: 'assets/scenes/foyer_mailbox.png',
+          hotspots: [
+            Hotspot(
+                id: 'letter_in_box',
+                area: const Rect.fromLTWH(0.30, 0.32, 0.42, 0.26),
+                onTap: (c) {
+                  if (c.s.flag('foyer_r_got_letter') == 0) {
+                    c.s.setFlag('foyer_r_got_letter', 1);
+                    c.give('letter1');
+                    c.sfx('paper_rustle');
+                  }
+                  c.openCloseup('letter1');
+                  c.say(strFoyerRLetter1);
+                }),
+          ]),
       'coat': Scene(
           id: 'coat',
           custom: (_, c) => RubbableScene(
