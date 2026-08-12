@@ -54,7 +54,9 @@
 | pickup.ogg | handleSmallLeather.ogg | RPG Audio |
 | wood_creak_open.ogg | creak1.ogg | RPG Audio |
 
-## 절차 생성 유지 슬롯
+## 자체 제작 슬롯 (절차 합성 v2)
 
 ghost_giggle, note1~4, organ_chord, organ_wrong, stone_drag, tv_static
-— `tool/gen_sfx.py`가 원본. 어울리는 CC0 실음원을 찾으면 교체 예정.
+— 어울리는 CC0 실음원이 없어 `tool/gen_sfx.py`에서 직접 설계·합성:
+파이프 오르간(디튠 2랭크+드로바 배음+홀 잔향), 유령 웃음(처프 4연속+숨),
+브라운 노이즈 끌기(그레인 저더), 브라운관 노이즈(플러터+험+크래클).
