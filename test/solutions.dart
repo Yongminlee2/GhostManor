@@ -1,5 +1,6 @@
 // 테스트 전용 라이브러리 (main() 없음) — 각 방의 정답 시퀀스를 다른 테스트가 재사용 (스펙 §8).
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ghostmanor/core/dial_safe.dart';
 import 'package:ghostmanor/core/game_state.dart';
 import 'package:ghostmanor/core/models.dart';
 import 'package:ghostmanor/rooms/items.dart';
@@ -97,37 +98,89 @@ int solveFoyer(GameState s, GameCtx c, Room room) {
   return steps;
 }
 
-/// 거실 정답 시퀀스 (room2_living_test.dart의 해피패스와 동일 절차).
-/// 다른 방 테스트가 "거실은 이미 클리어됐다"는 전제로 재사용한다.
-void solveLiving(GameState s, GameCtx c, Room room) {
-  tapSpot(room, s, c, 'living_b', 'cushion'); // 리모컨
+/// 거실 정답 시퀀스 (room2_living_test.dart의 해피패스와 동일 절차, 스텝
+/// 카운팅 — solveFoyer와 동일 관례). 다른 방 테스트가 "거실은 이미
+/// 클리어됐다"는 전제로 재사용한다(반환값은 무시해도 컴파일·동작에 지장 없음).
+int solveLiving(GameState s, GameCtx c, Room room) {
+  var steps = 0;
+  void tap(String sceneId, String hotspotId) {
+    tapSpot(room, s, c, sceneId, hotspotId);
+    steps++;
+  }
+
+  void pure(void Function() fn) {
+    fn();
+    steps++;
+  }
+
+  // T3 부우·TV(단서 허브): 쿠션→리모컨→TV 켬(부우 소파로 이동)→클로즈업이
+  // 탭마다 촛불 패턴(T2 단서) ↔ 나이 순서(T1 단서) 순환.
+  tap('living_b', 'cushion');
   expect(s.has('remote'), isTrue);
 
   s.select('remote');
-  tapSpot(room, s, c, 'living_b', 'tv'); // 리모컨으로 TV 켬 → 부우 비킴
-  expect(s.flag('living_tv_on'), 1);
+  tap('living_b', 'tv');
+  expect(s.flag('living_r_tv_on'), 1);
   expect(s.has('remote'), isFalse); // 리모컨 소모
 
-  tapSpot(room, s, c, 'living_b', 'tv'); // 켜진 TV 클로즈업 → 촛대 단서
+  tap('living_b', 'tv'); // 켜진 TV 클로즈업
   expect(s.closeupId, 'tv');
+  tap('tv', 'tv_scene_toggle'); // 나이 순서 장면으로 전환
+  expect(s.flag('living_r_tv_scene'), 1);
   s.closeCloseup();
 
-  toggleCandle(s, 2);
-  toggleCandle(s, 4);
-  expect(s.flag('living_fireplace_lit'), 1);
+  // T2 촛대→벽난로: 정답 배열(2·4만 켬) → 점화 → 비밀칸에서 다이얼 손잡이.
+  pure(() => toggleCandle(s, 2));
+  pure(() => toggleCandle(s, 4));
+  expect(s.flag('living_r_fireplace_lit'), 1);
 
-  tapSpot(room, s, c, 'living_a', 'secret_nook');
+  tap('living_a', 'secret_nook');
+  expect(s.has('knob'), isTrue);
+
+  // T1 초상화 시선 금고: 소품 개수 관찰(램프3·괘종2·꽃병7·책4, 나이순 = 3274).
+  tap('living_c', 'lamp');
+  tap('living_c', 'pendulum');
+  tap('living_c', 'vase');
+  tap('living_c', 'books');
+
+  // 손잡이 장착 → 다이얼 클로즈업 → 나이순 3274 입력 → 확인.
+  s.select('knob');
+  tap('living_c', 'safe');
+  expect(s.flag('living_r_safe_knob'), 1);
+  expect(s.has('knob'), isFalse); // 손잡이 소모
+
+  tap('living_c', 'safe');
+  expect(s.closeupId, 'safe');
+
+  void dialTo(int wheel, int times) {
+    for (var i = 0; i < times; i++) {
+      pure(() => tapDialWheel(s, 'living_r_safe', wheel));
+    }
+  }
+
+  dialTo(0, 3);
+  dialTo(1, 2);
+  dialTo(2, 7);
+  dialTo(3, 4);
+  expect(checkDialCode(s, 'living_r_safe', '3274'), isTrue);
+
+  pure(() => openSafe(c));
+  expect(s.flag('living_r_safe_open'), 1);
   expect(s.has('key_living'), isTrue);
-  expect(s.has('note1'), isTrue);
   expect(s.has('oil'), isTrue);
+  expect(s.has('note1'), isTrue);
+  s.closeCloseup();
 
+  // 문: 열쇠 → 입장.
   s.select('key_living');
-  tapSpot(room, s, c, 'living_b', 'door');
-  expect(s.flag('living_door_open'), 1);
+  tap('living_b', 'door');
+  expect(s.flag('living_r_door_open'), 1);
   expect(s.has('key_living'), isFalse); // 열쇠 소모
 
-  tapSpot(room, s, c, 'living_b', 'door');
-  expect(s.flag('living_done'), 1);
+  tap('living_b', 'door');
+  expect(s.flag('living_r_done'), 1);
+
+  return steps;
 }
 
 /// 서재 정답 시퀀스 (room3_study_test.dart의 해피패스와 동일 절차).

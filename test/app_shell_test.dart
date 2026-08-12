@@ -36,7 +36,7 @@ void main() {
     await t.pumpAndSettle();
     expect(find.text('거실'), findsOneWidget); // 방 4개 중 2번째 — 아직 안 끝남
 
-    s.setFlag('living_done', 1);
+    s.setFlag('living_r_done', 1);
     await t.pumpAndSettle();
     expect(find.text(strRoomClear), findsOneWidget);
     await t.tap(find.text(strNextRoom));
@@ -78,7 +78,7 @@ void main() {
       ..setFlag('foyer_r_done', 1)
       ..setFlag('cleared_shown_foyer', 1)
       ..setFlag('entered_living', 1)
-      ..setFlag('living_done', 1)
+      ..setFlag('living_r_done', 1)
       ..setFlag('cleared_shown_living', 1)
       ..setFlag('entered_study', 1)
       ..setFlag('study_done', 1)
@@ -108,7 +108,7 @@ void main() {
     // (최종 리뷰 Finding 2b).
     final s = GameState()
       ..setFlag('entered_living', 1)
-      ..setFlag('living_done', 1)
+      ..setFlag('living_r_done', 1)
       ..setFlag('cleared_shown_living', 1)
       ..roomIndex = 1;
     await t.pumpWidget(app(state: s));

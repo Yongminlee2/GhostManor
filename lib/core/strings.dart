@@ -56,6 +56,26 @@ const strLivingSecretEmpty = '비밀칸은 이제 비어 있다.';
 const strLivingDoorLocked = '잠겨 있다. 열쇠 구멍이 반짝인다.';
 const strLivingDoorOpened = '철컥! 다음 방으로 가는 문이 열렸다.';
 
+// ── 거실 리마스터 신규 (room2_living, living_r_ 플래그) ──
+const strLivingRNookKnob = '비밀칸에서 낡은 다이얼 손잡이를 찾았다! 부우: "그거 원래 저기 있었나? …몰랐다."';
+const strLivingRPortraitBaby =
+    '포동포동한 아기 초상화. 작은 눈이 지그시 한쪽을 향해 있다. 부우: "얘도 나만큼 이 집에 오래 있었을걸. …계속 아기인 채로 말이야."';
+const strLivingRPortraitYouth =
+    '형형한 눈빛의 청년 초상화. 시선이 또렷하게 한 방향에 고정돼 있다. 부우: "저 눈빛, 좀 무섭지 않냐? …나만 그런가."';
+const strLivingRPortraitMiddle =
+    '그윽한 눈매의 중년 초상화. 무언가를 오래도록 응시하고 있다. 부우: "근엄하지? 근데 콧수염이 좀 웃기지 않아?"';
+const strLivingRPortraitOld =
+    '주름진 눈가의 노인 초상화. 시선이 흔들림 없이 한곳에 머물러 있다. 부우: "이분이 제일 오래 보셨을 텐데… 뭘 보시는진 나도 모른다."';
+const strLivingRLamp = '갓의 줄무늬를 세어본다… 셋.';
+const strLivingRPendulum = '추가 둘.';
+const strLivingRVase = '꽃이 일곱 송이.';
+const strLivingRBooks = '네 권.';
+const strLivingRSafeNoKnob = '손잡이 꽂을 자리만 휑하다.';
+const strLivingRSafeKnobAttached = '끼릭, 손잡이가 딱 맞게 들어간다. 부우: "오, 거기 자리가 있었네? …몰랐다."';
+const strLivingRSafeWrong = '"우와, 그것도 아니야? 나 드라마 보다가 다 들리는데…" 부우가 킥킥댄다.';
+const strLivingRSafeOpen = '철컹, 철컹, 철컹! 묵직한 소리와 함께 금고 문이 열렸다. 거실 열쇠와 기름병, 달 그림 음표 카드가 들어 있었다!';
+const strLivingRSafeEmpty = '금고 안은 이제 비어 있다.';
+
 // ── 서재 (room3_study) ──
 const strStudyIntro = '책 무더기 속에서 안경 쓴 유령이 고개를 내민다. "쉿. 여긴 서재야. …책 제목? 다 까먹었어."';
 const strStudyNed = '"이 방의 비밀? 음… 잉크를 쏟았던 기억은 나. 어디에 쏟았더라." 너덜이 책장을 뒤적인다.';

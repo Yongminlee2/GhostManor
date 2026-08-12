@@ -18,6 +18,7 @@ const Map<String, Item> itemsById = {
   'key_living': Item('key_living', '거실 열쇠'),
   'note1': Item('note1', '음표 카드 ♪달'),
   'oil': Item('oil', '기름병'),
+  'knob': Item('knob', '다이얼 손잡이'),
   'crank': Item('crank', '놋쇠 크랭크'),
   'key_study': Item('key_study', '서재 열쇠'),
   'note2': Item('note2', '음표 카드 ♪별'),
