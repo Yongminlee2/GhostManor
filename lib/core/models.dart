@@ -59,10 +59,27 @@ class IdleSprite {
   IdleSprite({required this.image, required this.area, this.when, this.bobPx = 4});
 }
 
+/// 배경판 위를 실제로 이동/등장하는 분리 스프라이트(통 밀기·지구본 반쪽 등).
+/// area(s)가 상태에 따라 다른 rect를 리턴하면 AnimatedPositioned가 그 rect로
+/// 실이동한다(유한 트윈, settle 안전). 탭은 담당하지 않음 — 핫스팟이 처리.
+class SceneObject {
+  final String image;
+  final Rect Function(GameState s) area;
+  final Cond? visible; // null이면 항상 표시
+  final Duration duration;
+  SceneObject({
+    required this.image,
+    required this.area,
+    this.visible,
+    this.duration = const Duration(milliseconds: 600),
+  });
+}
+
 class Scene {
   final String id;
   final String? image; // assets/scenes/... (custom 씬은 생략 가능)
   final List<SceneOverlay> overlays;
+  final List<SceneObject> objects;
   final List<Hotspot> hotspots;
   final List<IdleSprite> idles;
 
@@ -73,6 +90,7 @@ class Scene {
     required this.id,
     this.image,
     this.overlays = const [],
+    this.objects = const [],
     this.hotspots = const [],
     this.idles = const [],
     this.custom,

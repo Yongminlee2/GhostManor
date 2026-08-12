@@ -21,8 +21,9 @@ Widget gameImage(String path) => Image.asset(
 /// 씬 숨쉬기·탭 리플·유령 둥실 같은 생동감 연출은 non-custom 씬에서만,
 /// 4초 주기 Timer 하나로 구동한다(반복 AnimationController 없음 —
 /// pumpAndSettle 안전). 벽 전환은 슬라이드, 클로즈업 여닫기는 줌으로 넘어가고
-/// (둘 다 finite AnimatedSwitcher), 오버레이는 등장 모션 타입별로, 지급받은
-/// 아이템은 탭 지점에서 인벤토리 쪽으로 짧게 날아간다 — 전부 유한 애니메이션.
+/// (둘 다 finite AnimatedSwitcher), 오버레이는 등장 모션 타입별로, 오브젝트는
+/// area(s) 변화에 AnimatedPositioned로 실이동, 지급받은 아이템은 탭 지점에서
+/// 인벤토리 쪽으로 짧게 날아간다 — 전부 유한 애니메이션.
 class SceneView extends StatefulWidget {
   final Room room;
   final GameCtx ctx;
@@ -125,6 +126,13 @@ class _SceneViewState extends State<SceneView> {
             return Positioned.fromRect(rect: r, child: _idleContent(idle, r));
           }
 
+          Widget objectItem(SceneObject o) => AnimatedPositioned.fromRect(
+                rect: px(o.area(s)),
+                duration: o.duration,
+                curve: Curves.easeInOut,
+                child: IgnorePointer(child: gameImage(o.image)),
+              );
+
           Widget wallBody() {
             if (scene.custom != null) return scene.custom!(context, ctx);
             return Stack(children: [
@@ -141,6 +149,8 @@ class _SceneViewState extends State<SceneView> {
                   child: gameImage(scene.image!),
                 ),
               ),
+              for (final o in scene.objects)
+                if (o.visible?.call(s) ?? true) objectItem(o),
               for (final o in scene.overlays)
                 if (o.when(s)) overlayItem(o),
               for (final idle in scene.idles)
