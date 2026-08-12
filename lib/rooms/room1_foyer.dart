@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../core/game_state.dart';
 import '../core/models.dart';
+import '../core/rub_scene.dart';
 import '../core/scene_view.dart';
 import '../core/strings.dart';
 
@@ -77,43 +78,25 @@ class _HandPainter extends CustomPainter {
   bool shouldRepaint(_HandPainter old) => old.hour != hour;
 }
 
-/// 액자 클로즈업: 먼지를 문질러 닦는다.
-class FrameCloseup extends StatefulWidget {
+/// 액자 클로즈업: 먼지를 문질러 닦는다. 실제 문지르기 로직은 RubbableScene으로
+/// 추출됐다 — 이 클래스는 room1_foyer_test.dart가 직접 위젯 생성해 테스트하므로
+/// (회귀 그물, 수정 금지) 얇은 위임 래퍼로만 남긴다.
+class FrameCloseup extends StatelessWidget {
   final GameCtx ctx;
   const FrameCloseup({super.key, required this.ctx});
 
   @override
-  State<FrameCloseup> createState() => _FrameCloseupState();
-}
-
-class _FrameCloseupState extends State<FrameCloseup> {
-  double progress = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    final s = widget.ctx.s;
-    final cleaned = s.flag('foyer_dust_cleaned') == 1;
-    return GestureDetector(
-      key: const Key('frame_rub'),
-      behavior: HitTestBehavior.opaque,
-      onPanUpdate: cleaned
-          ? null
-          : (d) {
-              setState(() => progress += d.delta.distance / 2500);
-              if (progress >= 1) {
-                finishRubbing(s);
-                widget.ctx.sfx('sparkle');
-              }
-            },
-      child: Stack(fit: StackFit.expand, children: [
-        gameImage('assets/scenes/foyer_frame_clean.png'),
-        if (!cleaned)
-          Opacity(
-              opacity: (1 - progress).clamp(0.0, 1.0),
-              child: gameImage('assets/scenes/foyer_frame_dust.png')),
-      ]),
-    );
-  }
+  Widget build(BuildContext context) => RubbableScene(
+        ctx: ctx,
+        baseImage: 'assets/scenes/foyer_frame_clean.png',
+        coverImage: 'assets/scenes/foyer_frame_dust.png',
+        cleaned: (s) => s.flag('foyer_dust_cleaned') >= 1,
+        onCleaned: (c) {
+          finishRubbing(c.s);
+          c.sfx('sparkle');
+        },
+        gestureKey: const Key('frame_rub'),
+      );
 }
 
 // ── 방 정의 ──
@@ -261,7 +244,19 @@ Room buildFoyer() {
                   c.say(strFoyerKeyFound);
                 }),
           ]),
-      'frame': Scene(id: 'frame', custom: (_, c) => FrameCloseup(ctx: c)),
+      'frame': Scene(
+          id: 'frame',
+          custom: (_, c) => RubbableScene(
+                ctx: c,
+                baseImage: 'assets/scenes/foyer_frame_clean.png',
+                coverImage: 'assets/scenes/foyer_frame_dust.png',
+                cleaned: (s) => s.flag('foyer_dust_cleaned') >= 1,
+                onCleaned: (c) {
+                  finishRubbing(c.s);
+                  c.sfx('sparkle');
+                },
+                gestureKey: const Key('frame_rub'),
+              )),
       'clock': Scene(id: 'clock', custom: (_, c) => ClockCloseup(ctx: c)),
     },
     hints: [
