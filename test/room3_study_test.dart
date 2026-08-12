@@ -63,6 +63,29 @@ void main() {
     expect(gap.when?.call(s) ?? true, isTrue); // 열려서 틈 핫스팟이 활성화됨
   });
 
+  test('열림 상태 히트테스트: arrow·gap 겹침 구간 탭은 gap(열쇠 수령)으로 풀린다(z순서 의존 고정)',
+      () {
+    tap('study_b', 'globe_arrow');
+    tap('study_b', 'globe_arrow');
+    tap('study_b', 'globe_arrow');
+    final wallB = room.walls.firstWhere((w) => w.id == 'study_b');
+    final arrow = findHotspot(room, 'study_b', 'globe_arrow');
+    final gap = findHotspot(room, 'study_b', 'globe_gap');
+    final overlap = arrow.area.intersect(gap.area);
+    expect(overlap.isEmpty, isFalse,
+        reason: '전제: 두 rect는 실제로 겹친다(안 겹치면 이 테스트 자체가 무의미)');
+    // SceneView onTapUp과 동일 규칙(hotspot_resolution_test와 같은 로직) —
+    // 겹침 구간에서는 뒤에 선언된 gap이 이겨야 4번째-탭 실수 방지가 성립한다.
+    String? resolve(Offset p) {
+      for (final hs in wallB.hotspots.reversed) {
+        if ((hs.when?.call(s) ?? true) && hs.area.contains(p)) return hs.id;
+      }
+      return null;
+    }
+
+    expect(resolve(overlap.center), 'globe_gap');
+  });
+
   test('부정: 지구본 화살표를 4번째 탭하면(연타) taps가 0으로 리셋된다', () {
     tap('study_b', 'globe_arrow');
     tap('study_b', 'globe_arrow');

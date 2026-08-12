@@ -241,6 +241,9 @@ Room buildStudy() {
                 id: 'globe_arrow',
                 area: globeArrowArea,
                 onTap: tapGlobeArrowSpot),
+            // gap은 arrow와 상단 구간이 겹친다 — 반드시 arrow보다 뒤에 선언해
+            // 열림(taps==3) 상태에서 겹침 탭이 gap(열쇠 수령)으로 풀리게 한다
+            // (z순서 의존 — room3_study_test의 열림 상태 히트테스트가 고정).
             Hotspot(
                 id: 'globe_gap',
                 area: globeGapArea,
