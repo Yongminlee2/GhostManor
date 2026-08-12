@@ -183,51 +183,83 @@ int solveLiving(GameState s, GameCtx c, Room room) {
   return steps;
 }
 
-/// 서재 정답 시퀀스 (room3_study_test.dart의 해피패스와 동일 절차).
-/// 전제: 방 2(거실)를 클리어해 기름병(oil)을 이미 보유한 상태 — 이 함수는 oil을
-/// 지급하지 않는다. 방 단독 테스트는 setUp에서 s.give('oil') 후 이 함수를 호출한다.
-void solveStudy(GameState s, GameCtx c, Room room) {
-  // 종이 문지르기 → 색 순서 단서(파→초→빨→노). 제스처 로직은 위젯 테스트가 별도로
-  // 검증하므로(원샷 가드), 여기서는 room1의 finishRubbing과 동일하게 플래그만 직접 설정.
-  tapSpot(room, s, c, 'study_b', 'paper');
+/// 서재 정답 시퀀스 (room3_study_test.dart의 해피패스와 동일 절차, 스텝
+/// 카운팅 — solveFoyer/solveLiving과 동일 관례). 전제: 방 2(거실)를 클리어해
+/// 기름병(oil)을 이미 보유한 상태 — 이 함수는 oil을 지급하지 않는다. 방 단독
+/// 테스트는 setUp에서 s.give('oil') 후 이 함수를 호출한다. 다른 방 테스트가
+/// "서재는 이미 클리어됐다"는 전제로 재사용한다(반환값은 무시해도 무방).
+int solveStudy(GameState s, GameCtx c, Room room) {
+  var steps = 0;
+  void tap(String sceneId, String hotspotId) {
+    tapSpot(room, s, c, sceneId, hotspotId);
+    steps++;
+  }
+
+  void pure(void Function() fn) {
+    fn();
+    steps++;
+  }
+
+  // T2 문양-색 변환: 종이 문지르기 → 문양 순서 단서(꽃→나무→새→뱀, 책등
+  // 각인으로 대조하면 파→초→빨→노). 제스처 로직은 위젯 테스트가 별도로
+  // 검증하므로(원샷 가드), 여기서는 room1의 finishRubbing과 동일하게 플래그만
+  // 직접 설정.
+  tap('study_b', 'paper');
   expect(s.closeupId, 'paper');
   s.closeCloseup();
-  s.setFlag('study_paper_rubbed', 1);
+  pure(() => s.setFlag('study_r_paper_rubbed', 1));
 
   // 책 4권을 파(2)→초(4)→빨(1)→노(3) 순서로 탭 → 숨은 공간 개방
-  tapSpot(room, s, c, 'study_a', 'book_blue');
-  tapSpot(room, s, c, 'study_a', 'book_green');
-  tapSpot(room, s, c, 'study_a', 'book_red');
-  tapSpot(room, s, c, 'study_a', 'book_yellow');
-  expect(s.flag('study_nook_open'), 1);
+  tap('study_a', 'book_blue');
+  tap('study_a', 'book_green');
+  tap('study_a', 'book_red');
+  tap('study_a', 'book_yellow');
+  expect(s.flag('study_r_nook_open'), 1);
 
-  // 숨은 공간 → 크랭크 + ♪별 카드
-  tapSpot(room, s, c, 'study_a', 'nook');
-  expect(s.has('crank'), isTrue);
+  // 숨은 공간 → 놋쇠 렌즈 + ♪별 카드 (렌즈가 T1의 교차 잠금)
+  tap('study_a', 'nook');
+  expect(s.has('lens'), isTrue);
   expect(s.has('note2'), isTrue);
 
-  // 크랭크로 지구본 개방 → 서재 열쇠
-  s.select('crank');
-  tapSpot(room, s, c, 'study_b', 'globe');
-  expect(s.flag('study_globe_open'), 1);
-  expect(s.has('crank'), isFalse); // 크랭크 소모
+  // T1 별자리 관측: 렌즈를 망원경에 장착 → 별 관측(W자) → 지도 대조(여우자리·
+  // 화살표 셋)
+  s.select('lens');
+  tap('study_c', 'telescope'); // 렌즈 장착
+  expect(s.flag('study_r_telescope_lens'), 1);
+  expect(s.has('lens'), isFalse); // 렌즈 소모(망원경에 고정)
 
-  tapSpot(room, s, c, 'study_b', 'globe');
+  tap('study_c', 'telescope'); // 관측 클로즈업
+  expect(s.closeupId, 'stars');
+  s.closeCloseup();
+
+  tap('study_c', 'starmap_frame'); // 지도 클로즈업
+  expect(s.closeupId, 'starmap');
+  s.closeCloseup();
+
+  // 지구본 상단 화살표를 정확히 3번 탭 → 반쪽이 벌어지고 중앙 틈에 열쇠 노출
+  tap('study_b', 'globe_arrow');
+  tap('study_b', 'globe_arrow');
+  tap('study_b', 'globe_arrow');
+  expect(s.flag('study_r_globe_taps'), 3);
+
+  tap('study_b', 'globe_gap'); // 틈에서 서재 열쇠
   expect(s.has('key_study'), isTrue);
 
   // 문: 열쇠(잠금 해제) + 기름(경첩) 둘 다 필요 → 탈출
   s.select('key_study');
-  tapSpot(room, s, c, 'study_b', 'door');
-  expect(s.flag('study_door_unlocked'), 1);
+  tap('study_b', 'door');
+  expect(s.flag('study_r_door_unlocked'), 1);
   expect(s.has('key_study'), isFalse); // 열쇠 소모
 
   s.select('oil');
-  tapSpot(room, s, c, 'study_b', 'door');
-  expect(s.flag('study_door_oiled'), 1);
+  tap('study_b', 'door');
+  expect(s.flag('study_r_door_oiled'), 1);
   expect(s.has('oil'), isFalse); // 기름 소모
 
-  tapSpot(room, s, c, 'study_b', 'door');
-  expect(s.flag('study_done'), 1);
+  tap('study_b', 'door');
+  expect(s.flag('study_r_done'), 1);
+
+  return steps;
 }
 
 /// 주방 정답 시퀀스 (room4_kitchen_test.dart의 해피패스와 동일 절차).

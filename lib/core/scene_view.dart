@@ -127,6 +127,10 @@ class _SceneViewState extends State<SceneView> {
           }
 
           Widget objectItem(SceneObject o) => AnimatedPositioned.fromRect(
+                // 같은 씬에 오브젝트가 2개 이상일 때 image 경로로 고유 식별 —
+                // 없으면 Flutter가 리스트 위치로만 매칭해 위젯 상태가 섞일 수
+                // 있다(지구본 반쪽 2개가 첫 사례, 스펙 §4-1).
+                key: ValueKey(o.image),
                 rect: px(o.area(s)),
                 duration: o.duration,
                 curve: Curves.easeInOut,

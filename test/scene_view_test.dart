@@ -232,4 +232,46 @@ void main() {
     expect(t.getTopLeft(find.byType(AnimatedPositioned)),
         offsetMoreOrLessEquals(end, epsilon: 1.0));
   });
+
+  testWidgets(
+      'SceneObject 2개(같은 씬): image 기반 key로 서로 다른 실이동 목적지에 각자 도달(상태 혼선 방지, study_r_globe 첫 사례)',
+      (t) async {
+    const leftClosed = Rect.fromLTWH(0.10, 0.10, 0.15, 0.15);
+    const leftOpen = Rect.fromLTWH(0.02, 0.10, 0.15, 0.15);
+    const rightClosed = Rect.fromLTWH(0.30, 0.10, 0.15, 0.15);
+    const rightOpen = Rect.fromLTWH(0.40, 0.10, 0.15, 0.15);
+    final room = _objRoom([
+      SceneObject(
+        image: 'assets/scenes/obj_left.png',
+        area: (s) => s.flag('opened') == 1 ? leftOpen : leftClosed,
+      ),
+      SceneObject(
+        image: 'assets/scenes/obj_right.png',
+        area: (s) => s.flag('opened') == 1 ? rightOpen : rightClosed,
+      ),
+    ]);
+    await pump(t, SceneView(room: room, ctx: c));
+    await t.pump();
+
+    final origin = t.getTopLeft(find.byType(SceneView));
+    const leftKey = ValueKey('assets/scenes/obj_left.png');
+    const rightKey = ValueKey('assets/scenes/obj_right.png');
+
+    // 닫힘: 각자 자기 이미지 키가 자기 rect에서 시작 (400x600 박스 기준).
+    expect(t.getTopLeft(find.byKey(leftKey)),
+        offsetMoreOrLessEquals(origin + const Offset(40, 60), epsilon: 1.0));
+    expect(t.getTopLeft(find.byKey(rightKey)),
+        offsetMoreOrLessEquals(origin + const Offset(120, 60), epsilon: 1.0));
+
+    s.setFlag('opened', 1);
+    await t.pump();
+    await t.pump(const Duration(milliseconds: 700)); // 트윈 완료(600ms) 대기
+
+    // 열림: 왼쪽 키는 왼쪽으로, 오른쪽 키는 오른쪽으로 — key가 없으면 리스트
+    // 위치로만 매칭돼 자리가 뒤섞일 수 있는 지점(스펙 §4-1 엔진 수정 대상).
+    expect(t.getTopLeft(find.byKey(leftKey)),
+        offsetMoreOrLessEquals(origin + const Offset(8, 60), epsilon: 1.0));
+    expect(t.getTopLeft(find.byKey(rightKey)),
+        offsetMoreOrLessEquals(origin + const Offset(160, 60), epsilon: 1.0));
+  });
 }

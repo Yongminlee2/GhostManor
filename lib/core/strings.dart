@@ -91,6 +91,17 @@ const strStudyDoorUnlocked = '철컥. 잠금은 풀렸는데… 문이 꿈쩍도
 const strStudyDoorSqueak = '끼이이익… 경첩이 녹슬어 열리지 않는다. 기름칠이 필요하다.';
 const strStudyDoorOiled = '기름을 듬뿍 발랐다. 경첩이 부드럽게 움직인다.';
 
+// ── 서재 리마스터 신규 (room3_study, study_r_ 플래그) ──
+const strStudyRNookLoot = '숨은 공간에서 놋쇠 렌즈와 별 그림 음표 카드를 찾았다!';
+const strStudyRTelescopeNoLens = '렌즈가 빠져 있다. 동그란 유리알이 필요하다.';
+const strStudyRTelescopeLensIn = '망원경에 렌즈를 끼우자 흐릿하던 시야가 또렷해진다.';
+const strStudyRGlobeReset = '지구본이 삐걱대며 제자리로 돌아간다. 뭔가 규칙이 있는 듯하다.';
+const strStudyRGlobeQuiet = '지구본은 이제 조용히 받침대 위에 놓여 있다.';
+const strStudyRWindow = '창밖은 온통 캄캄한 밤. 유리에 서린 입김 자국이 남는다.';
+const strStudyRGlobeReplica = '책상 구석의 작은 지구의 모형. 대륙 모양이 다 닳아 없어졌다.';
+const strStudyRLowerShelf = '아래 칸엔 곰팡내 나는 책들이 가득하다. 제목은 알아볼 수 없다.';
+const strStudyRShelfTop = '천장 가까이 닿은 책장 꼭대기엔 먼지만 소복하다.';
+
 // ── 주방 (room4_kitchen) ──
 const strKitchenIntro = '커다란 국자를 든 유령이 텅 빈 냄비를 젓고 있다. "300년째 맛을 못 봤어… 유령 수프만 있다면."';
 const strKitchenGukjaAsk = '"유령 수프의 재료는 셋. 말린 버섯, 이끼 낀 물, 그리고… 노래하는 주전자의 김이지. 만들어 주면 뒷문 열쇠를 주마."';
