@@ -33,5 +33,5 @@
 | assets/items/lit_candle.png | 불 켜진 양초 |
 | assets/items/key_foyer.png | 낡은 놋쇠 열쇠 |
 
-## 효과음 (Codex 아님 — CC0 사이트에서 수급, mp3)
+## 효과음 (CC0 사이트에서 수급, mp3)
 assets/audio/: pickup, combine, unlock, locked, door_open, clock_tick, sparkle, ghost_giggle, bgm_manor(루프 BGM)
