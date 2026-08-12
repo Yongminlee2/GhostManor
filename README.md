@@ -8,6 +8,7 @@
 - 테스트: `.\tool\f.cmd test` — 래퍼 없이 직접 실행하면 TEMP 한글 경로로 flutter_tester가 0xC0000409로 죽는다
 - APK: `.\tool\f.cmd build apk --release`
 - `C:\workAndroid\gradle-user-ascii`는 한글 홈 정션 — 사용 금지 (진짜는 gradle-home-ascii)
+- gradle 설정 일부(minSdk 줄, newDsl/builtInKotlin 플래그)는 Flutter 마이그레이터가 빌드 때마다 관리한다 — **커밋된 상태 = 마이그레이터 출력**이라 빌드 후에도 트리가 깨끗해야 정상. effective minSdk는 Flutter 기본값이며 광고 SDK 요구(23+) 충족은 빌드 성공으로 검증됨
 
 ## 구조
 
