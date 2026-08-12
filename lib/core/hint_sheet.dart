@@ -34,22 +34,32 @@ void showHintSheet(BuildContext context, Room room, HintService hints) {
                       style: const TextStyle(color: Colors.white70, fontSize: 13)),
                 ),
               if (hints.unlocked(h.puzzleId) < 3)
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton(
-                    key: Key('hint_btn_${h.puzzleId}'),
-                    onPressed: () {
-                      hints.unlockNext(h.puzzleId);
-                      setState(() {});
-                    },
-                    child: const Text(strHintFree),
-                  ),
-                ),
+                _nextStepControl(room, hints, h, setState),
               const Divider(color: Color(0xFF4A3A6B)),
             ],
           ],
         ),
       ),
     ),
+  );
+}
+
+/// 다음 힌트 단계: 시간 잠금 중이면 남은 시간 표시, 열렸으면 기존 버튼.
+Widget _nextStepControl(
+    Room room, HintService hints, PuzzleHint h, StateSetter setState) {
+  final remain = hints.lockRemaining(room.id, hints.unlocked(h.puzzleId) + 1);
+  return Align(
+    alignment: Alignment.centerLeft,
+    child: remain > 0
+        ? Text(strHintLockedIn(remain),
+            style: const TextStyle(color: Colors.white38, fontSize: 13))
+        : TextButton(
+            key: Key('hint_btn_${h.puzzleId}'),
+            onPressed: () {
+              hints.unlockNext(room.id, h.puzzleId);
+              setState(() {});
+            },
+            child: const Text(strHintFree),
+          ),
   );
 }

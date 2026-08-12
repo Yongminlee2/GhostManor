@@ -233,6 +233,8 @@ class _RoomScreenState extends State<RoomScreen> {
     final s = widget.state;
     if (s.flag('entered_${room.id}') == 0) {
       s.setFlag('entered_${room.id}', 1);
+      s.setFlag('entered_at_${room.id}',
+          DateTime.now().millisecondsSinceEpoch ~/ 1000);
       room.onEnter?.call(ctx);
     }
     _onStateChanged();

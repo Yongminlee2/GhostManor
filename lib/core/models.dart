@@ -56,7 +56,7 @@ class IdleSprite {
   final Rect area;
   final Cond? when; // null이면 항상 표시
   final double bobPx; // 위아래로 떠다니는 폭(픽셀)
-  IdleSprite({required this.image, required this.area, this.when, this.bobPx = 6});
+  IdleSprite({required this.image, required this.area, this.when, this.bobPx = 4});
 }
 
 class Scene {
