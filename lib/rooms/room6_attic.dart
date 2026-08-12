@@ -92,8 +92,9 @@ Room buildAttic() {
       Scene(id: 'attic_a', image: 'assets/scenes/attic_a.png', overlays: [
         SceneOverlay(
             image: 'assets/scenes/attic_a_cards.png',
-            area: const Rect.fromLTWH(0.36, 0.50, 0.28, 0.14),
-            when: (s) => s.flag('attic_cards_placed') >= 4),
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: (s) => s.flag('attic_cards_placed') >= 4,
+            motion: OverlayMotion.fade),
       ], hotspots: [
         Hotspot(
             id: 'organ',
@@ -142,9 +143,9 @@ Room buildAttic() {
       Scene(id: 'attic_b', image: 'assets/scenes/attic_b.png', overlays: [
         SceneOverlay(
             image: 'assets/scenes/attic_b_trunk_open.png',
-            area: const Rect.fromLTWH(0.36, 0.54, 0.34, 0.28),
+            area: const Rect.fromLTWH(0, 0, 1, 1),
             when: (s) => s.flag('attic_organ_played') == 1,
-            motion: OverlayMotion.grow),
+            motion: OverlayMotion.fade),
       ], hotspots: [
         Hotspot(
             id: 'embroidery',

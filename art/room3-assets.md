@@ -18,7 +18,7 @@
 ## 오버레이 — study_b 벽 (좌표에 맞춰 재단)
 | 파일 | 내용 | 배치 좌표(LTWH, study_b 기준) |
 |---|---|---|
-| assets/scenes/study_b_globe_open.png | 반으로 갈라져 열린 지구본, 안쪽에 서재 열쇠가 보임 | 0.17,0.42,0.18,0.20 |
+| assets/scenes/study_b_globe_open.png | 반으로 갈라져 열린 지구본, 안쪽에 서재 열쇠가 보임 | 전체 프레임 1024×1536 (원본 edit 방식, rect 0,0,1,1) |
 | assets/scenes/study_b_door_open.png | 활짝 열린 문, 안쪽은 다음 방으로 이어지는 어둠 | 0.62,0.24,0.26,0.46 |
 
 ## 클로즈업 (1024×1024)

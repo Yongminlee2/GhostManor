@@ -149,11 +149,11 @@ Room buildCellar() {
             when: (s) => s.flag('cellar_light') == 0),
         SceneOverlay(
             image: 'assets/scenes/cellar_a_glow.png',
-            area: const Rect.fromLTWH(0.08, 0.58, 0.24, 0.24),
+            area: const Rect.fromLTWH(0.11, 0.50, 0.24, 0.24),
             when: (s) => s.flag('cellar_light') == 0),
         SceneOverlay(
             image: 'assets/scenes/cellar_a_key_floor.png',
-            area: const Rect.fromLTWH(0.36, 0.50, 0.12, 0.10),
+            area: const Rect.fromLTWH(0.40, 0.80, 0.12, 0.065),
             when: (s) =>
                 s.flag('cellar_key_dropped') == 1 &&
                 s.flag('cellar_got_key') == 0),
@@ -197,7 +197,7 @@ Room buildCellar() {
             }),
         Hotspot(
             id: 'key_floor',
-            area: const Rect.fromLTWH(0.34, 0.48, 0.16, 0.14),
+            area: const Rect.fromLTWH(0.36, 0.76, 0.20, 0.14),
             when: (s) =>
                 s.flag('cellar_key_dropped') == 1 &&
                 s.flag('cellar_got_key') == 0,
@@ -211,6 +211,11 @@ Room buildCellar() {
       // 벽면 B: 와인통·배전반·쪽문 벽
       Scene(id: 'cellar_b', image: 'assets/scenes/cellar_b.png', overlays: [
         SceneOverlay(
+            image: 'assets/scenes/cellar_b_barrel_moved.png',
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: flagSet('cellar_barrel_moved'),
+            motion: OverlayMotion.fade),
+        SceneOverlay(
             image: 'assets/scenes/cellar_b_dark.png',
             area: const Rect.fromLTWH(0, 0, 1, 1),
             when: (s) => s.flag('cellar_light') == 0),
@@ -218,11 +223,6 @@ Room buildCellar() {
             image: 'assets/scenes/cellar_b_glow_arrow.png',
             area: const Rect.fromLTWH(0.44, 0.36, 0.20, 0.16),
             when: (s) => s.flag('cellar_light') == 0),
-        SceneOverlay(
-            image: 'assets/scenes/cellar_b_barrel_moved.png',
-            area: const Rect.fromLTWH(0.50, 0.36, 0.34, 0.44),
-            when: flagSet('cellar_barrel_moved'),
-            motion: OverlayMotion.grow),
       ], hotspots: [
         Hotspot(
             id: 'fusebox',
@@ -266,7 +266,7 @@ Room buildCellar() {
             }),
         Hotspot(
             id: 'small_door',
-            area: const Rect.fromLTWH(0.56, 0.30, 0.20, 0.30),
+            area: const Rect.fromLTWH(0.22, 0.42, 0.22, 0.32),
             when: flagSet('cellar_barrel_moved'),
             onTap: (c) {
               final s = c.s;

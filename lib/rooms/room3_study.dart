@@ -112,9 +112,9 @@ Room buildStudy() {
       Scene(id: 'study_b', image: 'assets/scenes/study_b.png', overlays: [
         SceneOverlay(
             image: 'assets/scenes/study_b_globe_open.png',
-            area: Rect.fromLTWH(0.17, 0.42, 0.18, 0.20),
+            area: Rect.fromLTWH(0, 0, 1, 1),
             when: flagSet('study_globe_open'),
-            motion: OverlayMotion.grow),
+            motion: OverlayMotion.fade),
         SceneOverlay(
             image: 'assets/scenes/study_b_door_open.png',
             area: doorArea,

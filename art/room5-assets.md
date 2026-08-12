@@ -18,15 +18,15 @@
 | 파일 | 내용 | 배치 좌표(LTWH, cellar_a 기준) |
 |---|---|---|
 | assets/scenes/cellar_a_dark.png | 벽면 전체를 덮는 **반투명 남색 전면 덮개** — 완전히 캄캄하지 않고 아래 cellar_a.png 그림이 희미하게 비쳐 보일 정도의 반투명도. 불 꺼진 기본 상태의 어둠막 | 0,0,1,1 |
-| assets/scenes/cellar_a_glow.png | glow_box 상자를 감싸는 **초록 형광 야광 테두리/반짝임** — 오직 어둠 속에서만 도드라지는 밝은 야광 페인트 느낌. 세 상자 중 이 상자만 정답임을 알려주는 유일한 단서 | 0.08,0.58,0.24,0.24 |
-| assets/scenes/cellar_a_key_floor.png | 선반 아래 바닥에 떨어진 녹슨 열쇠 하나 | 0.36,0.50,0.12,0.10 |
+| assets/scenes/cellar_a_glow.png | glow_box 상자를 감싸는 **초록 형광 야광 테두리/반짝임** — 오직 어둠 속에서만 도드라지는 밝은 야광 페인트 느낌. 세 상자 중 이 상자만 정답임을 알려주는 유일한 단서 | 0.11,0.50,0.24,0.24 |
+| assets/scenes/cellar_a_key_floor.png | 선반 아래 바닥에 떨어진 녹슨 열쇠 하나 | 0.40,0.80,0.12,0.065 |
 
 ## 오버레이 — cellar_b 벽 (좌표에 맞춰 재단)
 | 파일 | 내용 | 배치 좌표(LTWH, cellar_b 기준) |
 |---|---|---|
 | assets/scenes/cellar_b_dark.png | cellar_a_dark.png와 동일 톤의 **반투명 남색 전면 덮개** (아래가 희미하게 비침) | 0,0,1,1 |
 | assets/scenes/cellar_b_glow_arrow.png | 와인통 쪽을 가리키는 **초록 형광 화살표** — 야광 페인트로 급하게 그려 놓은 듯한 필체 | 0.44,0.36,0.20,0.16 |
-| assets/scenes/cellar_b_barrel_moved.png | 옆으로 밀려난 와인통 + 그 뒤로 드러난 작은 쪽문(더 이상 가려지지 않은 온전한 문) | 0.50,0.36,0.34,0.44 |
+| assets/scenes/cellar_b_barrel_moved.png | 옆으로 밀려난 와인통 + 그 뒤로 드러난 작은 쪽문(더 이상 가려지지 않은 온전한 문) | 전체 프레임 1024×1536 (원본 edit 방식, rect 0,0,1,1) |
 
 ## 클로즈업 (1024×1024)
 | 파일 | 내용 |
