@@ -6,6 +6,7 @@ import 'package:ghostmanor/core/models.dart';
 import 'package:ghostmanor/rooms/items.dart';
 import 'package:ghostmanor/rooms/room1_foyer.dart';
 import 'package:ghostmanor/rooms/room2_living.dart';
+import 'package:ghostmanor/core/switch_panel.dart';
 import 'package:ghostmanor/rooms/room5_cellar.dart';
 import 'package:ghostmanor/rooms/room6_attic.dart';
 
@@ -363,54 +364,110 @@ int solveKitchen(GameState s, GameCtx c, Room room) {
   return steps;
 }
 
-/// 지하실 정답 시퀀스 (room5_cellar_test.dart의 해피패스와 동일 절차).
-/// barrel/shelf 클로즈업은 커스텀 위젯(BarrelDrag/ShelfShake)이라 헤드리스 테스트에선
-/// 위젯을 펌프하지 않고 그 안에서 호출되는 순수 함수(moveBarrel/dropShelfKey)를 직접
-/// 호출한다 — 위젯 자체의 제스처/센서 배선은 room5_cellar_test.dart의 별도 위젯
-/// 테스트가 검증한다(스펙 §8 헤드리스 테스트 원칙).
-void solveCellar(GameState s, GameCtx c, Room room) {
-  // 어둠 속에서 야광 상자 → 퓨즈 + 구름 음표 카드
-  tapSpot(room, s, c, 'cellar_a', 'glow_box');
-  expect(s.has('fuse'), isTrue);
-  expect(s.has('note4'), isTrue);
-
-  // 퓨즈를 배전반에 끼우고 스위치로 점등
-  s.select('fuse');
-  tapSpot(room, s, c, 'cellar_b', 'fusebox');
-  expect(s.flag('cellar_fuse_installed'), 1);
-  expect(s.has('fuse'), isFalse); // 퓨즈 소모
-
-  tapSpot(room, s, c, 'cellar_b', 'light_switch');
-  expect(s.flag('cellar_light'), 1);
-
-  // 와인통 클로즈업 → 드래그로 밀기(moveBarrel 반복 호출)
-  tapSpot(room, s, c, 'cellar_b', 'barrel');
-  expect(s.closeupId, 'barrel');
-  for (var i = 0; i < 10; i++) {
-    moveBarrel(s, 60); // (60/6).round() = 10 * 10회 = 100
+/// 지하실 정답 시퀀스 (room5_cellar_test.dart의 해피패스와 동일 절차, 스텝
+/// 카운팅 — solveFoyer/solveLiving/solveStudy/solveKitchen과 동일 관례).
+/// barrel/shelf/switches 클로즈업은 커스텀 위젯이라 헤드리스 테스트에선 위젯을
+/// 펌프하지 않고 그 안에서 호출되는 순수 함수(moveBarrel/dropShelfKey/
+/// flipSwitch)를 직접 호출한다 — 위젯 자체의 제스처/센서 배선은
+/// room5_cellar_test.dart의 별도 위젯 테스트가 검증한다(스펙 §8 헤드리스
+/// 테스트 원칙). T1(전력)과 T2(와인)이 서로의 중간 결과를 필요로 하므로
+/// (퓨즈1→기본 점등→와인 라벨 판독→퓨즈2→스위치 조작) 이 함수 안에서 자연히
+/// 교차 진행된다. 배전반 옆 야광 순서를 다시 확인하러 잠깐 소등했다 재점등하는
+/// 대목이 어둠 왕복 최소 2회(설계 §요구)를 시퀀스 안에 실재시킨다. 다른 방
+/// 테스트가 "지하실은 이미 클리어됐다"는 전제로 재사용한다(반환값은 무시해도
+/// 컴파일·동작에 지장 없음).
+int solveCellar(GameState s, GameCtx c, Room room) {
+  var steps = 0;
+  void tap(String sceneId, String hotspotId) {
+    tapSpot(room, s, c, sceneId, hotspotId);
+    steps++;
   }
-  expect(s.flag('cellar_barrel_moved'), 1);
+
+  void pure(void Function() fn) {
+    fn();
+    steps++;
+  }
+
+  // T1 전반: 어둠 속에서 야광 상자 → 퓨즈1(만) → 배전반에 장착 → 기본 점등.
+  tap('cellar_a', 'glow_box');
+  expect(s.has('fuse'), isTrue);
+  expect(s.has('note4'), isFalse); // 리마스터: 구름 카드는 이제 상자B 보상
+
+  s.select('fuse');
+  tap('cellar_b', 'fusebox');
+  expect(s.flag('cellar_r_fuse_count'), 1);
+  expect(s.has('fuse'), isFalse); // 퓨즈1 소모
+
+  tap('cellar_b', 'light_switch'); // 소등→점등 1회차
+  expect(s.flag('cellar_r_light'), 1);
+
+  // T2: 점등 후 병 라벨 판독 → 어둠 낙서(5→1→3) 순서로 탭 → 상자B: 퓨즈2+♪구름.
+  tap('cellar_c', 'wine3'); // 촛불 5개
+  expect(s.flag('cellar_r_wine_seq'), 1);
+  tap('cellar_c', 'wine2'); // 촛불 1개
+  expect(s.flag('cellar_r_wine_seq'), 2);
+  tap('cellar_c', 'wine1'); // 촛불 3개(5번 병도 3개라 둘 다 통과 — 부정 테스트로 별도 확인)
+  expect(s.flag('cellar_r_wine_seq'), 3);
+  expect(s.flag('cellar_r_wine_open'), 1);
+
+  tap('cellar_c', 'boxb');
+  expect(s.has('fuse2'), isTrue);
+  expect(s.has('note4'), isTrue); // 다락 체인 카드는 여기서 지급
+
+  // T1 후반: 퓨즈2까지 장착 → 스위치 클로즈업 진입 전, 순서를 다시 확인하러
+  // 잠깐 소등했다 재점등(어둠 왕복 2회차 — cellar_r_light가 1→0→1로 실제
+  // 변화함을 아래 expect들이 직접 단언한다).
+  s.select('fuse2');
+  tap('cellar_b', 'fusebox');
+  expect(s.flag('cellar_r_fuse_count'), 2);
+  expect(s.has('fuse2'), isFalse); // 퓨즈2 소모
+
+  tap('cellar_b', 'light_switch'); // 점등→소등
+  expect(s.flag('cellar_r_light'), 0);
+  tap('cellar_b', 'light_switch'); // 소등→점등 2회차
+  expect(s.flag('cellar_r_light'), 1);
+
+  tap('cellar_b', 'fusebox'); // 2개 다 있으니 이번엔 SwitchPanel 클로즈업
+  expect(s.closeupId, 'switches');
+
+  pure(() => flipSwitch(s, 'cellar_r_switch', 0)); // △
+  pure(() => flipSwitch(s, 'cellar_r_switch', 1)); // ○
+  pure(() => flipSwitch(s, 'cellar_r_switch', 2)); // □
+  expect(s.flag('cellar_r_power'), 1);
+  s.closeCloseup();
+
+  // 통 실이동(SceneObject) → 쪽문 노출: 드래그로 밀기(moveBarrel 반복 호출).
+  tap('cellar_b', 'barrel');
+  expect(s.closeupId, 'barrel');
+  pure(() {
+    for (var i = 0; i < 10; i++) {
+      moveBarrel(s, 60); // (60/6).round() = 10 * 10회 = 100
+    }
+  });
+  expect(s.flag('cellar_r_barrel_moved'), 1);
   s.closeCloseup();
 
   // 선반 클로즈업 → 흔들기(센서 경로의 순수 함수 dropShelfKey 직접 호출)
-  tapSpot(room, s, c, 'cellar_a', 'shelf');
+  tap('cellar_a', 'shelf');
   expect(s.closeupId, 'shelf');
-  dropShelfKey(s);
-  expect(s.flag('cellar_key_dropped'), 1);
+  pure(() => dropShelfKey(s));
+  expect(s.flag('cellar_r_key_dropped'), 1);
   s.closeCloseup();
 
   // 바닥에 떨어진 열쇠 줍기
-  tapSpot(room, s, c, 'cellar_a', 'key_floor');
+  tap('cellar_a', 'key_floor');
   expect(s.has('key_cellar'), isTrue);
 
-  // 쪽문: 열쇠로 열기 → 탈출
+  // 쪽문: 열쇠로 잠금 해제 → 전력 복구까지 확인된 상태로 탈출.
   s.select('key_cellar');
-  tapSpot(room, s, c, 'cellar_b', 'small_door');
-  expect(s.flag('cellar_door_open'), 1);
+  tap('cellar_b', 'small_door');
+  expect(s.flag('cellar_r_door_open'), 1);
   expect(s.has('key_cellar'), isFalse); // 열쇠 소모
 
-  tapSpot(room, s, c, 'cellar_b', 'small_door');
-  expect(s.flag('cellar_done'), 1);
+  tap('cellar_b', 'small_door');
+  expect(s.flag('cellar_r_done'), 1);
+
+  return steps;
 }
 
 /// 다락방 정답 시퀀스 (room6_attic_test.dart의 해피패스와 동일 절차).

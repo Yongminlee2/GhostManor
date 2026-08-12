@@ -3,8 +3,9 @@ import '../core/game_state.dart';
 class Item {
   final String id;
   final String name;
-  const Item(this.id, this.name);
-  String get icon => 'assets/items/$id.png';
+  final String? iconOverride; // 다른 아이템과 아이콘을 공유할 때만 지정
+  const Item(this.id, this.name, {this.iconOverride});
+  String get icon => iconOverride ?? 'assets/items/$id.png';
 }
 
 /// 전 챕터 아이템 전역 레지스트리 (스펙 §4.3). 방 추가 시 여기에만 등록.
@@ -32,6 +33,11 @@ const Map<String, Item> itemsById = {
   'key_kitchen': Item('key_kitchen', '뒷문 열쇠'),
   'note3': Item('note3', '음표 카드 ♪해'),
   'fuse': Item('fuse', '낡은 퓨즈'),
+  // 지하실 리마스터: 배전반 2슬롯 중 두 번째 퓨즈 — 부품이 동일해 신규 아이콘을
+  // 만들지 않고 fuse.png를 공유한다(art/remaster-assets.md 비고). 인벤토리에
+  // fuse와 fuse2가 동시에 들어올 수 있어 id는 분리(InventoryBar가 Key('inv_$id')로
+  // 슬롯을 구분하므로 같은 id 두 개가 동시에 있으면 위젯 키 충돌이 난다).
+  'fuse2': Item('fuse2', '낡은 퓨즈', iconOverride: 'assets/items/fuse.png'),
   'key_cellar': Item('key_cellar', '녹슨 열쇠'),
   'note4': Item('note4', '음표 카드 ♪구름'),
 };

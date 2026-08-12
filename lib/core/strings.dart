@@ -148,20 +148,39 @@ const strKitchenRJarFlour = '밀가루 항아리. 손을 넣었다 빼니 하얗
 const strCellarIntro = '"꺄악! 누, 누구야! …사람? 다행이다아. 난 덜덜. 여기 너무 어두워서 300년째 무서워." 어둠 속 어딘가에서 이가 딱딱 부딪히는 소리가 난다.';
 const strCellarDeoldeolDark = '"저기, 저기 빛나는 거 보여? 나는 무서워서 못 만져. 네가 좀…" 덜덜이 구석에서 떨고 있다.';
 const strCellarDeoldeolLight = '"불 켜니까 살 것 같다! …참, 선반 위에 열쇠 있는 거 알아? 저긴 아무도 못 닿아. 온 집이 흔들리지 않는 한!"';
-const strCellarGlowBox = '야광 표시가 빛나는 상자를 열었다. 낡은 퓨즈와 구름 그림 음표 카드!';
 const strCellarBoxPlain = '평범한 상자다. 불을 켜니 다 똑같아 보인다.';
 const strCellarBoxEmpty = '빈 상자다. 거미가 항의하듯 쳐다본다.';
-const strCellarFusebox = '배전반. 퓨즈 하나가 빠져 있는 자리가 보인다.';
-const strCellarFuseIn = '퓨즈를 끼웠다. 배전반이 웅 하고 깨어난다.';
 const strCellarSwitchDead = '딸깍. 딸깍. 아무 일도 일어나지 않는다. 배전반이 죽어 있다.';
 const strCellarLightOn = '팟! 지하실에 불이 들어왔다. 덜덜의 환호성이 들린다.';
 const strCellarTooDark = '너무 어두워서 손잡이를 찾을 수 없다.';
 const strCellarBarrelDone = '드드득…! 와인통이 밀려나며 작은 쪽문이 드러났다!';
-const strCellarBarrelMoved = '통은 이미 밀어 뒀다. 쪽문이 보인다.';
 const strCellarKeyDrop = '와장창! 선반이 흔들리며 열쇠가 바닥으로 떨어졌다! 덜덜: "지, 지진이야?!"';
 const strCellarKeyTaken = '바닥에 떨어진 녹슨 열쇠를 주웠다.';
 const strCellarDoorLocked = '쪽문은 잠겨 있다. 녹슨 열쇠 구멍.';
 const strCellarDoorOpened = '끼익… 쪽문이 열렸다. 좁은 계단이 위로 이어진다.';
+
+// ── 지하실 리마스터 신규 (room5_cellar, cellar_r_ 플래그) ──
+const strCellarRGlowBox = '야광 표시가 빛나는 상자를 열었다. 낡은 퓨즈가 하나 들어 있었다!';
+const strCellarRFusebox = '배전반. 소켓 두 개가 텅 비어 있다.';
+const strCellarRFuseboxOneMore = '소켓 하나가 아직 비어 있다. 퓨즈가 하나 더 필요해 보인다.';
+const strCellarRFuse1In = '퓨즈를 끼웠다. 배전반 한쪽이 웅 하고 깨어난다. 소켓이 하나 더 비어 있다.';
+const strCellarRFuse2In = '두 번째 퓨즈까지 끼우자 배전반 전체가 부르르 떨린다. 안쪽에서 뭔가 달칵거리는 소리가 난다.';
+const strCellarRSwitchWrong = '파지직! 스위치들이 튕겨 나가듯 아래로 툭 떨어진다. 순서가 잘못된 모양이다.';
+const strCellarRWineBottle1 = '라벨을 자세히 본다. 가느다란 촛불 세 개가 그려져 있다.';
+const strCellarRWineBottle2 = '라벨엔 촛불이 딱 하나. 외로워 보인다.';
+const strCellarRWineBottle3 = '라벨 가득 촛불 다섯 개가 빼곡하다.';
+const strCellarRWineBottle4 = '촛불 두 개가 나란히 그려져 있다.';
+const strCellarRWineBottle5 = '이 라벨에도 촛불 세 개 — 옆의 것과 그림체가 살짝 다르다.';
+const strCellarRWineWrong =
+    '병들이 달그락거리며 제자리로. 덜덜: "그, 그거 순서 있댔어… 누가 그랬는지는 기억 안 나."';
+const strCellarRWineUnlocked = '달그락! 상자 자물쇠가 스르르 풀리는 소리가 난다.';
+const strCellarRBoxbLocked = '잠긴 작은 상자다. 자물쇠가 꿈쩍도 않는다.';
+const strCellarRBoxbOpen = '상자가 열리며 낡은 퓨즈와 구름 그림 음표 카드가 나왔다!';
+const strCellarRBoxbEmpty = '상자 안은 이제 비어 있다.';
+const strCellarRExitNeedsPower = '쪽문 너머 계단이 칠흑같이 어둡다. 전력부터 확실히 복구해야 안심하고 오를 수 있겠다.';
+const strCellarRSconce = '벽에 걸린 촛대. 조그만 불꽃이 조용히 흔들린다.';
+const strCellarRCrate = '빈 병들이 쌓인 나무 상자. 와인 창고답게 여기저기 빈 병 천지다.';
+const strCellarRDeoldeolC = '덜덜이 와인 랙 옆에서도 웅크리고 있다. "여, 여기도 뭔가 있는 것 같은데… 무서워서 자세힌 못 보겠어."';
 
 // ── 다락방 (room6_attic) ──
 const strAtticIntro = '"드디어 여기까지 왔군." 고스포가 트렁크 앞을 지키고 서 있다. "마지막 시험이다. 삼촌의 오르간은… 올바른 노래에만 답하지."';
