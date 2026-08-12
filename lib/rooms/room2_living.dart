@@ -24,7 +24,7 @@ void toggleCandle(GameState s, int i) {
 }
 
 /// 금고 다이얼 정답 확인 성공 시 1회 호출(DialSafe의 원샷 가드가 감싼다).
-/// 나이순(TV) × 시선 대상 개수(초상화 4점이 각각 향하는 소품) = 3274.
+/// 나이순(TV) × 그림 속 소품 개수(초상화 4점 대사가 소품 종류를 매핑) = 3274.
 void openSafe(GameCtx c) {
   final s = c.s;
   s.setFlag('living_r_safe_open', 1);
@@ -66,7 +66,7 @@ Room buildLiving() {
   const lamp4Area = Rect.fromLTWH(0.78, 0.20, 0.10, 0.11);
   const safeArea = Rect.fromLTWH(0.06, 0.30, 0.24, 0.20);
   const vaseArea = Rect.fromLTWH(0.12, 0.50, 0.19, 0.14);
-  const booksArea = Rect.fromLTWH(0.33, 0.63, 0.19, 0.12);
+  const booksArea = Rect.fromLTWH(0.16, 0.69, 0.18, 0.12);
   const pendulumArea = Rect.fromLTWH(0.76, 0.42, 0.20, 0.28);
 
   // 촛대 4개 공용: 토글 + 클릭음, 새로 점화됐으면 반짝임음+대사.

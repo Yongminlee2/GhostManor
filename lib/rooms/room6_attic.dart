@@ -120,7 +120,9 @@ Room buildAttic() {
   const stitchFrameArea = Rect.fromLTWH(0.27, 0.18, 0.32, 0.34);
   const roundTableArea = Rect.fromLTWH(0.79, 0.55, 0.20, 0.20);
   const rugArea = Rect.fromLTWH(0.12, 0.86, 0.30, 0.11);
-  const ghospoCArea = Rect.fromLTWH(0.46, 0.54, 0.16, 0.16);
+  // 고스포는 attic_c.png에 그려져 있지 않다 — 궤짝과 책 더미 사이 빈 바닥을
+  // "서성이는 기척" 영역으로 쓴다(잡동사니 사이라는 대사와 지형이 맞는 자리).
+  const ghospoCArea = Rect.fromLTWH(0.46, 0.68, 0.18, 0.20);
 
   return Room(
     id: 'attic',
