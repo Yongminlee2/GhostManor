@@ -21,8 +21,8 @@
 ## 오버레이 — living_b 벽 (좌표에 맞춰 재단)
 | 파일 | 내용 | 배치 좌표(LTWH, living_b 기준) |
 |---|---|---|
-| assets/scenes/living_b_boo_door.png | 문 앞을 막고 선 유령 부우 — 이불을 뒤집어쓰고 무서운 척하지만 시무룩함 | 0.60,0.28,0.24,0.34 |
-| assets/scenes/living_b_boo_sofa.png | 소파에 파묻혀 TV를 보는 행복한 표정의 부우 | 0.34,0.56,0.18,0.22 |
+| assets/scenes/living_b_boo_door.png | 문 앞을 막고 선 유령 부우 — 이불을 뒤집어쓰고 무서운 척하지만 시무룩함 **배경 없이 유령 전신만, 배경 투명 PNG** (씬 크롭 금지) | 0.60,0.28,0.24,0.34 |
+| assets/scenes/living_b_boo_sofa.png | 소파에 파묻혀 TV를 보는 행복한 표정의 부우 **배경 없이 유령 전신만, 배경 투명 PNG** (씬 크롭 금지) | 0.34,0.56,0.18,0.22 |
 | assets/scenes/living_b_tv_on.png | 지지직거리는 빛이 도는 켜진 TV 화면 | 0.10,0.24,0.24,0.22 |
 | assets/scenes/living_b_door_open.png | 활짝 열린 문, 안쪽은 다음 방으로 이어지는 어둠 | 0.62,0.26,0.26,0.44 |
 

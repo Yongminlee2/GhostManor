@@ -32,7 +32,7 @@ Room buildLiving() {
   const doorArea = Rect.fromLTWH(0.62, 0.26, 0.26, 0.44);
   const booSofaArea = Rect.fromLTWH(0.34, 0.56, 0.18, 0.22);
 
-  // candle2·3·4 공용: 토글 + 클릭음, 새로 점화됐으면 반짝임음+대사.
+  // 촛대 4개 공용: 토글 + 클릭음, 새로 점화됐으면 반짝임음+대사.
   void tapCandle(GameCtx c, int i) {
     final wasLit = c.s.flag('living_fireplace_lit') >= 1;
     toggleCandle(c.s, i);
@@ -80,10 +80,7 @@ Room buildLiving() {
             id: 'candle1',
             area: candle1Area,
             when: flagZero('living_fireplace_lit'),
-            onTap: (c) {
-              toggleCandle(c.s, 1);
-              c.sfx('clock_tick');
-            }),
+            onTap: (c) => tapCandle(c, 1)),
         Hotspot(
             id: 'candle2',
             area: candle2Area,
