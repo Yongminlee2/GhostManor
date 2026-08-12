@@ -91,6 +91,21 @@ const strCellarKeyTaken = '바닥에 떨어진 녹슨 열쇠를 주웠다.';
 const strCellarDoorLocked = '쪽문은 잠겨 있다. 녹슨 열쇠 구멍.';
 const strCellarDoorOpened = '끼익… 쪽문이 열렸다. 좁은 계단이 위로 이어진다.';
 
+// ── 다락방 (room6_attic) ──
+const strAtticIntro = '"드디어 여기까지 왔군." 고스포가 트렁크 앞을 지키고 서 있다. "마지막 시험이다. 삼촌의 오르간은… 올바른 노래에만 답하지."';
+const strAtticGhospoHint = '"카드는 보면대에, 순서는… 저 낡은 자수가 알고 있다. 나? 난 음치라서 모른다."';
+const strAtticGhospoProud = '"그 노래… 주인님이 생전에 흥얼거리던 곡이야." 고스포가 눈시울(?)을 훔친다.';
+const strAtticStandEmpty = '오르간 보면대. 음표 카드를 놓는 홈이 네 개 파여 있다.';
+const strAtticCardPlaced = '카드를 보면대에 놓았다.';
+const strAtticCardsAll = '네 장이 모두 모였다! 악보가 완성됐다 — 달, 별, 해, 구름이 각각 도·레·미·파로 빛난다.';
+const strAtticStandFull = '악보 완성. 이제 연주만 남았다.';
+const strAtticOrganNoCards = '건반을 눌러도 먹먹한 소리뿐이다. 보면대에 악보(음표 카드)가 있어야 할 것 같다.';
+const strAtticOrganWrong = '삐끗! 오르간이 불쾌한 화음을 낸다. 처음부터 다시.';
+const strAtticOrganPlayed = '웅장한 화음이 다락을 가득 채운다…! 트렁크의 자물쇠가 저절로 풀렸다.';
+const strAtticTrunkLocked = '삼촌의 트렁크. 자물쇠에 열쇠 구멍이 없다. 음표 문양만 새겨져 있다.';
+const strAtticWill = '유언장을 찾았다! "축하한다, 조카야. 시험을 통과했으니 저택은 네 것이다. 참, 말 안 했던가? 나도 300년 전부터 유령이란다. 앞으로 잘 부탁한다 — 2층에서 만나자꾸나. ― 삼촌" …잠깐, 뭐라고요?';
+const strAtticWindow = '둥근 창으로 달빛이 쏟아진다. 마당의 허수아비가 손을 흔든… 기분 탓이겠지.';
+
 // ── 앱 셸 ──
 const strAppTitle = '기묘한 유령 저택';
 const strContinue = '이어하기';
@@ -102,7 +117,7 @@ const strResetProgress = '진행 초기화';
 const strResetConfirm = '정말 모든 진행을 삭제할까요?';
 const strRoomClear = '방 탈출 성공!';
 const strNextRoom = '다음 방으로';
-const strChapterEnd = '챕터 1 클리어!\n저택의 더 깊은 곳은 준비 중…';
+const strChapterEnd = '챕터 1 클리어!\n삼촌(유령)의 저택은 이제 당신 것.\n…2층의 이야기는 다음 챕터에서.';
 const strBackToTitle = '처음으로';
 const strCancel = '취소';
 const strOk = '확인';

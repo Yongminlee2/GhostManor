@@ -23,7 +23,7 @@ void main() {
   });
 
   testWidgets(
-      '클리어 흐름: foyer_done → 다음 방 → living_done → 다음 방 → study_done → 다음 방 → kitchen_done → 다음 방 → 지하실 클리어 → 엔딩',
+      '클리어 흐름: foyer_done → 다음 방 → living_done → 다음 방 → study_done → 다음 방 → kitchen_done → 다음 방 → cellar_done → 다음 방 → 다락방 클리어 → 엔딩',
       (t) async {
     final s = GameState()..setFlag('entered_foyer', 1);
     await t.pumpWidget(app(state: s));
@@ -55,9 +55,16 @@ void main() {
     expect(find.text(strRoomClear), findsOneWidget);
     await t.tap(find.text(strNextRoom));
     await t.pumpAndSettle();
-    expect(find.text('지하실'), findsOneWidget); // 마지막 방 — 아직 안 끝남
+    expect(find.text('지하실'), findsOneWidget); // 방 6개 중 5번째 — 아직 안 끝남
 
     s.setFlag('cellar_done', 1);
+    await t.pumpAndSettle();
+    expect(find.text(strRoomClear), findsOneWidget);
+    await t.tap(find.text(strNextRoom));
+    await t.pumpAndSettle();
+    expect(find.text('다락방'), findsOneWidget); // 마지막 방 — 아직 안 끝남
+
+    s.setFlag('attic_done', 1);
     await t.pumpAndSettle();
     expect(find.text(strRoomClear), findsOneWidget);
     await t.tap(find.text(strNextRoom));
@@ -83,7 +90,11 @@ void main() {
       ..roomIndex = 4
       ..setFlag('entered_cellar', 1)
       ..setFlag('cellar_done', 1)
-      ..setFlag('cleared_shown_cellar', 1);
+      ..setFlag('cleared_shown_cellar', 1)
+      ..roomIndex = 5
+      ..setFlag('entered_attic', 1)
+      ..setFlag('attic_done', 1)
+      ..setFlag('cleared_shown_attic', 1);
     await t.pumpWidget(app(state: s));
     await t.pumpAndSettle();
     expect(find.text(strChapterEnd), findsOneWidget);

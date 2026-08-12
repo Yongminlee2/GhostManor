@@ -6,6 +6,7 @@ import 'package:ghostmanor/rooms/items.dart';
 import 'package:ghostmanor/rooms/room1_foyer.dart';
 import 'package:ghostmanor/rooms/room2_living.dart';
 import 'package:ghostmanor/rooms/room5_cellar.dart';
+import 'package:ghostmanor/rooms/room6_attic.dart';
 
 /// room1_foyer_test.dart의 findHotspot 헬퍼를 일반화 — room을 인자로 받는다.
 Hotspot findHotspot(Room room, String sceneId, String hotspotId) {
@@ -243,4 +244,43 @@ void solveCellar(GameState s, GameCtx c, Room room) {
 
   tapSpot(room, s, c, 'cellar_b', 'small_door');
   expect(s.flag('cellar_done'), 1);
+}
+
+/// 다락방 정답 시퀀스 (room6_attic_test.dart의 해피패스와 동일 절차).
+/// 전제: 방 2~5(거실·서재·주방·지하실)를 모두 클리어해 note1~4를 이미 보유한
+/// 상태 — 이 함수는 카드를 지급하지 않는다. 방 단독 테스트는 setUp에서
+/// note1~4를 지급한 뒤 이 함수를 호출한다.
+void solveAttic(GameState s, GameCtx c, Room room) {
+  // 카드 4장을 보면대에 배치(순서 무관 — 보면대는 개수만 센다)
+  for (final note in ['note1', 'note2', 'note3', 'note4']) {
+    s.select(note);
+    tapSpot(room, s, c, 'attic_a', 'music_stand');
+    expect(s.has(note), isFalse); // 카드 소모
+  }
+  expect(s.flag('attic_cards_placed'), 4);
+
+  // 자수 클로즈업(관찰 전용) 확인
+  tapSpot(room, s, c, 'attic_b', 'embroidery');
+  expect(s.closeupId, 'embroidery');
+  s.closeCloseup();
+
+  // 오르간 클로즈업 확인
+  tapSpot(room, s, c, 'attic_a', 'organ');
+  expect(s.closeupId, 'organ');
+  s.closeCloseup();
+
+  // 정답 순서로 연주: 도미레파 = 건반 1,3,2,4
+  tapOrganKey(s, 1);
+  tapOrganKey(s, 3);
+  tapOrganKey(s, 2);
+  tapOrganKey(s, 4);
+  expect(s.flag('attic_organ_played'), 1);
+
+  // 트렁크: 첫 탭은 유언장, 두 번째 탭에 탈출
+  tapSpot(room, s, c, 'attic_b', 'trunk');
+  expect(s.flag('attic_got_will'), 1);
+  expect(s.flag('attic_done'), 0);
+
+  tapSpot(room, s, c, 'attic_b', 'trunk');
+  expect(s.flag('attic_done'), 1);
 }
