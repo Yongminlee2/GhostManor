@@ -150,3 +150,46 @@ void solveStudy(GameState s, GameCtx c, Room room) {
   tapSpot(room, s, c, 'study_b', 'door');
   expect(s.flag('study_done'), 1);
 }
+
+/// 주방 정답 시퀀스 (room4_kitchen_test.dart의 해피패스와 동일 절차).
+/// 이 방은 클로즈업이 전혀 없다(전부 벽 핫스팟+오버레이) — 그래서 다른 solve* 함수와
+/// 달리 구체 closeupId 단언이 없다.
+void solveKitchen(GameState s, GameCtx c, Room room) {
+  tapSpot(room, s, c, 'kitchen_a', 'counter'); // 빈 병
+  expect(s.has('empty_bottle'), isTrue);
+
+  s.select('empty_bottle');
+  tapSpot(room, s, c, 'kitchen_b', 'sink'); // 싱크대 물 채움 → 이끼물 병
+  expect(s.has('water_bottle'), isTrue);
+  expect(s.has('empty_bottle'), isFalse); // 빈 병 소모(직접 교환, 조합 아님)
+
+  tapSpot(room, s, c, 'kitchen_a', 'jar'); // 말린 버섯
+  expect(s.has('mushroom'), isTrue);
+
+  // 찬장 문 두드리기: 2번째 문의 첫 탭이 곧 발견 판정 → 재탭에서 주전자 획득
+  tapSpot(room, s, c, 'kitchen_b', 'cupboard2'); // 속 빈 울림 발견
+  expect(s.flag('kitchen_hollow_found'), 1);
+  tapSpot(room, s, c, 'kitchen_b', 'cupboard2'); // 노래하는 주전자
+  expect(s.has('kettle_singing'), isTrue);
+
+  // 다단계 조합: 버섯+이끼물 병 = 수프 베이스, 수프 베이스+주전자 = 유령 수프
+  expect(tryCombine(s, 'mushroom', 'water_bottle'), isTrue);
+  expect(s.has('soup_base'), isTrue);
+  expect(tryCombine(s, 'kettle_singing', 'soup_base'), isTrue);
+  expect(s.has('ghost_soup'), isTrue);
+
+  s.select('ghost_soup');
+  tapSpot(room, s, c, 'kitchen_a', 'gukja'); // 국자에게 수프를 먹임
+  expect(s.flag('kitchen_ghost_fed'), 1);
+  expect(s.has('key_kitchen'), isTrue);
+  expect(s.has('note3'), isTrue);
+  expect(s.has('ghost_soup'), isFalse); // 수프 소모
+
+  s.select('key_kitchen');
+  tapSpot(room, s, c, 'kitchen_b', 'backdoor'); // 잠금 해제
+  expect(s.flag('kitchen_door_open'), 1);
+  expect(s.has('key_kitchen'), isFalse); // 열쇠 소모
+
+  tapSpot(room, s, c, 'kitchen_b', 'backdoor'); // 탈출
+  expect(s.flag('kitchen_done'), 1);
+}

@@ -53,6 +53,25 @@ const strStudyDoorUnlocked = '철컥. 잠금은 풀렸는데… 문이 꿈쩍도
 const strStudyDoorSqueak = '끼이이익… 경첩이 녹슬어 열리지 않는다. 기름칠이 필요하다.';
 const strStudyDoorOiled = '기름을 듬뿍 발랐다. 경첩이 부드럽게 움직인다.';
 
+// ── 주방 (room4_kitchen) ──
+const strKitchenIntro = '커다란 국자를 든 유령이 텅 빈 냄비를 젓고 있다. "300년째 맛을 못 봤어… 유령 수프만 있다면."';
+const strKitchenGukjaAsk = '"유령 수프의 재료는 셋. 말린 버섯, 이끼 낀 물, 그리고… 노래하는 주전자의 김이지. 만들어 주면 뒷문 열쇠를 주마."';
+const strKitchenGukjaHappy = '"완벽한 간이야…!" 국자가 감격에 젖어 수프를 젓고 있다.';
+const strKitchenFed = '국자가 수프를 한 모금 넘긴다(어떻게?). "이 맛이야!!" 뒷문 열쇠와 해 그림 음표 카드를 건넸다!';
+const strKitchenBottle = '조리대에서 빈 병을 챙겼다.';
+const strKitchenCounterEmpty = '조리대엔 이제 먼지뿐이다.';
+const strKitchenStove = '오래된 화덕. 불씨가 유령불처럼 파랗게 일렁인다.';
+const strKitchenJar = '항아리 속에서 말린 버섯을 찾았다. 몇백 년 묵은 향이 난다.';
+const strKitchenJarEmpty = '항아리는 비었다.';
+const strKitchenSink = '싱크대에 이끼 낀 물이 고여 있다. 담을 것이 필요하다.';
+const strKitchenFill = '병에 이끼 낀 물을 가득 담았다. 초록빛이 은은하다.';
+const strKitchenKnockDull = '퉁, 퉁. 꽉 찬 둔탁한 소리다.';
+const strKitchenKnockHollow = '통통! 속이 빈 울림이다! 문이 스르륵 열렸다.';
+const strKitchenKettle = '찬장 안에서 노래하는 주전자를 꺼냈다. 흥얼거림이 멈추지 않는다.';
+const strKitchenCupboardEmpty = '주전자가 있던 자리만 휑하다.';
+const strKitchenDoorLocked = '뒷문은 잠겨 있다.';
+const strKitchenDoorOpened = '철컥! 뒷문이 열렸다. 지하로 내려가는 계단이 보인다.';
+
 // ── 앱 셸 ──
 const strAppTitle = '기묘한 유령 저택';
 const strContinue = '이어하기';

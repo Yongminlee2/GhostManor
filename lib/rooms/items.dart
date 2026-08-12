@@ -20,11 +20,21 @@ const Map<String, Item> itemsById = {
   'crank': Item('crank', '놋쇠 크랭크'),
   'key_study': Item('key_study', '서재 열쇠'),
   'note2': Item('note2', '음표 카드 ♪별'),
+  'empty_bottle': Item('empty_bottle', '빈 병'),
+  'water_bottle': Item('water_bottle', '이끼물 병'),
+  'mushroom': Item('mushroom', '말린 버섯'),
+  'kettle_singing': Item('kettle_singing', '노래하는 주전자'),
+  'soup_base': Item('soup_base', '수프 베이스'),
+  'ghost_soup': Item('ghost_soup', '유령 수프'),
+  'key_kitchen': Item('key_kitchen', '뒷문 열쇠'),
+  'note3': Item('note3', '음표 카드 ♪해'),
 };
 
 /// 키 = 두 id를 사전순 정렬해 '+'로 연결.
 const Map<String, String> _combineTable = {
   'candle+match': 'lit_candle',
+  'mushroom+water_bottle': 'soup_base',
+  'kettle_singing+soup_base': 'ghost_soup',
 };
 
 String? combineResult(String a, String b) {
