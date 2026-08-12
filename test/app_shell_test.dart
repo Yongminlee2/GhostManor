@@ -100,6 +100,23 @@ void main() {
     expect(find.text(strChapterEnd), findsOneWidget);
   });
 
+  testWidgets(
+      '스트랜드된 세이브 자동 복구: 클리어 다이얼로그 못 보고 저장된 상태로 재개해도 다음 방으로 자동 전진',
+      (t) async {
+    // cleared_shown_living만 켜져 있고 실제 전진(goRoom)은 없었던 상태 —
+    // 백버튼 dismiss나 다이얼로그 도중 프로세스 사망이 만드는 스트랜드 세이브
+    // (최종 리뷰 Finding 2b).
+    final s = GameState()
+      ..setFlag('entered_living', 1)
+      ..setFlag('living_done', 1)
+      ..setFlag('cleared_shown_living', 1)
+      ..roomIndex = 1;
+    await t.pumpWidget(app(state: s));
+    await t.pumpAndSettle();
+    expect(find.text('서재'), findsOneWidget); // 거실에 갇히지 않고 다음 방으로
+    expect(find.text('거실'), findsNothing);
+  });
+
   testWidgets('설정: 진행 초기화 → 타이틀로 + 세이브 삭제', (t) async {
     final s = GameState()..setFlag('entered_foyer', 1);
     await t.pumpWidget(app(state: s));

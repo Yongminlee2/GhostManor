@@ -195,9 +195,24 @@ class _RoomScreenState extends State<RoomScreen> {
     widget.audio.playBgm('bgm_manor');
     widget.state.addListener(_onStateChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _selfHealStrandedClear();
       _precacheRoomImages();
       _enterRoomIfFirst();
     });
+  }
+
+  /// 구 코드 경로가 만든 스트랜드 세이브(다이얼로그 안 본 채 cleared_shown만
+  /// 켜짐) 또는 다이얼로그 중 프로세스 사망을 복구 — 다이얼로그 재표시 없이
+  /// 바로 다음 방으로 넘긴다 (최종 리뷰 Finding 2b). goRoom 뒤엔 새 방이
+  /// cleared가 아니라서 재호출돼도 더 진행하지 않는다 — 루프 없음.
+  void _selfHealStrandedClear() {
+    final s = widget.state;
+    if (room.cleared(s) &&
+        s.flag('cleared_shown_${room.id}') >= 1 &&
+        s.roomIndex + 1 < widget.rooms.length) {
+      s.goRoom(s.roomIndex + 1);
+      setState(() {}); // room getter가 roomIndex 의존 — 아래 precache/enter가 새 방을 보게
+    }
   }
 
   /// 방 진입 시 이미지 프리로드 (스펙 §4.6). 에셋 미도착이면 조용히 무시.
@@ -235,6 +250,10 @@ class _RoomScreenState extends State<RoomScreen> {
     }
   }
 
+  /// 다이얼로그가 버튼이든 시스템 백버튼이든 어떻게 닫히든 await가 반환되면
+  /// 전진한다 — 백버튼 소프트락 수정 (최종 리뷰 Finding 2a). 전진 로직을 버튼
+  /// onPressed 안에서만 태우던 예전 방식은 barrierDismissible:false가 막지
+  /// 못하는 백버튼 dismiss에서 방을 영영 못 넘어가는 함정이었다.
   Future<void> _showClear() async {
     widget.audio.play('door_open');
     await showDialog<void>(
@@ -244,21 +263,20 @@ class _RoomScreenState extends State<RoomScreen> {
         title: const Text(strRoomClear),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              final s = widget.state;
-              if (s.roomIndex + 1 < widget.rooms.length) {
-                s.goRoom(s.roomIndex + 1);
-                _precacheRoomImages();
-                _enterRoomIfFirst();
-              }
-              setState(() {}); // 방 전환/엔딩 모두 재빌드 필요 (room getter가 roomIndex에 의존)
-            },
+            onPressed: () => Navigator.pop(context),
             child: const Text(strNextRoom),
           ),
         ],
       ),
     );
+    if (!context.mounted) return;
+    final s = widget.state;
+    if (s.roomIndex + 1 < widget.rooms.length) {
+      s.goRoom(s.roomIndex + 1);
+      _precacheRoomImages();
+      _enterRoomIfFirst();
+    }
+    setState(() {}); // 방 전환/엔딩 모두 재빌드 필요 (room getter가 roomIndex에 의존)
   }
 
   bool get _ended {

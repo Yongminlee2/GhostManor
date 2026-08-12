@@ -76,6 +76,14 @@ Room buildLiving() {
             area: nookArea,
             when: flagSet('living_fireplace_lit')),
       ], hotspots: [
+        // fireplace는 큰 배경 rect라 목록 맨 앞(= 탭 우선순위 최하) 선언 —
+        // 뒤에 오는 candle2/candle3와 겹쳐도 촛대가 항상 이긴다 (최종 리뷰 Finding 1).
+        Hotspot(
+            id: 'fireplace',
+            area: fireplaceArea,
+            onTap: (c) => c.say(c.s.flag('living_fireplace_lit') >= 1
+                ? strLivingFireplaceLit
+                : strLivingFireplaceCold)),
         Hotspot(
             id: 'candle1',
             area: candle1Area,
@@ -113,12 +121,6 @@ Room buildLiving() {
                 c.say(strLivingSecretEmpty);
               }
             }),
-        Hotspot(
-            id: 'fireplace',
-            area: fireplaceArea,
-            onTap: (c) => c.say(c.s.flag('living_fireplace_lit') >= 1
-                ? strLivingFireplaceLit
-                : strLivingFireplaceCold)),
       ]),
       // 벽면 B: 소파·TV·문 벽
       Scene(id: 'living_b', image: 'assets/scenes/living_b.png', overlays: [
@@ -166,22 +168,9 @@ Room buildLiving() {
                 c.say(strLivingTvOff);
               }
             }),
-        Hotspot(
-            id: 'boo',
-            area: const Rect.fromLTWH(0.62, 0.30, 0.20, 0.30),
-            when: flagZero('living_tv_on'),
-            onTap: (c) {
-              c.sfx('ghost_giggle');
-              c.say(strLivingBooScare);
-            }),
-        Hotspot(
-            id: 'boo_sofa',
-            area: booSofaArea,
-            when: flagSet('living_tv_on'),
-            onTap: (c) {
-              c.sfx('ghost_giggle');
-              c.say(strLivingBooHappy);
-            }),
+        // door는 boo/boo_sofa를 감싸는 더 큰 rect라 그 앞에 선언 —
+        // TV 끄고 켠 상태 각각에서 boo/boo_sofa(뒤 선언)가 자기 자리를 이기고,
+        // 문 나머지 테두리는 door가 받는다 (최종 리뷰 Finding 3).
         Hotspot(
             id: 'door',
             area: doorArea,
@@ -201,6 +190,22 @@ Room buildLiving() {
                 c.sfx('locked');
                 c.say(strLivingDoorLocked);
               }
+            }),
+        Hotspot(
+            id: 'boo',
+            area: const Rect.fromLTWH(0.62, 0.30, 0.20, 0.30),
+            when: flagZero('living_tv_on'),
+            onTap: (c) {
+              c.sfx('ghost_giggle');
+              c.say(strLivingBooScare);
+            }),
+        Hotspot(
+            id: 'boo_sofa',
+            area: booSofaArea,
+            when: flagSet('living_tv_on'),
+            onTap: (c) {
+              c.sfx('ghost_giggle');
+              c.say(strLivingBooHappy);
             }),
       ]),
     ],
