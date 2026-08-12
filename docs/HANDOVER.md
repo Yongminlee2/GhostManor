@@ -11,7 +11,7 @@
 | Flutter | 3.44.x / Dart 3.12 (개발 머신 기준 `C:\flutter`, PATH 미등록) |
 | 실행 | **모든 flutter 명령은 `.\tool\f.cmd <args>`로** — PUB_CACHE/GRADLE_USER_HOME/TEMP를 ASCII 경로로 고정하는 래퍼. 다른 머신에서는 래퍼 안의 경로만 환경에 맞게 수정 |
 | 왜? | 사용자 홈이 비ASCII(한글)인 Windows에서 ①`flutter test`가 temp 경로 문제로 0xC0000409 즉사 ②gradle 캐시 경로 문제가 발생한다. 래퍼가 전부 우회 |
-| Gradle/AGP | **Gradle 8.14 + AGP 8.12.0 고정** — `google_mobile_ads`가 Gradle 9와 비호환(업스트림). 9로 올리기 전에 광고 SDK 호환을 반드시 확인 |
+| Gradle/AGP | **Gradle 8.14 + AGP 8.12.0 고정** — 도구 체인은 프로젝트가 소유한다는 원칙(과거 광고 SDK 호환 이슈에서 확립). 올릴 때는 전체 빌드로 검증 |
 | minSdk 등 | gradle 설정 일부는 Flutter 도구가 빌드마다 재작성한다. **커밋된 상태 = 도구 출력** — 빌드 후 `git status`가 깨끗해야 정상. 더러우면 도구 버전이 바뀐 것이니 새 출력을 검토 후 커밋 |
 | 파일 편집 | 한글 포함 파일을 PowerShell `Get-Content \| Set-Content` 파이프로 수정하면 인코딩이 깨진다 — 에디터/전용 도구로만 |
 
@@ -22,28 +22,19 @@
   `test/hotspot_resolution_test.dart`가 잡아준다(예외는 주석과 함께 예외 맵에).
 - 방 플래그에 접두어를 빼먹지 말 것 (`cellar_...`) — 세이브 맵이 전역 공유라
   이름 충돌은 다른 방을 미리 풀어버린다.
-- `pubspec.yaml`에 의존성을 함부로 늘리지 말 것 — 현재 4개가 전부이며 의도적이다.
+- `pubspec.yaml`에 의존성을 함부로 늘리지 말 것 — 현재 3개(shared_preferences·audioplayers·sensors_plus)가 전부이며 의도적이다.
 - 클리어 전진 로직을 다이얼로그 버튼 안으로 되돌리지 말 것 — 뒤로가기 dismiss
   소프트락의 원인이었다(main.dart의 주석과 DEVLOG §7 참조).
 
 ## 3. 남은 작업 체크리스트
 
 ### 3-1. 콘텐츠 마감
-- [ ] **방 4~6 아트 반영** — `art/room4-assets.md`·`room5`·`room6` 의뢰서대로
-  이미지를 생성해 `assets/` 경로에 파일명 그대로 저장. 검수 포인트:
-  규격(씬 1024×1536·클로즈업 1024²·아이템 512² 투명), 오버레이 크롭이 표의
-  좌표와 일치, **퍼즐 정답 그림의 정확성**(자수 달→해→별→구름, 오르간 건반
-  하단 40% 4등분, 지하실 어둠막은 반투명·야광은 형광 초록), 이미지에 글자 금지.
-  반영 후 실행해서 좌표가 그림과 안 맞으면 코드 rect를 그림에 맞춰 조정
-  (서재 조정 이력이 선례 — `art/room3-assets.md` 상단 주석).
-- [ ] **효과음 13종** — CC0 음원을 mp3로 `assets/audio/`에:
-  `pickup, combine, unlock, locked, door_open, clock_tick, sparkle, ghost_giggle,
-  bgm_manor(루프), note1, note2, note3, note4(도레미파)`.
-  없어도 게임은 무음으로 동작하므로 급하지 않다.
+- [x] 방 1~6 아트 반영·리터치 검수 완료 (living_b_boo_sofa 1장만 2차 재생성 대기 — art/retouch-request-1.md)
+- [x] 효과음·앰비언스 39종 절차 생성 완료 (`tool/gen_sfx.py`; 추후 CC0 음원으로 개별 교체 가능)
 
 ### 3-2. 검증
 - [ ] **실기기 챕터 1 완주** — 최종 수용 기준. 특히 확인:
-  지하실 흔들기(실센서), 힌트 광고 흐름, 각 방 핫스팟 체감 좌표,
+  지하실 흔들기(실센서), 각 방 핫스팟 체감 좌표, 소리 취향 점검,
   클리어 다이얼로그 뒤로가기 후 정상 전진, 중간 종료 후 이어하기.
 - [ ] 완주 중 발견된 좌표·연출 이슈 반영 패스.
 
@@ -51,12 +42,12 @@
 - [ ] 런처 이름·아이콘 — 현재 템플릿 기본값("ghostmanor"). manifest `android:label`
   + 아이콘 리소스 교체.
 - [ ] 서명 키 생성·`key.properties` 연결 (현재 릴리스 빌드는 debug 서명).
-- [ ] 스토어 등록 — 스크린샷, 설명, 데이터 보안 신고(광고 SDK 기재).
+- [ ] 스토어 등록 — 스크린샷, 설명, 데이터 보안 신고.
 - [ ] 버전 관리 — pubspec `version` 올리기.
 
 ### 3-4. iOS (준비됨, 미착수)
 - Xcode 환경에서 빌드만 하면 되는 상태를 유지 중 (순수 Flutter + 공식 플러그인,
-  Info.plist에 광고 테스트 ID·세로 고정 반영됨). Apple 개발자 계정 + 실기기 필요.
+  Info.plist에 세로 고정 반영됨). Apple 개발자 계정 + 실기기 필요.
 
 ### 3-5. 챕터 2 (설계부터)
 - 방 추가 절차는 ARCHITECTURE.md의 레시피 10단계.
@@ -94,4 +85,4 @@
 .\tool\f.cmd build apk --release
 ```
 
-기대값: 이슈 0 / 112개 전부 통과 / `app-release.apk` 생성 + `git status` 깨끗.
+기대값: 이슈 0 / 114개 전부 통과 / `app-release.apk` 생성 + `git status` 깨끗.
