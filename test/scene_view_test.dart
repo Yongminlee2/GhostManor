@@ -165,6 +165,14 @@ void main() {
     expect(find.byKey(const ValueKey('fly_1')), findsNothing);
   });
 
+  testWidgets('인벤토리: 레지스트리에 없는 id(구세이브 잔재)는 건너뛰고 렌더가 산다', (t) async {
+    s.give('candle');
+    s.inventory.add('ghost_soup'); // 제거된 구세대 아이템 id를 세이브 잔재처럼 주입
+    await pump(t, InventoryBar(ctx: c));
+    expect(find.byKey(const Key('inv_candle')), findsOneWidget);
+    expect(find.byKey(const Key('inv_ghost_soup')), findsNothing);
+  });
+
   testWidgets('인벤토리: 선택 → 조합 성공, 실패 시 선택 이동', (t) async {
     s.give('candle');
     s.give('match');

@@ -18,7 +18,12 @@ class InventoryBar extends StatelessWidget {
         child: ListView(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          children: [for (final id in s.inventory) _slot(id, s)],
+          // 레지스트리에 없는 id(구버전 세이브 잔재)는 조용히 건너뛴다 —
+          // 여기서 안 거르면 아래 _slot의 강제 언랩이 렌더를 통째로 죽인다.
+          children: [
+            for (final id in s.inventory)
+              if (itemsById.containsKey(id)) _slot(id, s),
+          ],
         ),
       ),
     );
