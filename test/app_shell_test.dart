@@ -8,8 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
-  Widget app({GameState? state}) => GhostManorApp(
-      initialState: state, adFn: () async => true, audioEnabled: false);
+  Widget app({GameState? state}) =>
+      GhostManorApp(initialState: state, audioEnabled: false);
 
   testWidgets('타이틀: 세이브 없으면 이어하기 없음, 처음부터 → 현관 진입 + 인트로 대사', (t) async {
     await t.pumpWidget(app());

@@ -48,9 +48,6 @@
 - [ ] 완주 중 발견된 좌표·연출 이슈 반영 패스.
 
 ### 3-3. 출시 (Google Play)
-- [ ] **광고 실ID 전환** — 현재 전부 공식 테스트 ID. 교체 위치 3곳:
-  `lib/core/ads.dart`(보상형 유닛), `android/app/src/main/AndroidManifest.xml`
-  (APPLICATION_ID 메타데이터), `ios/Runner/Info.plist`(GADApplicationIdentifier).
 - [ ] 런처 이름·아이콘 — 현재 템플릿 기본값("ghostmanor"). manifest `android:label`
   + 아이콘 리소스 교체.
 - [ ] 서명 키 생성·`key.properties` 연결 (현재 릴리스 빌드는 debug 서명).
@@ -78,6 +75,8 @@
   직접 인스턴스화하기 때문. room1 테스트를 손볼 일이 생기면 함께 제거 가능.
 - 지하실 선반 클로즈업은 어둠 상태에서도 열리며 무반응(공정성 문제는 없음) —
   아트/폴리시 패스에서 재검토.
+- 광고는 2026-08-12 결정으로 완전 미탑재(힌트 전부 무료). 재도입하려면 git
+  히스토리의 이전 구현 참조.
 
 ## 5. 빠른 자가진단
 

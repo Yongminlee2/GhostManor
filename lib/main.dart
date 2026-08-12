@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'core/ads.dart' as ads;
 import 'core/audio_service.dart';
 import 'core/game_state.dart';
 import 'core/hint_service.dart';
@@ -20,10 +19,9 @@ void main() async {
 
 class GhostManorApp extends StatefulWidget {
   final GameState? initialState; // 테스트 주입: 지정 시 타이틀 건너뛰고 바로 방
-  final Future<bool> Function()? adFn;
   final bool audioEnabled;
   const GhostManorApp(
-      {super.key, this.initialState, this.adFn, this.audioEnabled = true});
+      {super.key, this.initialState, this.audioEnabled = true});
 
   @override
   State<GhostManorApp> createState() => _GhostManorAppState();
@@ -106,7 +104,6 @@ class _GhostManorAppState extends State<GhostManorApp> {
                   rooms: rooms,
                   audio: audio,
                   save: save,
-                  adFn: widget.adFn ?? ads.showRewardedAd,
                   onExitToTitle: _toTitle,
                 ),
     );
@@ -167,7 +164,6 @@ class RoomScreen extends StatefulWidget {
   final List<Room> rooms;
   final AudioService audio;
   final SaveService save;
-  final Future<bool> Function() adFn;
   final Future<void> Function() onExitToTitle;
   const RoomScreen(
       {super.key,
@@ -175,7 +171,6 @@ class RoomScreen extends StatefulWidget {
       required this.rooms,
       required this.audio,
       required this.save,
-      required this.adFn,
       required this.onExitToTitle});
 
   @override
@@ -184,8 +179,7 @@ class RoomScreen extends StatefulWidget {
 
 class _RoomScreenState extends State<RoomScreen> {
   late final GameCtx ctx = GameCtx(widget.state, widget.audio);
-  late final HintService hints =
-      HintService(widget.state, showRewardedAd: widget.adFn);
+  late final HintService hints = HintService(widget.state);
 
   Room get room => widget.rooms[widget.state.roomIndex % widget.rooms.length];
 

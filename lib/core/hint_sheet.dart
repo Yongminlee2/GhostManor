@@ -38,17 +38,11 @@ void showHintSheet(BuildContext context, Room room, HintService hints) {
                   alignment: Alignment.centerLeft,
                   child: TextButton(
                     key: Key('hint_btn_${h.puzzleId}'),
-                    onPressed: () async {
-                      final r = await hints.unlockNext(h.puzzleId);
-                      if (r == HintOutcome.adFailed && context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text(strAdFailed)));
-                      }
-                      if (context.mounted) setState(() {});
+                    onPressed: () {
+                      hints.unlockNext(h.puzzleId);
+                      setState(() {});
                     },
-                    child: Text(hints.unlocked(h.puzzleId) == 0
-                        ? strHintFree
-                        : strHintByAd),
+                    child: const Text(strHintFree),
                   ),
                 ),
               const Divider(color: Color(0xFF4A3A6B)),

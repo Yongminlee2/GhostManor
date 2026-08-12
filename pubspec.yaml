@@ -32,7 +32,6 @@ dependencies:
     sdk: flutter
   shared_preferences: ^2.3.0
   audioplayers: ^6.0.0
-  google_mobile_ads: ^5.2.0
   sensors_plus: ^6.0.0
 
 dev_dependencies:
