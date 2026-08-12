@@ -4,6 +4,7 @@ import 'package:ghostmanor/core/audio_service.dart';
 import 'package:ghostmanor/core/game_state.dart';
 import 'package:ghostmanor/core/models.dart';
 import 'package:ghostmanor/core/rub_scene.dart';
+import 'package:ghostmanor/core/strings.dart';
 import 'package:ghostmanor/rooms/items.dart';
 import 'package:ghostmanor/rooms/room3_study.dart';
 import 'solutions.dart';
@@ -35,6 +36,18 @@ void main() {
     expect(s.flag('study_book_seq'), 1);
     tapBook(s, 1);
     expect(s.flag('study_book_seq'), 0);
+  });
+
+  // tapBook 직접 호출로는 tapBookSpot(onTap 래퍼)의 리셋 대사 분기가 한 번도
+  // 실행되지 않는다 — 핫스팟 경유로 별도 검증(리뷰 지적, Important).
+  test('책 핫스팟 경유: 틀린 순서는 리셋 + 리셋 대사', () {
+    tap('study_a', 'book_blue'); // 정답 1단계(2)
+    expect(s.flag('study_book_seq'), 1);
+
+    tap('study_a', 'book_red'); // 오답(정답은 4=book_green)
+    expect(s.flag('study_book_seq'), 0);
+    expect(s.dialog, strStudyBookReset);
+    expect(s.flag('study_nook_open'), 0);
   });
 
   test('부정: 기름 없이 열쇠만 쓰면 문이 열리지 않는다(경첩 삐걱)', () {
