@@ -38,6 +38,21 @@ const strLivingSecretEmpty = '비밀칸은 이제 비어 있다.';
 const strLivingDoorLocked = '잠겨 있다. 열쇠 구멍이 반짝인다.';
 const strLivingDoorOpened = '철컥! 다음 방으로 가는 문이 열렸다.';
 
+// ── 서재 (room3_study) ──
+const strStudyIntro = '책 무더기 속에서 안경 쓴 유령이 고개를 내민다. "쉿. 여긴 서재야. …책 제목? 다 까먹었어."';
+const strStudyNed = '"이 방의 비밀? 음… 잉크를 쏟았던 기억은 나. 어디에 쏟았더라." 너덜이 책장을 뒤적인다.';
+const strStudyDesk = '오래된 책상. 잉크병이 쓰러져 있고, 얼룩진 종이 한 장이 눈에 띈다.';
+const strStudyBookReset = '덜컥. 책들이 원래대로 튕겨 돌아왔다. 순서가 틀린 모양이다.';
+const strStudyNookOpen = '드르륵! 책장 한 칸이 안으로 밀리며 숨은 공간이 드러났다!';
+const strStudyNookLoot = '숨은 공간에서 놋쇠 크랭크와 별 그림 음표 카드를 찾았다!';
+const strStudyGlobe = '낡은 지구본. 옆면에 크랭크를 꽂는 구멍이 있다.';
+const strStudyGlobeOpen = '끼릭끼릭… 지구본이 반으로 갈라졌다!';
+const strStudyGlobeKey = '지구본 안에서 서재 열쇠를 꺼냈다.';
+const strStudyDoorLocked = '잠겨 있다. 열쇠 구멍이 오래됐다.';
+const strStudyDoorUnlocked = '철컥. 잠금은 풀렸는데… 문이 꿈쩍도 안 한다. 경첩이 시뻘겋게 녹슬었다.';
+const strStudyDoorSqueak = '끼이이익… 경첩이 녹슬어 열리지 않는다. 기름칠이 필요하다.';
+const strStudyDoorOiled = '기름을 듬뿍 발랐다. 경첩이 부드럽게 움직인다.';
+
 // ── 앱 셸 ──
 const strAppTitle = '기묘한 유령 저택';
 const strContinue = '이어하기';

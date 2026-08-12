@@ -103,3 +103,50 @@ void solveLiving(GameState s, GameCtx c, Room room) {
   tapSpot(room, s, c, 'living_b', 'door');
   expect(s.flag('living_done'), 1);
 }
+
+/// 서재 정답 시퀀스 (room3_study_test.dart의 해피패스와 동일 절차).
+/// 전제: 방 2(거실)를 클리어해 기름병(oil)을 이미 보유한 상태 — 이 함수는 oil을
+/// 지급하지 않는다. 방 단독 테스트는 setUp에서 s.give('oil') 후 이 함수를 호출한다.
+void solveStudy(GameState s, GameCtx c, Room room) {
+  // 종이 문지르기 → 색 순서 단서(파→초→빨→노). 제스처 로직은 위젯 테스트가 별도로
+  // 검증하므로(원샷 가드), 여기서는 room1의 finishRubbing과 동일하게 플래그만 직접 설정.
+  tapSpot(room, s, c, 'study_b', 'paper');
+  expect(s.closeupId, 'paper');
+  s.closeCloseup();
+  s.setFlag('study_paper_rubbed', 1);
+
+  // 책 4권을 파(2)→초(4)→빨(1)→노(3) 순서로 탭 → 숨은 공간 개방
+  tapSpot(room, s, c, 'study_a', 'book_blue');
+  tapSpot(room, s, c, 'study_a', 'book_green');
+  tapSpot(room, s, c, 'study_a', 'book_red');
+  tapSpot(room, s, c, 'study_a', 'book_yellow');
+  expect(s.flag('study_nook_open'), 1);
+
+  // 숨은 공간 → 크랭크 + ♪별 카드
+  tapSpot(room, s, c, 'study_a', 'nook');
+  expect(s.has('crank'), isTrue);
+  expect(s.has('note2'), isTrue);
+
+  // 크랭크로 지구본 개방 → 서재 열쇠
+  s.select('crank');
+  tapSpot(room, s, c, 'study_b', 'globe');
+  expect(s.flag('study_globe_open'), 1);
+  expect(s.has('crank'), isFalse); // 크랭크 소모
+
+  tapSpot(room, s, c, 'study_b', 'globe');
+  expect(s.has('key_study'), isTrue);
+
+  // 문: 열쇠(잠금 해제) + 기름(경첩) 둘 다 필요 → 탈출
+  s.select('key_study');
+  tapSpot(room, s, c, 'study_b', 'door');
+  expect(s.flag('study_door_unlocked'), 1);
+  expect(s.has('key_study'), isFalse); // 열쇠 소모
+
+  s.select('oil');
+  tapSpot(room, s, c, 'study_b', 'door');
+  expect(s.flag('study_door_oiled'), 1);
+  expect(s.has('oil'), isFalse); // 기름 소모
+
+  tapSpot(room, s, c, 'study_b', 'door');
+  expect(s.flag('study_done'), 1);
+}
