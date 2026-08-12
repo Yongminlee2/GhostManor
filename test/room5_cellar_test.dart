@@ -88,7 +88,14 @@ void main() {
 
   // ── 부정 테스트 (브리프 6종) ──
 
+  test('부정: 어두우면 병 라벨을 읽을 수 없다(시퀀스 진행 없음)', () {
+    tap('cellar_c', 'wine3'); // 프레시 상태는 소등
+    expect(s.dialog, strCellarRWineDark);
+    expect(s.flag('cellar_r_wine_seq'), 0);
+  });
+
   test('부정: 병 순서를 틀리면 리셋 + 브리프 오답 대사 그대로', () {
+    s.setFlag('cellar_r_light', 1); // 라벨 판독은 점등 필수
     tap('cellar_c', 'wine3'); // 촛불 5개 — 정답 1단계
     expect(s.flag('cellar_r_wine_seq'), 1);
     tap('cellar_c', 'wine4'); // 촛불 2개 — 정답 2단계(1)가 아니라 오답
@@ -101,6 +108,7 @@ void main() {
       '지식 게이트 아님: 낙서(glow3)를 본 적 없어도 5→1→3 순서로 탭하면 상자B가 열린다'
       '(현관 편지와 동일 원칙) — 라벨상 촛불 3개인 두 병(1·5번) 중 어느 쪽을 써도 통과',
       () {
+    s.setFlag('cellar_r_light', 1); // 라벨 판독은 점등 필수
     tap('cellar_c', 'wine3'); // 5
     tap('cellar_c', 'wine2'); // 1
     tap('cellar_c', 'wine5'); // 3 — wine1이 아니라 wine5(같은 개수의 다른 병)

@@ -173,6 +173,7 @@ const strCellarRWineBottle4 = '촛불 두 개가 나란히 그려져 있다.';
 const strCellarRWineBottle5 = '이 라벨에도 촛불 세 개 — 옆의 것과 그림체가 살짝 다르다.';
 const strCellarRWineWrong =
     '병들이 달그락거리며 제자리로. 덜덜: "그, 그거 순서 있댔어… 누가 그랬는지는 기억 안 나."';
+const strCellarRWineDark = '어두워서 라벨이 하나도 안 보인다. 불부터 켜야겠다.';
 const strCellarRWineUnlocked = '달그락! 상자 자물쇠가 스르르 풀리는 소리가 난다.';
 const strCellarRBoxbLocked = '잠긴 작은 상자다. 자물쇠가 꿈쩍도 않는다.';
 const strCellarRBoxbOpen = '상자가 열리며 낡은 퓨즈와 구름 그림 음표 카드가 나왔다!';

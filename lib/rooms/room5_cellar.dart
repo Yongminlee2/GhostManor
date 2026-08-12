@@ -191,6 +191,12 @@ Room buildCellar() {
 
   void tapWineBottle(GameCtx c, int i) {
     final s = c.s;
+    // 라벨은 그림 단서 — 어두우면 판독 자체가 불가(이 방의 어둠 왕복 정체성).
+    // 스위치(촉감 조작)와 달리 여기는 점등 필수.
+    if (s.flag('cellar_r_light') == 0) {
+      c.say(strCellarRWineDark);
+      return;
+    }
     final label = wineLabels[i];
     if (s.flag('cellar_r_wine_open') >= 1) {
       c.say(label); // 이미 풀렸어도 라벨 구경은 계속 가능
@@ -460,8 +466,8 @@ Room buildCellar() {
       ], solved: (s) => s.flag('cellar_r_wine_open') >= 1),
       PuzzleHint(puzzleId: 'p_cellar_r_exit', title: '통 뒤의 쪽문', steps: [
         '통 뒤가 수상해요 — 밀 수 있을 것 같은데',
-        '통을 민 뒤 쪽문. 열쇠는 높은 곳 — 덜덜의 말을 떠올려요',
-        '정답: 셰이크(또는 선반 연타)로 열쇠 낙하 → 쪽문',
+        '통을 민 뒤 쪽문 — 쪽문 걸쇠는 전기가 들어와야 풀려요',
+        '정답: 전력 복구 후, 셰이크(또는 선반 연타)로 열쇠 낙하 → 쪽문',
       ], solved: (s) => s.flag('cellar_r_done') >= 1),
     ],
   );
