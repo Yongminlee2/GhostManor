@@ -23,54 +23,78 @@ void tapSpot(Room room, GameState s, GameCtx c, String sceneId, String hotspotId
   h.onTap(c);
 }
 
-/// 현관 정답 시퀀스 (room1_foyer_test.dart의 "정답 시퀀스로 클리어 가능"과 동일 절차).
-/// 다른 방 테스트가 "현관은 이미 클리어됐다"는 전제로 재사용한다.
-void solveFoyer(GameState s, GameCtx c, Room room) {
-  tapSpot(room, s, c, 'foyer_b', 'coat'); // 성냥
+/// 현관 정답 시퀀스 (리마스터판, room1_foyer_test.dart의 "정답 시퀀스로 클리어
+/// 가능"과 동일 절차). 스텝 수(tapSpot·순수함수 호출 1회=1스텝)를 반환 —
+/// 하드코어 게이트가 ≥15를 단언한다. 다른 방 테스트가 "현관은 이미
+/// 클리어됐다"는 전제로 재사용한다(반환값은 무시해도 컴파일·동작에 지장 없음).
+int solveFoyer(GameState s, GameCtx c, Room room) {
+  var steps = 0;
+  void tap(String sceneId, String hotspotId) {
+    tapSpot(room, s, c, sceneId, hotspotId);
+    steps++;
+  }
+
+  void pure(void Function() fn) {
+    fn();
+    steps++;
+  }
+
+  // T1 빛 만들기: 외투 문지르기 → 성냥, 신발장 구두 → 양초, 조합 → 불 켠 초
+  tap('foyer_b', 'coat');
+  expect(s.closeupId, 'coat');
+  pure(() => finishCoatRub(s));
   expect(s.has('match'), isTrue);
+  s.closeCloseup();
 
-  tapSpot(room, s, c, 'foyer_b', 'shoe_cabinet');
+  tap('foyer_b', 'shoe_cabinet');
   expect(s.closeupId, 'shoes');
-  tapSpot(room, s, c, 'shoes', 'candle_in_shoe'); // 양초
+  tap('shoes', 'shoe3_candle'); // 양초
   expect(s.has('candle'), isTrue);
+  s.closeCloseup();
 
-  expect(tryCombine(s, 'candle', 'match'), isTrue);
+  pure(() => expect(tryCombine(s, 'candle', 'match'), isTrue));
   expect(s.has('lit_candle'), isTrue);
 
+  // T2 시계 코드: 액자 문지르기(시계 4개 그림) + 우편함(편지, 지식 단서) →
+  // 벽시계를 3시로
+  tap('foyer_a', 'frame');
+  expect(s.closeupId, 'frame');
+  pure(() => finishFrameRub(s));
+  expect(s.flag('foyer_r_dust_cleaned'), 1);
   s.closeCloseup();
 
-  // 액자 먼지 → 시계 3시 단서 (제스처 로직 함수)
-  tapSpot(room, s, c, 'foyer_a', 'frame');
-  expect(room.closeups.containsKey(s.closeupId), isTrue);
+  tap('foyer_c', 'mailbox');
+  expect(s.has('letter1'), isTrue);
+  expect(s.closeupId, 'letter1');
   s.closeCloseup();
-  finishRubbing(s);
-  expect(s.flag('foyer_dust_cleaned'), 1);
 
-  // 벽시계 12→1→2→3
-  tapSpot(room, s, c, 'foyer_b', 'clock');
-  expect(room.closeups.containsKey(s.closeupId), isTrue);
+  tap('foyer_b', 'clock');
+  expect(s.closeupId, 'clock');
   s.closeCloseup();
-  tapClockHand(s);
-  tapClockHand(s);
-  tapClockHand(s);
-  expect(s.flag('foyer_clock_hour'), 3);
-  expect(s.flag('foyer_drawer_unlocked'), 1);
+  pure(() => tapClockHand(s)); // 1시
+  pure(() => tapClockHand(s)); // 2시
+  pure(() => tapClockHand(s)); // 3시
+  expect(s.flag('foyer_r_clock_hour'), 3);
+  expect(s.flag('foyer_r_drawer_unlocked'), 1);
 
-  // 서랍: 열림 → 어두움 → 촛불 → 열쇠
-  tapSpot(room, s, c, 'foyer_a', 'drawer');
+  // 교차: 서랍은 어두워 T1의 불 켠 초가 필요 → 열쇠
+  tap('foyer_a', 'drawer');
   expect(s.closeupId, 'drawer');
   s.select('lit_candle');
-  tapSpot(room, s, c, 'drawer', 'drawer_dark');
-  expect(s.flag('foyer_drawer_lit'), 1);
-  tapSpot(room, s, c, 'drawer', 'drawer_key');
+  tap('drawer', 'drawer_dark');
+  expect(s.flag('foyer_r_drawer_lit'), 1);
+  tap('drawer', 'drawer_key');
   expect(s.has('key_foyer'), isTrue);
+  s.closeCloseup();
 
-  // 문: 잠김 → 열쇠 → 입장
+  // 문: 열쇠 → 입장
   s.select('key_foyer');
-  tapSpot(room, s, c, 'foyer_a', 'inner_door');
-  expect(s.flag('foyer_inner_door_open'), 1);
+  tap('foyer_a', 'inner_door');
+  expect(s.flag('foyer_r_inner_door_open'), 1);
   expect(s.has('key_foyer'), isFalse); // 열쇠 소모
-  tapSpot(room, s, c, 'foyer_a', 'inner_door');
+  tap('foyer_a', 'inner_door');
+
+  return steps;
 }
 
 /// 거실 정답 시퀀스 (room2_living_test.dart의 해피패스와 동일 절차).

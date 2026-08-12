@@ -13,6 +13,7 @@ const Map<String, Item> itemsById = {
   'candle': Item('candle', '양초'),
   'lit_candle': Item('lit_candle', '불 켠 초'),
   'key_foyer': Item('key_foyer', '낡은 열쇠'),
+  'letter1': Item('letter1', '낡은 편지'),
   'remote': Item('remote', '리모컨'),
   'key_living': Item('key_living', '거실 열쇠'),
   'note1': Item('note1', '음표 카드 ♪달'),

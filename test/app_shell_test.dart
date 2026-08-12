@@ -29,7 +29,7 @@ void main() {
     await t.pumpWidget(app(state: s));
     await t.pumpAndSettle();
     expect(find.text('현관'), findsOneWidget);
-    s.setFlag('foyer_done', 1);
+    s.setFlag('foyer_r_done', 1);
     await t.pumpAndSettle();
     expect(find.text(strRoomClear), findsOneWidget);
     await t.tap(find.text(strNextRoom));
@@ -75,7 +75,7 @@ void main() {
   testWidgets('챕터 완료 상태로 재개하면 엔딩 화면', (t) async {
     final s = GameState()
       ..setFlag('entered_foyer', 1)
-      ..setFlag('foyer_done', 1)
+      ..setFlag('foyer_r_done', 1)
       ..setFlag('cleared_shown_foyer', 1)
       ..setFlag('entered_living', 1)
       ..setFlag('living_done', 1)

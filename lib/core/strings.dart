@@ -23,6 +23,21 @@ const strFoyerKeyFound = '낡은 열쇠를 얻었다! 고스포가 아쉬운 표
 const strFoyerDoorOpened = '철컥! 문이 열렸다. 저택 안쪽으로 들어가자.';
 const strFoyerClockSet = '똑딱… 철컥! 어디선가 잠금이 풀리는 소리가 났다.';
 
+// ── 현관 리마스터 신규 (room1_foyer, foyer_r_ 플래그) ──
+const strFoyerRCoatMatch =
+    '먼지를 털어내니 안주머니에서 성냥 한 개비가 나왔다! 고스포: "거봐, 내가 저기 있다고 했잖아. …안 했나? 아무튼 있었다."';
+const strFoyerRShoe1 = '낡은 부츠 한 짝, 진흙이 300년째 말라붙어 있다. 고스포: "삼촌이 정원 일을 좋아하셨지. 유령이 되고 나서도 말이야."';
+const strFoyerRShoe2 =
+    '반짝이는 무도화, 발끝이 다 헤졌다. 고스포: "밤새 왈츠를 추셨다는 소문이 있는데… 나도 자세힌 모른다. 소문이란 게 원래 그렇지."';
+const strFoyerRPortrait1 = '근엄한 표정의 초상화. 고스포: "이분이 이 저택의 초대 주인님이시다. 눈매가 매섭지? 나도 300년째 적응이 안 된다."';
+const strFoyerRPortrait2 =
+    '화사한 드레스 차림의 귀부인 초상화. 고스포: "사모님이시지. 그림 속에서도 나를 흘겨보시는 것 같단 말이야… 기분 탓이겠지?"';
+const strFoyerRMirror = '먼지 낀 거울. 고스포가 무심코 들여다보다 화들짝 놀란다. "으악, 내가 없어! …아, 맞다. 유령이었지. 이거 매번 놀란다니까."';
+const strFoyerRRug = '낡은 양탄자. 밟을 때마다 먼지가 풀썩인다. 고스포: "그 밑에 뭐 있나 궁금하지? 없다, 진짜 없어. 왜 자꾸 들춰보려고 그러나."';
+const strFoyerRCandlestick = '벽에 붙은 장식용 촛대. 초는 꽂혀 있지만 불붙은 흔적은 없다. 고스포: "장식이다, 장식. …뭐, 만져본다고 뭐라 안 한다."';
+const strFoyerRLetter1 = '저녁 식사는 셋째 시계의 시각에 — E.G.';
+const strFoyerRDrawerLocked = '서랍이 꿈쩍도 안 한다. 어디선가 시계 초침 소리만 크게 들린다…';
+
 // ── 거실 (room2_living) ──
 const strLivingIntro = '"드, 들어오지 마! 여긴 겁주기 담당 부우 님의 구역이다!" …문 앞의 작은 유령이 이불을 뒤집어쓰고 떨고 있다.';
 const strLivingBooScare = '"부우~! 무, 무섭지?! …안 무서워? 하아, 오늘 드라마 재방송도 놓쳤는데."';
