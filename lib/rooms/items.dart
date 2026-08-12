@@ -28,6 +28,9 @@ const Map<String, Item> itemsById = {
   'ghost_soup': Item('ghost_soup', '유령 수프'),
   'key_kitchen': Item('key_kitchen', '뒷문 열쇠'),
   'note3': Item('note3', '음표 카드 ♪해'),
+  'fuse': Item('fuse', '낡은 퓨즈'),
+  'key_cellar': Item('key_cellar', '녹슨 열쇠'),
+  'note4': Item('note4', '음표 카드 ♪구름'),
 };
 
 /// 키 = 두 id를 사전순 정렬해 '+'로 연결.

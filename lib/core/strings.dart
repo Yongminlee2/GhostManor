@@ -72,6 +72,25 @@ const strKitchenCupboardEmpty = '주전자가 있던 자리만 휑하다.';
 const strKitchenDoorLocked = '뒷문은 잠겨 있다.';
 const strKitchenDoorOpened = '철컥! 뒷문이 열렸다. 지하로 내려가는 계단이 보인다.';
 
+// ── 지하실 (room5_cellar) ──
+const strCellarIntro = '"꺄악! 누, 누구야! …사람? 다행이다아. 난 덜덜. 여기 너무 어두워서 300년째 무서워." 어둠 속 어딘가에서 이가 딱딱 부딪히는 소리가 난다.';
+const strCellarDeoldeolDark = '"저기, 저기 빛나는 거 보여? 나는 무서워서 못 만져. 네가 좀…" 덜덜이 구석에서 떨고 있다.';
+const strCellarDeoldeolLight = '"불 켜니까 살 것 같다! …참, 선반 위에 열쇠 있는 거 알아? 저긴 아무도 못 닿아. 온 집이 흔들리지 않는 한!"';
+const strCellarGlowBox = '야광 표시가 빛나는 상자를 열었다. 낡은 퓨즈와 구름 그림 음표 카드!';
+const strCellarBoxPlain = '평범한 상자다. 불을 켜니 다 똑같아 보인다.';
+const strCellarBoxEmpty = '빈 상자다. 거미가 항의하듯 쳐다본다.';
+const strCellarFusebox = '배전반. 퓨즈 하나가 빠져 있는 자리가 보인다.';
+const strCellarFuseIn = '퓨즈를 끼웠다. 배전반이 웅 하고 깨어난다.';
+const strCellarSwitchDead = '딸깍. 딸깍. 아무 일도 일어나지 않는다. 배전반이 죽어 있다.';
+const strCellarLightOn = '팟! 지하실에 불이 들어왔다. 덜덜의 환호성이 들린다.';
+const strCellarTooDark = '너무 어두워서 손잡이를 찾을 수 없다.';
+const strCellarBarrelDone = '드드득…! 와인통이 밀려나며 작은 쪽문이 드러났다!';
+const strCellarBarrelMoved = '통은 이미 밀어 뒀다. 쪽문이 보인다.';
+const strCellarKeyDrop = '와장창! 선반이 흔들리며 열쇠가 바닥으로 떨어졌다! 덜덜: "지, 지진이야?!"';
+const strCellarKeyTaken = '바닥에 떨어진 녹슨 열쇠를 주웠다.';
+const strCellarDoorLocked = '쪽문은 잠겨 있다. 녹슨 열쇠 구멍.';
+const strCellarDoorOpened = '끼익… 쪽문이 열렸다. 좁은 계단이 위로 이어진다.';
+
 // ── 앱 셸 ──
 const strAppTitle = '기묘한 유령 저택';
 const strContinue = '이어하기';

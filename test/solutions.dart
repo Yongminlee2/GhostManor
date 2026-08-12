@@ -5,6 +5,7 @@ import 'package:ghostmanor/core/models.dart';
 import 'package:ghostmanor/rooms/items.dart';
 import 'package:ghostmanor/rooms/room1_foyer.dart';
 import 'package:ghostmanor/rooms/room2_living.dart';
+import 'package:ghostmanor/rooms/room5_cellar.dart';
 
 /// room1_foyer_test.dart의 findHotspot 헬퍼를 일반화 — room을 인자로 받는다.
 Hotspot findHotspot(Room room, String sceneId, String hotspotId) {
@@ -192,4 +193,54 @@ void solveKitchen(GameState s, GameCtx c, Room room) {
 
   tapSpot(room, s, c, 'kitchen_b', 'backdoor'); // 탈출
   expect(s.flag('kitchen_done'), 1);
+}
+
+/// 지하실 정답 시퀀스 (room5_cellar_test.dart의 해피패스와 동일 절차).
+/// barrel/shelf 클로즈업은 커스텀 위젯(BarrelDrag/ShelfShake)이라 헤드리스 테스트에선
+/// 위젯을 펌프하지 않고 그 안에서 호출되는 순수 함수(moveBarrel/dropShelfKey)를 직접
+/// 호출한다 — 위젯 자체의 제스처/센서 배선은 room5_cellar_test.dart의 별도 위젯
+/// 테스트가 검증한다(스펙 §8 헤드리스 테스트 원칙).
+void solveCellar(GameState s, GameCtx c, Room room) {
+  // 어둠 속에서 야광 상자 → 퓨즈 + 구름 음표 카드
+  tapSpot(room, s, c, 'cellar_a', 'glow_box');
+  expect(s.has('fuse'), isTrue);
+  expect(s.has('note4'), isTrue);
+
+  // 퓨즈를 배전반에 끼우고 스위치로 점등
+  s.select('fuse');
+  tapSpot(room, s, c, 'cellar_b', 'fusebox');
+  expect(s.flag('cellar_fuse_installed'), 1);
+  expect(s.has('fuse'), isFalse); // 퓨즈 소모
+
+  tapSpot(room, s, c, 'cellar_b', 'light_switch');
+  expect(s.flag('cellar_light'), 1);
+
+  // 와인통 클로즈업 → 드래그로 밀기(moveBarrel 반복 호출)
+  tapSpot(room, s, c, 'cellar_b', 'barrel');
+  expect(s.closeupId, 'barrel');
+  for (var i = 0; i < 10; i++) {
+    moveBarrel(s, 60); // (60/6).round() = 10 * 10회 = 100
+  }
+  expect(s.flag('cellar_barrel_moved'), 1);
+  s.closeCloseup();
+
+  // 선반 클로즈업 → 흔들기(센서 경로의 순수 함수 dropShelfKey 직접 호출)
+  tapSpot(room, s, c, 'cellar_a', 'shelf');
+  expect(s.closeupId, 'shelf');
+  dropShelfKey(s);
+  expect(s.flag('cellar_key_dropped'), 1);
+  s.closeCloseup();
+
+  // 바닥에 떨어진 열쇠 줍기
+  tapSpot(room, s, c, 'cellar_a', 'key_floor');
+  expect(s.has('key_cellar'), isTrue);
+
+  // 쪽문: 열쇠로 열기 → 탈출
+  s.select('key_cellar');
+  tapSpot(room, s, c, 'cellar_b', 'small_door');
+  expect(s.flag('cellar_door_open'), 1);
+  expect(s.has('key_cellar'), isFalse); // 열쇠 소모
+
+  tapSpot(room, s, c, 'cellar_b', 'small_door');
+  expect(s.flag('cellar_done'), 1);
 }
