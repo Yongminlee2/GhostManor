@@ -50,7 +50,7 @@ void main() {
     await t.pumpAndSettle();
     expect(find.text('주방'), findsOneWidget); // 방 5개 중 4번째 — 아직 안 끝남
 
-    s.setFlag('kitchen_done', 1);
+    s.setFlag('kitchen_r_done', 1);
     await t.pumpAndSettle();
     expect(find.text(strRoomClear), findsOneWidget);
     await t.tap(find.text(strNextRoom));
@@ -85,7 +85,7 @@ void main() {
       ..setFlag('cleared_shown_study', 1)
       ..roomIndex = 3
       ..setFlag('entered_kitchen', 1)
-      ..setFlag('kitchen_done', 1)
+      ..setFlag('kitchen_r_done', 1)
       ..setFlag('cleared_shown_kitchen', 1)
       ..roomIndex = 4
       ..setFlag('entered_cellar', 1)

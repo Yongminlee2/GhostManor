@@ -104,9 +104,7 @@ const strStudyRShelfTop = '천장 가까이 닿은 책장 꼭대기엔 먼지만
 
 // ── 주방 (room4_kitchen) ──
 const strKitchenIntro = '커다란 국자를 든 유령이 텅 빈 냄비를 젓고 있다. "300년째 맛을 못 봤어… 유령 수프만 있다면."';
-const strKitchenGukjaAsk = '"유령 수프의 재료는 셋. 말린 버섯, 이끼 낀 물, 그리고… 노래하는 주전자의 김이지. 만들어 주면 뒷문 열쇠를 주마."';
 const strKitchenGukjaHappy = '"완벽한 간이야…!" 국자가 감격에 젖어 수프를 젓고 있다.';
-const strKitchenFed = '국자가 수프를 한 모금 넘긴다(어떻게?). "이 맛이야!!" 뒷문 열쇠와 해 그림 음표 카드를 건넸다!';
 const strKitchenBottle = '조리대에서 빈 병을 챙겼다.';
 const strKitchenCounterEmpty = '조리대엔 이제 먼지뿐이다.';
 const strKitchenStove = '오래된 화덕. 불씨가 유령불처럼 파랗게 일렁인다.';
@@ -120,6 +118,31 @@ const strKitchenKettle = '찬장 안에서 노래하는 주전자를 꺼냈다. 
 const strKitchenCupboardEmpty = '주전자가 있던 자리만 휑하다.';
 const strKitchenDoorLocked = '뒷문은 잠겨 있다.';
 const strKitchenDoorOpened = '철컥! 뒷문이 열렸다. 지하로 내려가는 계단이 보인다.';
+
+// ── 주방 리마스터 신규 (room4_kitchen, kitchen_r_ 플래그) ──
+const strKitchenRGukjaAsk =
+    '국자가 둥둥 떠서 빈 냄비를 하염없이 젓는다. "300년 만에 처음으로 뭔가 끓여볼 수 있으려나… 기대되는군. 근데 맛없으면 바로 뱉을 거다. 미리 말해두는데, 나 입맛 되게 까다롭다."';
+const strKitchenRPotWrong = '국자가 국물을 맛보더니 전부 뱉는다. "순서! 순서가 생명이야!!"';
+const strKitchenRFed = '국자가 수프를 한 모금 넘긴다(어떻게?). "바로 이 맛이야…!!" 감격한 국자가 뒷문 열쇠를 건넸다!';
+const strKitchenRPotWater = '맑은 물이 냄비 안에서 찰랑인다.';
+const strKitchenRPotMushroom = '버섯이 퐁당! 물이 걸쭉하게 흐려진다.';
+const strKitchenRPotHerb = '마른 약초 향이 확 퍼지며 냄비 속이 짙은 초록으로 물든다.';
+const strKitchenRPotDone = '노래하는 주전자를 기울이자 흥얼거림이 김과 함께 스며든다. 국물이 순식간에 황금빛으로 빛난다!';
+const strKitchenRPokerRack = '벽 걸이에서 낡은 부지깽이를 챙겼다.';
+const strKitchenRPokerRackEmpty = '걸이는 이제 비어 있다.';
+const strKitchenRPokerHeated = '부지깽이 끝을 화덕 속에 푹 찔러 넣었다. 벌겋게 달아올랐다!';
+const strKitchenRPokerSlotEmpty = '화덕 옆에 쇠 걸이가 붙어 있다. 뭔가 달굴 게 있다면 여기 대보면 어떨까.';
+const strKitchenRIceFrozen = '함 전체에 두꺼운 서리가 껴 자물쇠 윤곽조차 안 보인다.';
+const strKitchenRIceColdPoker = '부지깽이 끝을 자물쇠에 대봤지만 아무 반응이 없다. 이걸로는 역부족인 모양이다.';
+const strKitchenRIceCrack1 = '쩍! 서리에 금이 갔다. 자물쇠 윤곽이 살짝 드러난다.';
+const strKitchenRIceCrack2 = '서리가 절반 넘게 녹아내렸다. 물이 뚝뚝 떨어진다.';
+const strKitchenRIceMelted = '서리가 완전히 녹았다! 자물쇠가 스르르 풀리며 함이 열린다.';
+const strKitchenRIceLoot = '함 속에서 마른 약초와 해 그림 음표 카드를 찾았다!';
+const strKitchenRIceEmpty = '함 속은 이제 비어 있다.';
+const strKitchenRSausages =
+    '천장에 매달린 훈제 소시지 한 줄. 국자가 지날 때마다 아쉬운 눈으로 쳐다본다지만, 손(?)이 안 닿아 300년째 그대로다.';
+const strKitchenRJarPickles = '장아찌가 든 항아리. 뚜껑을 여니 시큼한 냄새가 훅 끼친다. 유령도 코가 있으면 도망갈 냄새다.';
+const strKitchenRJarFlour = '밀가루 항아리. 손을 넣었다 빼니 하얗게 변했다. 어디선가 국자의 재채기 소리가 들린 것 같다.';
 
 // ── 지하실 (room5_cellar) ──
 const strCellarIntro = '"꺄악! 누, 누구야! …사람? 다행이다아. 난 덜덜. 여기 너무 어두워서 300년째 무서워." 어둠 속 어딘가에서 이가 딱딱 부딪히는 소리가 난다.';

@@ -26,8 +26,9 @@ const Map<String, Item> itemsById = {
   'water_bottle': Item('water_bottle', '이끼물 병'),
   'mushroom': Item('mushroom', '말린 버섯'),
   'kettle_singing': Item('kettle_singing', '노래하는 주전자'),
-  'soup_base': Item('soup_base', '수프 베이스'),
-  'ghost_soup': Item('ghost_soup', '유령 수프'),
+  'poker': Item('poker', '부지깽이'),
+  'poker_hot': Item('poker_hot', '달군 부지깽이'),
+  'herb': Item('herb', '마른 약초'),
   'key_kitchen': Item('key_kitchen', '뒷문 열쇠'),
   'note3': Item('note3', '음표 카드 ♪해'),
   'fuse': Item('fuse', '낡은 퓨즈'),
@@ -35,11 +36,11 @@ const Map<String, Item> itemsById = {
   'note4': Item('note4', '음표 카드 ♪구름'),
 };
 
-/// 키 = 두 id를 사전순 정렬해 '+'로 연결.
+/// 키 = 두 id를 사전순 정렬해 '+'로 연결. 주방 리마스터로 수프는 인벤토리
+/// 조합이 아니라 월드 냄비 슬롯(room4_kitchen.dart의 usePotIngredient)이 됐다 —
+/// mushroom+water_bottle/kettle_singing+soup_base 항목은 삭제(설계 §4-2).
 const Map<String, String> _combineTable = {
   'candle+match': 'lit_candle',
-  'mushroom+water_bottle': 'soup_base',
-  'kettle_singing+soup_base': 'ghost_soup',
 };
 
 String? combineResult(String a, String b) {

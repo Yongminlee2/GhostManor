@@ -262,47 +262,105 @@ int solveStudy(GameState s, GameCtx c, Room room) {
   return steps;
 }
 
-/// 주방 정답 시퀀스 (room4_kitchen_test.dart의 해피패스와 동일 절차).
-/// 이 방은 클로즈업이 전혀 없다(전부 벽 핫스팟+오버레이) — 그래서 다른 solve* 함수와
-/// 달리 구체 closeupId 단언이 없다.
-void solveKitchen(GameState s, GameCtx c, Room room) {
-  tapSpot(room, s, c, 'kitchen_a', 'counter'); // 빈 병
+/// 주방 정답 시퀀스 (room4_kitchen_test.dart의 해피패스와 동일 절차, 스텝
+/// 카운팅 — solveFoyer/solveLiving/solveStudy와 동일 관례). 두 스레드가
+/// 교차 잠금(T2 보상 마른 약초가 T1의 3번째 재료)이라 T2를 먼저 끝내야 T1을
+/// 완주할 수 있다. 다른 방 테스트가 "주방은 이미 클리어됐다"는 전제로
+/// 재사용한다(반환값은 무시해도 컴파일·동작에 지장 없음).
+int solveKitchen(GameState s, GameCtx c, Room room) {
+  var steps = 0;
+  void tap(String sceneId, String hotspotId) {
+    tapSpot(room, s, c, sceneId, hotspotId);
+    steps++;
+  }
+
+  void pure(void Function() fn) {
+    fn();
+    steps++;
+  }
+
+  // T1 재료 수집 시작: 레시피판은 지식일 뿐 게이트가 아니지만(현관 편지와
+  // 동일 원칙), 정공법 플레이어라면 당연히 먼저 닦아본다.
+  tap('kitchen_c', 'recipe_board');
+  expect(s.closeupId, 'recipe');
+  s.closeCloseup();
+  pure(() => s.setFlag('kitchen_r_recipe_rubbed', 1));
+
+  tap('kitchen_a', 'counter'); // 빈 병
   expect(s.has('empty_bottle'), isTrue);
 
   s.select('empty_bottle');
-  tapSpot(room, s, c, 'kitchen_b', 'sink'); // 싱크대 물 채움 → 이끼물 병
+  tap('kitchen_b', 'sink'); // 이끼물 병
   expect(s.has('water_bottle'), isTrue);
-  expect(s.has('empty_bottle'), isFalse); // 빈 병 소모(직접 교환, 조합 아님)
+  expect(s.has('empty_bottle'), isFalse); // 빈 병 소모
 
-  tapSpot(room, s, c, 'kitchen_a', 'jar'); // 말린 버섯
+  tap('kitchen_a', 'jar'); // 말린 버섯
   expect(s.has('mushroom'), isTrue);
 
-  // 찬장 문 두드리기: 2번째 문의 첫 탭이 곧 발견 판정 → 재탭에서 주전자 획득
-  tapSpot(room, s, c, 'kitchen_b', 'cupboard2'); // 속 빈 울림 발견
-  expect(s.flag('kitchen_hollow_found'), 1);
-  tapSpot(room, s, c, 'kitchen_b', 'cupboard2'); // 노래하는 주전자
+  tap('kitchen_b', 'cupboard2'); // 속 빈 울림 발견
+  expect(s.flag('kitchen_r_hollow_found'), 1);
+  tap('kitchen_b', 'cupboard2'); // 노래하는 주전자
   expect(s.has('kettle_singing'), isTrue);
 
-  // 다단계 조합: 버섯+이끼물 병 = 수프 베이스, 수프 베이스+주전자 = 유령 수프
-  expect(tryCombine(s, 'mushroom', 'water_bottle'), isTrue);
-  expect(s.has('soup_base'), isTrue);
-  expect(tryCombine(s, 'kettle_singing', 'soup_base'), isTrue);
-  expect(s.has('ghost_soup'), isTrue);
+  // T2 빙실: 부지깽이 획득 → 화덕에 달굼 → 언 자물쇠 3단계 해동 → 마른 약초+♪해
+  tap('kitchen_c', 'poker_rack');
+  expect(s.has('poker'), isTrue);
 
-  s.select('ghost_soup');
-  tapSpot(room, s, c, 'kitchen_a', 'gukja'); // 국자에게 수프를 먹임
-  expect(s.flag('kitchen_ghost_fed'), 1);
-  expect(s.has('key_kitchen'), isTrue);
+  s.select('poker');
+  tap('kitchen_a', 'stove_poker_slot');
+  expect(s.has('poker_hot'), isTrue);
+  expect(s.has('poker'), isFalse); // 부지깽이 소모(달굼)
+
+  s.select('poker_hot');
+  tap('kitchen_c', 'icebox'); // 1단계
+  expect(s.flag('kitchen_r_ice_stage'), 1);
+  tap('kitchen_c', 'icebox'); // 2단계
+  expect(s.flag('kitchen_r_ice_stage'), 2);
+  tap('kitchen_c', 'icebox'); // 3단계 — 완전히 녹음, poker_hot 소모
+  expect(s.flag('kitchen_r_ice_stage'), 3);
+  expect(s.has('poker_hot'), isFalse);
+
+  tap('kitchen_c', 'icebox'); // 함 개방 → 마른 약초 + ♪해
+  expect(s.has('herb'), isTrue);
   expect(s.has('note3'), isTrue);
-  expect(s.has('ghost_soup'), isFalse); // 수프 소모
+
+  // T1 완성: 냄비 클로즈업을 한 번 열어보고(빈 상태 확인), 물→버섯→약초→
+  // 주전자의 노래 순서로 투입
+  tap('kitchen_a', 'pot');
+  expect(s.closeupId, 'pot');
+  s.closeCloseup();
+
+  s.select('water_bottle');
+  tap('kitchen_a', 'pot');
+  expect(s.flag('kitchen_r_pot_stage'), 1);
+  expect(s.has('water_bottle'), isFalse);
+
+  s.select('mushroom');
+  tap('kitchen_a', 'pot');
+  expect(s.flag('kitchen_r_pot_stage'), 2);
+
+  s.select('herb');
+  tap('kitchen_a', 'pot');
+  expect(s.flag('kitchen_r_pot_stage'), 3);
+
+  s.select('kettle_singing');
+  tap('kitchen_a', 'pot');
+  expect(s.flag('kitchen_r_pot_stage'), 4);
+
+  // 완성 수프 → 국자에게 → 뒷문 열쇠
+  tap('kitchen_a', 'gukja');
+  expect(s.flag('kitchen_r_ghost_fed'), 1);
+  expect(s.has('key_kitchen'), isTrue);
 
   s.select('key_kitchen');
-  tapSpot(room, s, c, 'kitchen_b', 'backdoor'); // 잠금 해제
-  expect(s.flag('kitchen_door_open'), 1);
+  tap('kitchen_b', 'backdoor'); // 잠금 해제
+  expect(s.flag('kitchen_r_door_open'), 1);
   expect(s.has('key_kitchen'), isFalse); // 열쇠 소모
 
-  tapSpot(room, s, c, 'kitchen_b', 'backdoor'); // 탈출
-  expect(s.flag('kitchen_done'), 1);
+  tap('kitchen_b', 'backdoor'); // 탈출
+  expect(s.flag('kitchen_r_done'), 1);
+
+  return steps;
 }
 
 /// 지하실 정답 시퀀스 (room5_cellar_test.dart의 해피패스와 동일 절차).
