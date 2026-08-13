@@ -9,6 +9,7 @@ import 'package:ghostmanor/rooms/room2_living.dart';
 import 'package:ghostmanor/core/switch_panel.dart';
 import 'package:ghostmanor/rooms/room5_cellar.dart';
 import 'package:ghostmanor/rooms/room6_attic.dart';
+import 'package:ghostmanor/rooms/room7_hall.dart';
 
 /// room1_foyer_test.dart의 findHotspot 헬퍼를 일반화 — room을 인자로 받는다.
 Hotspot findHotspot(Room room, String sceneId, String hotspotId) {
@@ -554,6 +555,85 @@ int solveAttic(GameState s, GameCtx c, Room room) {
 
   tap('attic_b', 'trunk');
   expect(s.flag('attic_r_done'), 1);
+
+  return steps;
+}
+
+/// 계단홀·복도(챕터2 방7) 정답 시퀀스 (room7_hall_test.dart의 해피패스와 동일
+/// 절차, 스텝 카운팅 — solveFoyer 등과 동일 관례). 이 함수는 rooms.dart에
+/// 아직 등록되지 않은 room7을 buildHall()로 직접 받아 단독 검증한다(챕터2
+/// 계획 Task 7이 rooms.dart 일괄 등록+앱 셸 진입 연결을 맡는다 — task-3-report
+/// 참조). T1(초상 정렬)과 T2(카펫→마루판→태엽→시계→샹들리에)는 서로 독립
+/// 스레드라 순서를 바꿔도 무방하지만, 여기서는 T1을 먼저 끝내 프레임이 열린
+/// 상태에서 가족사진 앵커를 탭해 회상1이 재생되는 것까지 확인한다. rug
+/// 클로즈업은 커스텀 RubbableScene이라 헤드리스 테스트에선 위젯을 펌프하지
+/// 않고 onCleaned가 호출하는 순수 함수 finishRugRoll을 직접 호출한다(room5
+/// solveCellar의 moveBarrel 직접 호출과 동일 원칙 — 위젯 자체의 드래그 배선은
+/// room7_hall_test.dart의 별도 위젯 테스트가 검증).
+int solveHall(GameState s, GameCtx c, Room room) {
+  var steps = 0;
+  void tap(String sceneId, String hotspotId) {
+    tapSpot(room, s, c, sceneId, hotspotId);
+    steps++;
+  }
+
+  void pure(void Function() fn) {
+    fn();
+    steps++;
+  }
+
+  // T1 초상 정렬: 2·4번째만 기울이면 즉시 정답(카펫 다이아 단서는 안 봐도 됨).
+  tap('hall_a', 'portrait2');
+  tap('hall_a', 'portrait4');
+  expect(s.flag('f2_hall_frames'), 1);
+
+  // 회상1: 프레임 완료 후 가족사진 앵커를 탭하면 재생.
+  tap('hall_c', 'photo');
+  expect(s.closeupId, 'memory');
+  expect(s.flag('f2_hall_memory'), 1);
+  s.closeCloseup();
+
+  // T2 전반: 카펫 드래그로 걷기(순수 함수로 완료 시뮬레이션) → 마루판 4장
+  // 두드리기(3 dull + 1 hollow, 두 번째 탭에서 winder 획득).
+  tap('hall_c', 'rug');
+  expect(s.closeupId, 'rug');
+  pure(() => finishRugRoll(s));
+  expect(s.flag('f2_hall_rug_rolled'), 1);
+  s.closeCloseup();
+
+  tap('hall_c', 'plank1'); // dull
+  tap('hall_c', 'plank2'); // dull
+  tap('hall_c', 'plank3'); // hollow 1차 발견
+  expect(s.has('winder'), isFalse);
+  tap('hall_c', 'plank3'); // hollow 2차 — winder 획득
+  expect(s.has('winder'), isTrue);
+  tap('hall_c', 'plank4'); // dull
+
+  // T2 후반: 태엽손잡이 → 벽시계(종 3번 함의) → 살아난 시계 → 샹들리에 →
+  // 열쇠 낙하 → 바닥에서 줍기.
+  tap('hall_b', 'clock');
+  expect(s.closeupId, 'clock');
+  s.select('winder');
+  tap('clock', 'winder_hole');
+  expect(s.flag('f2_hall_clock_wound'), 1);
+  expect(s.flag('f2_hall_b_alive'), 1);
+  expect(s.has('winder'), isFalse); // winder 소모
+  s.closeCloseup();
+
+  tap('hall_b', 'chandelier');
+  expect(s.flag('f2_hall_key_dropped'), 1);
+  tap('hall_b', 'floor_key');
+  expect(s.has('key_f2bed'), isTrue);
+
+  // 문: 열쇠 + 액자 정렬 이중 게이트 → 개방 → 탈출(emblem_hall 지급).
+  s.select('key_f2bed');
+  tap('hall_a', 'door');
+  expect(s.flag('f2_hall_door_open'), 1);
+  expect(s.has('key_f2bed'), isFalse); // 열쇠 소모
+
+  tap('hall_a', 'door');
+  expect(s.flag('f2_hall_done'), 1);
+  expect(s.has('emblem_hall'), isTrue);
 
   return steps;
 }

@@ -41,6 +41,11 @@ const Map<String, Item> itemsById = {
   'key_cellar': Item('key_cellar', '녹슨 열쇠'),
   'note4': Item('note4', '음표 카드 ♪구름'),
   'shred': Item('shred', '자수 조각'),
+
+  // ── 챕터 2: 방 7 계단홀·복도 ──
+  'winder': Item('winder', '태엽 손잡이'),
+  'key_f2bed': Item('key_f2bed', '리본 달린 안방 열쇠'),
+  'emblem_hall': Item('emblem_hall', '사진틀 문양'),
 };
 
 /// 키 = 두 id를 사전순 정렬해 '+'로 연결. 주방 리마스터로 수프는 인벤토리
