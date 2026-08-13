@@ -729,3 +729,77 @@ int solveBed(GameState s, GameCtx c, Room room) {
 
   return steps;
 }
+
+/// 아이 방(챕터2 방9) 정답 시퀀스 (room9_child_test.dart의 해피패스와 동일
+/// 절차, 스텝 카운팅 — solveHall/solveBed와 동일 관례). rooms.dart에 아직
+/// 등록되지 않은 room9를 buildChild()로 직접 받아 단독 검증한다(챕터2 계획
+/// Task 7이 rooms.dart 일괄 등록을 맡는다). T1(기차 스위치)과 T2(오르골)는
+/// 초반부가 서로 독립이라 진입 직후 병렬로 만질 수 있지만, T2의 완성(오르골
+/// 수리)은 T1의 보상 gear_toy 없이는 불가능하다(교차 잠금) — 그래서 T1을
+/// 먼저 끝낸다. 스위치 0·2(양 끝)를 일부러 한 번씩 잘못 넘겼다가 되돌리는
+/// 대목은 브리프의 "스위치는 유지(리셋 아님, 재조정 가능)"을 실제로
+/// 시연한다(cellar solveCellar가 어둠 왕복을 시퀀스 안에 실재시키는 것과
+/// 동일한 이유) — 그 사이 기차 출발을 한 번 실패시켜 SceneObject가 원위치
+/// (트랙을 떠난 적이 없으므로 rect가 그대로 trainStartArea)임을 확인한다.
+/// 문은 T2의 다른 보상 key_f2lab으로. 다른 방 테스트가 "아이 방은 이미
+/// 클리어됐다"는 전제로 재사용한다(반환값은 무시해도 컴파일·동작에 지장 없음).
+int solveChild(GameState s, GameCtx c, Room room) {
+  var steps = 0;
+  void tap(String sceneId, String hotspotId) {
+    tapSpot(room, s, c, sceneId, hotspotId);
+    steps++;
+  }
+
+  // T1 전반: 모빌(지식 단서, 게이트 아님 — 정공법 플레이어는 그래도 먼저
+  // 확인한다, kitchen recipe_board와 동일 원칙) → 스위치 0·2를 일부러
+  // 틀리게 넘긴 채 기차를 출발시켜 실패를 확인 → 0·2를 되돌리고 가운데(1)만
+  // 오른쪽으로 → 재출발 성공.
+  tap('child_a', 'mobile');
+
+  tap('child_b', 'switch1'); // 인덱스0: 0→1 (오답)
+  tap('child_b', 'switch3'); // 인덱스2: 0→1 (오답)
+  tap('child_b', 'train_start'); // 실패 — [1,0,1] != [0,1,0]
+  expect(s.flag('f2_child_train'), 0);
+
+  tap('child_b', 'switch1'); // 인덱스0: 1→0 (원복)
+  tap('child_b', 'switch2'); // 인덱스1: 0→1 (정답)
+  tap('child_b', 'switch3'); // 인덱스2: 1→0 (원복)
+  tap('child_b', 'train_start'); // 성공 — [0,1,0]
+  expect(s.flag('f2_child_train'), 1);
+
+  tap('child_b', 'drawer'); // 1차: 반짝임 발견
+  expect(s.has('gear_toy'), isFalse);
+  tap('child_b', 'drawer'); // 2차: 톱니 획득
+  expect(s.has('gear_toy'), isTrue);
+
+  // T2: 오르골 태엽 감기(고장난 멜로디) → 내부 클로즈업 → gear_toy 장착 →
+  // 완주 + key_f2lab → 재탭으로 회상3 재생(오르골 앵커).
+  tap('child_c', 'music_box');
+  expect(s.flag('f2_child_organ_wound'), 1);
+  tap('child_c', 'music_box');
+  expect(s.closeupId, 'organ');
+
+  s.select('gear_toy');
+  tap('organ', 'fix');
+  expect(s.flag('f2_child_organ_fixed'), 1);
+  expect(s.has('gear_toy'), isFalse); // 톱니 소모
+  expect(s.has('key_f2lab'), isTrue);
+  s.closeCloseup();
+
+  tap('child_c', 'music_box');
+  expect(s.closeupId, 'memory');
+  expect(s.flag('f2_child_memory'), 1);
+  s.closeCloseup();
+
+  // 문: key_f2lab → 입장(emblem_child 지급).
+  s.select('key_f2lab');
+  tap('child_a', 'door');
+  expect(s.flag('f2_child_door_open'), 1);
+  expect(s.has('key_f2lab'), isFalse); // 열쇠 소모
+
+  tap('child_a', 'door');
+  expect(s.flag('f2_child_done'), 1);
+  expect(s.has('emblem_child'), isTrue);
+
+  return steps;
+}

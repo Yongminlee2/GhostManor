@@ -327,3 +327,37 @@ const strF2BedStitchThread1 = '파란 실이 자수틀에 사뿐히 얹힌다.';
 const strF2BedStitchThread2 = '은실이 자수틀 위에서 조용히 반짝인다.';
 const strF2BedStitchWrong = '실이 엉킨다. 마님의 한숨이 들리는 것 같다… 처음부터 다시.';
 const strF2BedStitchComplete = '마지막 실이 자리를 잡는 순간, 구름까지 완성된 자수가 은은히 빛난다.';
+
+// ── 방 9 아이 방 (room9_child, f2_child_ 플래그) ──
+const strF2ChildIntro =
+    '문이 열리자 작은 침대와 흔들리는 모빌이 눈에 들어온다. 장난감들이 어둠 속에서 가만히 이쪽을 보는 것 같다.';
+const strF2ChildMobile = '천장의 별 모빌이 천천히 돈다. 위에서부터 행성이 좌·우·좌 순서로 매달려 있다.';
+const strF2ChildBed = '작은 침대가 단정히 정리돼 있다. 베개에 아직 온기가 남은 것 같다.';
+const strF2ChildBlanket = '별무늬 이불이 덮여 있다. 어둠 속에서도 별들이 은은히 빛나는 것 같다.';
+const strF2ChildWallPicsLeft = '아이가 그린 듯한 그림들 — 유령과 집, 해골이 액자 속에 나란히 걸려 있다.';
+const strF2ChildWallPicsRight = '토끼와 곰, 꽃 그림이 걸려 있다. 서툰 손길이지만 정성이 느껴진다.';
+const strF2ChildNightstand = '협탁 위 촛불이 자그맣게 흔들린다. 옆엔 작은 장난감 집 모형이 놓여 있다.';
+const strF2ChildRockingHorse = '나무 목마가 방 한켠에 놓여 있다. 안장이 반들반들하게 닳아 있다.';
+const strF2ChildBall = '낡은 공 하나가 바닥에 굴러 있다. 색이 다 바랬다.';
+const strF2ChildShelf = '장난감장 위 칸에 성곽과 곰인형, 작은 집이 나란히 놓여 있다.';
+const strF2ChildWindow = '커튼 틈으로 짙은 안개만 보인다. 창틀에 먼지가 소복하다.';
+const strF2ChildTrainFail = '칙— 폭. 기차가 시무룩하게 되돌아온다. 분기가 마음에 안 드는 모양이다.';
+const strF2ChildTrainSuccess = '칙칙폭폭— 기차가 힘차게 트랙을 달려 장난감장 밑 터널로 사라진다!';
+const strF2ChildTrainDone = '트랙이 조용하다. 기차는 이미 터널 속으로 사라졌다.';
+const strF2ChildDrawerPeek = '장난감장 아래서 서랍이 스르륵 밀려 나온다. 안에서 뭔가 반짝인다.';
+const strF2ChildDrawerGive = '서랍 속에서 작은 놋쇠 톱니 하나를 꺼냈다.';
+const strF2ChildDrawerEmpty = '서랍 안은 이제 비어 있다.';
+const strF2ChildOrganWind = '태엽을 감자 오르골이 돌아간다. 도, 미, 그리고 파 — 그 사이 어딘가, 한 음이 비어 있다.';
+const strF2ChildOrganNeedsGear = '부러진 빗살 자리가 비어 있다. 꼭 맞는 무언가가 필요해 보인다.';
+const strF2ChildOrganFixed = '톱니가 제자리에 꼭 들어맞는다. 오르골이 처음부터 다시, 막힘없이 곡조를 완주한다.';
+const strF2ChildOrganFixedLook = '오르골은 이제 완전하다. 곡조가 막힘없이 흐른다.';
+const strF2ChildDeskShelf = '선반 위에 토끼 인형과 파란 인형, 작은 인형집이 놓여 있다.';
+const strF2ChildManorPicture = '액자 속에 저택의 실루엣이 그려져 있다. 어딘가 낯익은 지붕선이다.';
+const strF2ChildSmallFrames = '작은 액자 둘 — 토끼와 소녀의 그림이 나란히 걸려 있다.';
+const strF2ChildCandleDesk = '책상 위 촛불이 은은히 타오른다.';
+const strF2ChildBooks = '그림책이 두어 권 쌓여 있다. 표지가 낡아 해졌다.';
+const strF2ChildFloorToys = '바닥에 곰인형이 앉아 있다. 리본이 삐뚤게 매어 있다.';
+const strF2ChildMusicDrawerLocked = '뮤직서랍에 작은 자물쇠가 걸려 있다. 안에서 무언가 짤랑이는 소리가 희미하게 들린다.';
+const strF2ChildMusicDrawerOpen = '뮤직서랍이 활짝 열려 있다. 이제 텅 비었다.';
+const strF2ChildDoorLocked = '문이 잠겨 있다. 열쇠가 필요해 보인다.';
+const strF2ChildDoorOpened = '철컥, 문이 열렸다.';
