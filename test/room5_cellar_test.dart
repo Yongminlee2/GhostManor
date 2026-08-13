@@ -106,12 +106,12 @@ void main() {
 
   test(
       '지식 게이트 아님: 낙서(glow3)를 본 적 없어도 5→1→3 순서로 탭하면 상자B가 열린다'
-      '(현관 편지와 동일 원칙) — 라벨상 촛불 3개인 두 병(1·5번) 중 어느 쪽을 써도 통과',
+      '(현관 편지와 동일 원칙) — 판정은 병 위치가 아니라 라벨 촛불 개수 값',
       () {
     s.setFlag('cellar_r_light', 1); // 라벨 판독은 점등 필수
     tap('cellar_c', 'wine3'); // 5
     tap('cellar_c', 'wine2'); // 1
-    tap('cellar_c', 'wine5'); // 3 — wine1이 아니라 wine5(같은 개수의 다른 병)
+    tap('cellar_c', 'wine5'); // 3 — 리터치 후 촛불 3개는 wine5뿐(wine1은 4개)
     expect(s.flag('cellar_r_wine_open'), 1);
   });
 

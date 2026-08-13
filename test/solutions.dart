@@ -408,7 +408,7 @@ int solveCellar(GameState s, GameCtx c, Room room) {
   expect(s.flag('cellar_r_wine_seq'), 1);
   tap('cellar_c', 'wine2'); // 촛불 1개
   expect(s.flag('cellar_r_wine_seq'), 2);
-  tap('cellar_c', 'wine1'); // 촛불 3개(5번 병도 3개라 둘 다 통과 — 부정 테스트로 별도 확인)
+  tap('cellar_c', 'wine5'); // 촛불 3개(리터치 후 라벨은 4·1·5·2·3으로 유일)
   expect(s.flag('cellar_r_wine_seq'), 3);
   expect(s.flag('cellar_r_wine_open'), 1);
 

@@ -165,11 +165,11 @@ const strCellarRFuseboxOneMore = '소켓 하나가 아직 비어 있다. 퓨즈�
 const strCellarRFuse1In = '퓨즈를 끼웠다. 배전반 한쪽이 웅 하고 깨어난다. 소켓이 하나 더 비어 있다.';
 const strCellarRFuse2In = '두 번째 퓨즈까지 끼우자 배전반 전체가 부르르 떨린다. 안쪽에서 뭔가 달칵거리는 소리가 난다.';
 const strCellarRSwitchWrong = '파지직! 스위치들이 튕겨 나가듯 아래로 툭 떨어진다. 순서가 잘못된 모양이다.';
-const strCellarRWineBottle1 = '라벨을 자세히 본다. 가느다란 촛불 세 개가 그려져 있다.';
+const strCellarRWineBottle1 = '라벨을 자세히 본다. 가느다란 촛불 네 개가 그려져 있다.';
 const strCellarRWineBottle2 = '라벨엔 촛불이 딱 하나. 외로워 보인다.';
 const strCellarRWineBottle3 = '라벨 가득 촛불 다섯 개가 빼곡하다.';
 const strCellarRWineBottle4 = '촛불 두 개가 나란히 그려져 있다.';
-const strCellarRWineBottle5 = '이 라벨에도 촛불 세 개 — 옆의 것과 그림체가 살짝 다르다.';
+const strCellarRWineBottle5 = '라벨에 촛불 세 개가 나란히 타오르고 있다.';
 const strCellarRWineWrong =
     '병들이 달그락거리며 제자리로. 덜덜: "그, 그거 순서 있댔어… 누가 그랬는지는 기억 안 나."';
 const strCellarRWineDark = '어두워서 라벨이 하나도 안 보인다. 불부터 켜야겠다.';

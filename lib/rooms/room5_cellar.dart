@@ -174,8 +174,9 @@ Room buildCellar() {
   // 와인 랙 병 5개(왼쪽부터) — 실제 납품 아트(cellar_c.png) 라벨의 촛불 개수를
   // 그대로 옮긴 값. 정답을 그대로 보여주지 않으려 뒤섞여 있고(아트 의뢰서
   // 지시), 그중 1번·5번 라벨이 우연히 둘 다 "셋"이다 — tapWine은 인덱스가
-  // 아니라 개수 값만 비교하므로 둘 중 어느 쪽을 탭해도 동일하게 통과한다.
-  const wineCounts = [3, 1, 5, 2, 3];
+  // 아니라 개수 값만 비교한다(리터치로 라벨이 4·1·5·2·3 유일해졌지만
+  // 값 판정은 그대로 둔다 — 아트가 또 바뀌어도 코드는 흔들리지 않게).
+  const wineCounts = [4, 1, 5, 2, 3];
   const wineLabels = [
     strCellarRWineBottle1,
     strCellarRWineBottle2,

@@ -89,10 +89,10 @@ Room buildKitchen() {
   // 벽 C(신규 저장실): 빙실 함·레시피판·부지깽이 걸이는 브리프 binding 좌표,
   // 소시지·항아리 3개는 리액션 전용이라 서로 겹치지 않는 빈 자리에 배치.
   // 벽 C — kitchen_c.png 실측: 빙실 함은 좌측 대형, 레시피판 중앙, 걸이 우측.
-  // ice1~3 크롭은 의뢰서 rect 그대로 잘려 왔으므로 오버레이는 원 크롭 rect에
-  // 고정해야 원본과 픽셀이 이어진다(핫스팟만 실물 위치로 이동).
+  // ice1~3은 리터치 2차에서 함 문 영역 크롭(가장자리 페더 알파)으로 재제작 —
+  // 오버레이 rect는 크롭 창과 정확히 일치해야 픽셀이 이어진다.
   const iceArea = Rect.fromLTWH(0.04, 0.32, 0.37, 0.42);
-  const iceCropArea = Rect.fromLTWH(0.34, 0.40, 0.32, 0.30);
+  const iceCropArea = Rect.fromLTWH(0.040, 0.320, 0.420, 0.440);
   const recipeArea = Rect.fromLTWH(0.47, 0.30, 0.28, 0.22);
   const pokerRackArea = Rect.fromLTWH(0.76, 0.20, 0.17, 0.35);
   const sausagesArea = Rect.fromLTWH(0.36, 0.13, 0.40, 0.17);
