@@ -23,6 +23,8 @@ void main() {
     // 루프
     'bgm_manor', 'ambient_foyer', 'ambient_living', 'ambient_study',
     'ambient_kitchen', 'ambient_cellar', 'ambient_attic',
+    'ambient_hall', 'ambient_bed', 'ambient_child', 'ambient_lab',
+    'ambient_seal',
   ];
 
   test('모든 슬롯이 존재하는 자산 파일로 해석된다', () {

@@ -31,6 +31,12 @@ class AudioService {
     'ambient_kitchen': 'ambient_kitchen.flac',
     'ambient_cellar': 'ambient_foyer.flac', // 루프 재사용 — 파일 중복 없이
     'ambient_attic': 'ambient_study.flac',
+    // 챕터 2 (2층) — 동일한 재사용 원칙
+    'ambient_hall': 'ambient_foyer.flac',
+    'ambient_bed': 'ambient_living.flac',
+    'ambient_child': 'ambient_kitchen.flac',
+    'ambient_lab': 'ambient_study.flac',
+    'ambient_seal': 'ambient_foyer.flac',
     'bgm_manor': 'bgm_manor.ogg',
   };
 
