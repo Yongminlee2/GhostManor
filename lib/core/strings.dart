@@ -3,7 +3,7 @@ const strHintFree = '힌트 보기';
 String strHintLockedIn(int sec) {
   final m = sec ~/ 60;
   final ss = (sec % 60).toString().padLeft(2, '0');
-  return '🔒 $m:$ss 후 열림';
+  return '$m:$ss 후 열림';
 }
 
 // ── 현관 (room1_foyer) ──

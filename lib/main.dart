@@ -5,6 +5,7 @@ import 'core/game_state.dart';
 import 'core/hint_service.dart';
 import 'core/hint_sheet.dart';
 import 'core/inventory_bar.dart';
+import 'core/manor_theme.dart';
 import 'core/models.dart';
 import 'core/save_service.dart';
 import 'core/scene_view.dart';
@@ -83,38 +84,32 @@ class _GhostManorAppState extends State<GhostManorApp> {
     return MaterialApp(
       title: strAppTitle,
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF5B3E96),
-          brightness: Brightness.dark,
-        ),
-        scaffoldBackgroundColor: const Color(0xFF1A1226),
-      ),
+      theme: buildManorTheme(),
       home: !loaded
           ? const Scaffold(body: SizedBox())
           : playing == null
-              ? TitleScreen(
-                  hasSave: hasSave,
-                  onContinue: () async {
-                    final s = await save.load();
-                    if (s != null) _start(s);
-                  },
-                  onNewGame: (context) async {
-                    if (hasSave) {
-                      final ok = await _confirm(context, strNewGameConfirm);
-                      if (!ok) return;
-                      await save.clear();
-                    }
-                    _start(GameState());
-                  },
-                )
-              : RoomScreen(
-                  state: playing!,
-                  rooms: rooms,
-                  audio: audio,
-                  save: save,
-                  onExitToTitle: _toTitle,
-                ),
+          ? TitleScreen(
+              hasSave: hasSave,
+              onContinue: () async {
+                final s = await save.load();
+                if (s != null) _start(s);
+              },
+              onNewGame: (context) async {
+                if (hasSave) {
+                  final ok = await _confirm(context, strNewGameConfirm);
+                  if (!ok) return;
+                  await save.clear();
+                }
+                _start(GameState());
+              },
+            )
+          : RoomScreen(
+              state: playing!,
+              rooms: rooms,
+              audio: audio,
+              save: save,
+              onExitToTitle: _toTitle,
+            ),
     );
   }
 }
@@ -153,31 +148,163 @@ class TitleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              strAppTitle,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 48),
-            if (hasSave)
-              FilledButton(
-                onPressed: onContinue,
-                child: const Text(strContinue),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            'assets/ui/title_manor.png',
+            fit: BoxFit.cover,
+            alignment: Alignment.center,
+          ),
+          const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0x4D100817),
+                  Color(0x1A100817),
+                  Color(0xB30D0712),
+                ],
+                stops: [0, 0.52, 1],
               ),
-            const SizedBox(height: 12),
-            FilledButton.tonal(
-              onPressed: () => onNewGame(context),
-              child: const Text(strNewGame),
             ),
-          ],
-        ),
+          ),
+          SafeArea(
+            child: LayoutBuilder(
+              builder: (context, box) => Padding(
+                padding: const EdgeInsets.fromLTRB(24, 30, 24, 30),
+                child: Column(
+                  children: [
+                    const _TitleLockup(),
+                    const Spacer(),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 390),
+                      child: ManorPanel(
+                        padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+                        color: const Color(0xE6241731),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const ManorRule(),
+                            const SizedBox(height: 15),
+                            if (hasSave) ...[
+                              _TitleButton(
+                                key: const Key('title_continue'),
+                                label: strContinue,
+                                icon: Icons.auto_stories_outlined,
+                                onPressed: onContinue,
+                                primary: true,
+                              ),
+                              const SizedBox(height: 12),
+                            ],
+                            _TitleButton(
+                              key: const Key('title_new_game'),
+                              label: strNewGame,
+                              icon: Icons.vpn_key_outlined,
+                              onPressed: () => onNewGame(context),
+                              primary: !hasSave,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: box.maxHeight * 0.025),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
+}
+
+class _TitleLockup extends StatelessWidget {
+  const _TitleLockup();
+
+  @override
+  Widget build(BuildContext context) => Column(
+    children: [
+      Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: manorPanel,
+          border: Border.all(color: manorGold, width: 1.4),
+          boxShadow: const [BoxShadow(color: Colors.black54, blurRadius: 12)],
+        ),
+        child: const Icon(
+          Icons.nightlight_round,
+          color: manorGoldBright,
+          size: 27,
+        ),
+      ),
+      const SizedBox(height: 14),
+      Text(
+        strAppTitle,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: manorCream,
+          fontSize: 38,
+          fontWeight: FontWeight.w900,
+          letterSpacing: -1,
+          shadows: [
+            Shadow(color: Colors.black, blurRadius: 10, offset: Offset(0, 3)),
+            Shadow(color: Color(0xFF6D45A4), blurRadius: 22),
+          ],
+        ),
+      ),
+      const SizedBox(height: 9),
+      const Text(
+        'GHOST MANOR',
+        style: TextStyle(
+          color: manorGoldBright,
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 5,
+          shadows: [Shadow(color: Colors.black, blurRadius: 6)],
+        ),
+      ),
+    ],
+  );
+}
+
+class _TitleButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final VoidCallback onPressed;
+  final bool primary;
+
+  const _TitleButton({
+    super.key,
+    required this.label,
+    required this.icon,
+    required this.onPressed,
+    required this.primary,
+  });
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: double.infinity,
+    height: 58,
+    child: FilledButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 21),
+      label: Text(label),
+      style: FilledButton.styleFrom(
+        foregroundColor: primary ? manorInk : manorCream,
+        backgroundColor: primary ? manorGoldBright : const Color(0xFF463253),
+        side: BorderSide(
+          color: primary ? manorGoldBright : manorGold,
+          width: 1.2,
+        ),
+        elevation: primary ? 5 : 0,
+      ),
+    ),
+  );
 }
 
 class RoomScreen extends StatefulWidget {
@@ -282,7 +409,12 @@ class _RoomScreenState extends State<RoomScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
+        icon: const Icon(Icons.key, color: manorGoldBright, size: 30),
         title: const Text(strRoomClear),
+        content: const Text(
+          '묵직한 자물쇠가 풀렸습니다. 저택의 다음 공간으로 이동합니다.',
+          textAlign: TextAlign.center,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -314,21 +446,42 @@ class _RoomScreenState extends State<RoomScreen> {
     await showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
+        icon: const Icon(
+          Icons.settings_outlined,
+          color: manorGoldBright,
+          size: 30,
+        ),
         title: const Text(strSettings),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             StatefulBuilder(
-              builder: (context, setDlg) => SwitchListTile(
-                title: const Text(strMute),
-                value: widget.audio.muted,
-                onChanged: (v) {
-                  widget.audio.setMuted(v);
-                  s.setFlag('muted', v ? 1 : 0);
-                  setDlg(() {});
-                },
+              builder: (context, setDlg) => ManorPanel(
+                padding: EdgeInsets.zero,
+                color: Colors.transparent,
+                child: Material(
+                  color: manorPanelSoft,
+                  borderRadius: BorderRadius.circular(17),
+                  clipBehavior: Clip.antiAlias,
+                  child: SwitchListTile(
+                    secondary: Icon(
+                      widget.audio.muted
+                          ? Icons.volume_off_outlined
+                          : Icons.volume_up_outlined,
+                      color: manorGoldBright,
+                    ),
+                    title: const Text(strMute),
+                    value: widget.audio.muted,
+                    onChanged: (v) {
+                      widget.audio.setMuted(v);
+                      s.setFlag('muted', v ? 1 : 0);
+                      setDlg(() {});
+                    },
+                  ),
+                ),
               ),
             ),
+            const SizedBox(height: 12),
             TextButton(
               onPressed: () async {
                 final ok = await _confirm(context, strResetConfirm);
@@ -352,22 +505,45 @@ class _RoomScreenState extends State<RoomScreen> {
   Widget build(BuildContext context) {
     if (_ended) {
       return Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                strChapterEnd,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 22),
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset('assets/ui/title_manor.png', fit: BoxFit.cover),
+            const ColoredBox(color: Color(0xB312091A)),
+            SafeArea(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: ManorPanel(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.nightlight_round,
+                          color: manorGoldBright,
+                          size: 42,
+                        ),
+                        const SizedBox(height: 18),
+                        const Text(
+                          strChapterEnd,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 20, height: 1.6),
+                        ),
+                        const SizedBox(height: 20),
+                        const ManorRule(),
+                        const SizedBox(height: 20),
+                        FilledButton.icon(
+                          onPressed: widget.onExitToTitle,
+                          icon: const Icon(Icons.home_outlined),
+                          label: const Text(strBackToTitle),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-              const SizedBox(height: 32),
-              FilledButton(
-                onPressed: widget.onExitToTitle,
-                child: const Text(strBackToTitle),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
     }
@@ -375,29 +551,66 @@ class _RoomScreenState extends State<RoomScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Row(
-              children: [
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    room.name,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+            Container(
+              height: 62,
+              decoration: const BoxDecoration(
+                color: Color(0xFF21142E),
+                border: Border(bottom: BorderSide(color: manorGold, width: 1)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black45,
+                    blurRadius: 8,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  const SizedBox(width: 16),
+                  Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: manorGold),
+                      color: manorPanelSoft,
+                    ),
+                    child: Center(
+                      child: Text(
+                        '${widget.state.roomIndex + 1}',
+                        style: const TextStyle(
+                          color: manorGoldBright,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-                IconButton(
-                  key: const Key('btn_hint'),
-                  icon: const Icon(Icons.lightbulb_outline),
-                  onPressed: () => showHintSheet(context, room, hints),
-                ),
-                IconButton(
-                  key: const Key('btn_settings'),
-                  icon: const Icon(Icons.settings),
-                  onPressed: _openSettings,
-                ),
-              ],
+                  const SizedBox(width: 11),
+                  Expanded(
+                    child: Text(
+                      room.name,
+                      style: const TextStyle(
+                        color: manorCream,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                  _TopBarButton(
+                    key: const Key('btn_hint'),
+                    icon: Icons.lightbulb_outline,
+                    label: strHintTitle,
+                    onPressed: () => showHintSheet(context, room, hints),
+                  ),
+                  _TopBarButton(
+                    key: const Key('btn_settings'),
+                    icon: Icons.settings_outlined,
+                    label: strSettings,
+                    onPressed: _openSettings,
+                  ),
+                  const SizedBox(width: 8),
+                ],
+              ),
             ),
             Expanded(
               child: Center(
@@ -413,4 +626,34 @@ class _RoomScreenState extends State<RoomScreen> {
       ),
     );
   }
+}
+
+class _TopBarButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  const _TopBarButton({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: label,
+    button: true,
+    child: Tooltip(
+      message: label,
+      child: IconButton(
+        onPressed: onPressed,
+        icon: Icon(icon, color: manorGoldBright),
+        style: IconButton.styleFrom(
+          backgroundColor: const Color(0xFF382548),
+          side: const BorderSide(color: Color(0xFF6D527E)),
+        ),
+      ),
+    ),
+  );
 }
