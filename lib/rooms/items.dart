@@ -66,6 +66,19 @@ const Map<String, Item> itemsById = {
   'gear_toy': Item('gear_toy', '작은 놋쇠 톱니'),
   'key_f2lab': Item('key_f2lab', '잉크 얼룩 묻은 서고 열쇠'),
   'emblem_child': Item('emblem_child', '톱니 문양'),
+
+  // ── 챕터 2: 방 10 서고·작업실 ──
+  'cylinder1': Item('cylinder1', '왁스 실린더(점 1)'),
+  'cylinder2': Item('cylinder2', '왁스 실린더(점 2)'),
+  'cylinder3': Item('cylinder3', '왁스 실린더(점 3)'),
+  'keyring': Item('keyring', '열쇠고리'),
+  // 아직 전용 아이콘이 없어 라벨 폴백으로 동작(art/chapter2-assets.md 비고 —
+  // "아이콘은 필요시 라벨 폴백"). gameImage/InventoryBar의 errorBuilder가 처리.
+  'vial_purple': Item('vial_purple', '보라색 약병'),
+  'vial_green': Item('vial_green', '초록색 약병'),
+  'vial_amber': Item('vial_amber', '호박색 약병'),
+  'key_f2seal': Item('key_f2seal', '검은 철 열쇠'),
+  'emblem_lab': Item('emblem_lab', '실린더 문양'),
 };
 
 /// 키 = 두 id를 사전순 정렬해 '+'로 연결. 주방 리마스터로 수프는 인벤토리

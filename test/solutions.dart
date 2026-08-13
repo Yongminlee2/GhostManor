@@ -10,6 +10,7 @@ import 'package:ghostmanor/core/switch_panel.dart';
 import 'package:ghostmanor/rooms/room5_cellar.dart';
 import 'package:ghostmanor/rooms/room6_attic.dart';
 import 'package:ghostmanor/rooms/room7_hall.dart';
+import 'package:ghostmanor/rooms/room10_lab.dart';
 
 /// room1_foyer_test.dart의 findHotspot 헬퍼를 일반화 — room을 인자로 받는다.
 Hotspot findHotspot(Room room, String sceneId, String hotspotId) {
@@ -800,6 +801,135 @@ int solveChild(GameState s, GameCtx c, Room room) {
   tap('child_a', 'door');
   expect(s.flag('f2_child_done'), 1);
   expect(s.has('emblem_child'), isTrue);
+
+  return steps;
+}
+
+/// 서고·작업실(챕터2 방10) 정답 시퀀스 (room10_lab_test.dart의 해피패스와
+/// 동일 절차, 스텝 카운팅 — solveHall/solveBed/solveChild와 동일 관례).
+/// rooms.dart에 아직 등록되지 않은 room10을 buildLab()로 직접 받아 단독
+/// 검증한다(챕터2 계획 Task 7이 rooms.dart 일괄 등록을 맡는다). T1(축음기
+/// 실린더 3개 → 관측 장치 다이얼 241)과 T2(약병 3개를 램프에 순서대로 →
+/// 편지)는 초반부(실린더1 획득, 칠판/약병 접근)가 서로 독립이라 진입 직후
+/// 병렬로 만질 수 있지만, 실린더2는 잠긴 서랍 속이고 그 열쇠고리는 T2 구역
+/// (약병 선반 뒤)에 있어 T1을 완주하려면 T2 구역을 한 번은 들러야 한다(교차).
+/// 관측 장치를 깨우면(f2_lab_b_awake) 칠판 rect가 금고로 뒤덮이므로(같은
+/// rect를 board/safe가 상호 배타 when으로 공유), 칠판 정리는 반드시 장치를
+/// 깨우기 전에 끝낸다 — 이 함수의 순서가 그 제약을 그대로 지킨다. phono/
+/// board/device 클로즈업은 각각 헤드리스 tap(스핀들)과 순수 함수 직접 호출
+/// (finishBoardClean, awakenDevice — room7 solveHall의 finishRugRoll/room2
+/// solveLiving의 openSafe와 동일 원칙)로 처리한다. 문은 이 방이 스스로 만든
+/// key_f2seal로 연다. 다른 방 테스트가 "서고는 이미 클리어됐다"는 전제로
+/// 재사용한다(반환값은 무시해도 컴파일·동작에 지장 없음).
+int solveLab(GameState s, GameCtx c, Room room) {
+  var steps = 0;
+  void tap(String sceneId, String hotspotId) {
+    tapSpot(room, s, c, sceneId, hotspotId);
+    steps++;
+  }
+
+  void pure(void Function() fn) {
+    fn();
+    steps++;
+  }
+
+  // T1 전반: 책장에서 실린더1 → 약병 선반 뒤 열쇠고리(T2 구역 경유) → 서랍
+  // 개방해 실린더2 → 축음기 스핀들에 꽂혀 있던 실린더3 꺼내기 → 실린더 셋을
+  // 차례로 얹어 재생(청각 공정 — 종·물방울·새 소리, 사운드 재생 여부는
+  // AudioService(enabled:false)라 검증하지 않는다).
+  tap('lab_a', 'bookshelf');
+  expect(s.has('cylinder1'), isTrue);
+
+  tap('lab_c', 'keyring');
+  expect(s.has('keyring'), isTrue);
+
+  s.select('keyring');
+  tap('lab_a', 'drawer');
+  expect(s.has('cylinder2'), isTrue);
+  expect(s.has('keyring'), isFalse); // 열쇠고리 소모
+
+  tap('lab_a', 'phono');
+  expect(s.closeupId, 'phono');
+
+  tap('phono', 'spindle'); // 꽂혀 있던 실린더3 꺼내기
+  expect(s.has('cylinder3'), isTrue);
+
+  s.select('cylinder1');
+  tap('phono', 'spindle');
+  s.select('cylinder2');
+  tap('phono', 'spindle');
+  s.select('cylinder3');
+  tap('phono', 'spindle');
+  s.closeCloseup();
+
+  // T2 전반: 칠판을 닦아 배합 그림 확인(장치를 깨우기 전에 반드시 끝내야
+  // rect가 금고로 바뀌기 전에 접근 가능) → 약병 3개 수집 → 보라→초록→호박
+  // 순서로 램프에 투입 → 램프 점등 → 편지 잉크 드러남(재탭으로 회상4).
+  tap('lab_b', 'board');
+  expect(s.closeupId, 'board');
+  pure(() => finishBoardClean(s));
+  expect(s.flag('f2_lab_board_clean'), 1);
+  s.closeCloseup();
+
+  tap('lab_c', 'vial_purple');
+  tap('lab_c', 'vial_green');
+  tap('lab_c', 'vial_amber');
+  expect(s.has('vial_purple'), isTrue);
+  expect(s.has('vial_green'), isTrue);
+  expect(s.has('vial_amber'), isTrue);
+
+  s.select('vial_purple');
+  tap('lab_c', 'lamp');
+  expect(s.flag('f2_lab_lamp_stage'), 1);
+
+  s.select('vial_green');
+  tap('lab_c', 'lamp');
+  expect(s.flag('f2_lab_lamp_stage'), 2);
+
+  s.select('vial_amber');
+  tap('lab_c', 'lamp');
+  expect(s.flag('f2_lab_c_lamp'), 1);
+
+  tap('lab_c', 'letter'); // 잉크 드러남 + 편지 전문
+  expect(s.flag('f2_lab_letter_ink'), 1);
+
+  tap('lab_c', 'letter'); // 재탭 → 회상4(앵커)
+  expect(s.closeupId, 'memory');
+  expect(s.flag('f2_lab_memory'), 1);
+  s.closeCloseup();
+
+  // T1 후반: 관측 장치 다이얼을 241로 맞춰 확인 → 장치 기동 → 벽 금고 노출
+  // → 금고에서 key_f2seal.
+  tap('lab_b', 'device');
+  expect(s.closeupId, 'device');
+
+  void dialTo(int wheel, int times) {
+    for (var i = 0; i < times; i++) {
+      pure(() => tapDialWheel(s, 'f2_lab_dial', wheel));
+    }
+  }
+
+  dialTo(0, 2);
+  dialTo(1, 4);
+  dialTo(2, 1);
+  expect(checkDialCode(s, 'f2_lab_dial', '241'), isTrue);
+
+  pure(() => awakenDevice(c));
+  expect(s.flag('f2_lab_b_awake'), 1);
+  s.closeCloseup();
+
+  tap('lab_b', 'safe');
+  expect(s.has('key_f2seal'), isTrue);
+
+  // 문: 이 방이 스스로 만든 key_f2seal → 입장(emblem_lab 지급).
+  s.select('key_f2seal');
+  tap('lab_a', 'door');
+  expect(s.flag('f2_lab_door_open'), 1);
+  expect(s.has('key_f2seal'), isFalse); // 열쇠 소모
+
+  tap('lab_a', 'door');
+  expect(s.flag('f2_lab_done'), 1);
+  expect(s.has('emblem_lab'), isTrue);
 
   return steps;
 }
