@@ -637,3 +637,95 @@ int solveHall(GameState s, GameCtx c, Room room) {
 
   return steps;
 }
+
+/// 안방(챕터2 방8) 정답 시퀀스 (room8_bed_test.dart의 해피패스와 동일 절차,
+/// 스텝 카운팅 — solveHall과 동일 관례). rooms.dart에 아직 등록되지 않은
+/// room8을 buildBed()로 직접 받아 단독 검증한다(챕터2 계획 Task 7이 rooms.dart
+/// 일괄 등록을 맡는다). T1(거울 차이 → 유령 물건 3개 → 보석함 3슬롯)과 T2
+/// (자수 3색 순서)는 교차 잠금이다 — 보석함 완성 보상(은실)이 자수의 2번째
+/// 실이라 T2를 끝내려면 T1을 먼저 마쳐야 한다. 문은 T1의 다른 보상
+/// (key_f2child)으로 연다. wardrobe/jewelbox/frame 클로즈업은 커스텀 위젯
+/// 없는 일반 Hotspot이라(RubbableScene류가 아님) 헤드리스 tap만으로 전 과정을
+/// 그대로 재현한다. 다른 방 테스트가 "안방은 이미 클리어됐다"는 전제로
+/// 재사용한다(반환값은 무시해도 컴파일·동작에 지장 없음).
+int solveBed(GameState s, GameCtx c, Room room) {
+  var steps = 0;
+  void tap(String sceneId, String hotspotId) {
+    tapSpot(room, s, c, sceneId, hotspotId);
+    steps++;
+  }
+
+  // T1 거울 차이: 거울상을 실물과 대조(관찰만, 상태 불변) → 유령 물건 3개.
+  tap('bed_b', 'mirror');
+  expect(s.closeupId, 'mirror');
+  s.closeCloseup();
+
+  tap('bed_a', 'nightstand'); // 머리핀
+  expect(s.has('hairpin'), isTrue);
+
+  tap('bed_b', 'brooch'); // 브로치
+  expect(s.has('brooch'), isTrue);
+
+  tap('bed_c', 'wardrobe');
+  expect(s.closeupId, 'wardrobe');
+  tap('wardrobe', 'search'); // 1차 허탕
+  tap('wardrobe', 'search'); // 2차 허탕
+  tap('wardrobe', 'search'); // 3차 — 단추
+  expect(s.has('button_gh'), isTrue);
+  s.closeCloseup();
+
+  // 보석함 3슬롯 투입(순서 무관) → 완성 시 은실 + key_f2child.
+  s.select('hairpin');
+  tap('bed_b', 'jewelbox');
+  expect(s.has('hairpin'), isFalse); // 소모
+
+  s.select('brooch');
+  tap('bed_b', 'jewelbox');
+
+  s.select('button_gh');
+  tap('bed_b', 'jewelbox');
+  expect(s.flag('f2_bed_jewelbox_open'), 1);
+  expect(s.has('silver_thread'), isTrue);
+  expect(s.has('key_f2child'), isTrue);
+
+  // T2 자수 완성: 리본 서랍(지식, 게이트 아님) → 반짇고리에서 파랑 2타래 →
+  // 파랑→은→파랑 순서로 자수틀에.
+  tap('bed_c', 'ribbon_drawer');
+  expect(s.closeupId, 'ribbons');
+  s.closeCloseup();
+
+  tap('bed_c', 'sewing_basket'); // 파랑 1
+  tap('bed_c', 'sewing_basket'); // 파랑 2
+  expect(s.has('thread_blue1'), isTrue);
+  expect(s.has('thread_blue2'), isTrue);
+
+  s.select('thread_blue1');
+  tap('bed_c', 'embroidery');
+  expect(s.flag('f2_bed_stitch_stage'), 1);
+
+  s.select('silver_thread');
+  tap('bed_c', 'embroidery');
+  expect(s.flag('f2_bed_stitch_stage'), 2);
+
+  s.select('thread_blue2');
+  tap('bed_c', 'embroidery');
+  expect(s.flag('f2_bed_stitch_done'), 1);
+
+  // 회상2: 자수틀 재탭(앵커).
+  tap('bed_c', 'embroidery');
+  expect(s.closeupId, 'memory');
+  expect(s.flag('f2_bed_memory'), 1);
+  s.closeCloseup();
+
+  // 문: key_f2child → 입장.
+  s.select('key_f2child');
+  tap('bed_a', 'door');
+  expect(s.flag('f2_bed_door_open'), 1);
+  expect(s.has('key_f2child'), isFalse); // 소모
+
+  tap('bed_a', 'door');
+  expect(s.flag('f2_bed_done'), 1);
+  expect(s.has('emblem_bed'), isTrue);
+
+  return steps;
+}

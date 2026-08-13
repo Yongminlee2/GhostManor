@@ -284,3 +284,44 @@ const strF2HallWindow = '창밖은 온통 회색 안개뿐이다. 정원이 있�
 const strF2HallCurtain = '커튼이 낡아 가장자리가 해졌다. 손대면 먼지 냄새가 풀썩 날 것 같다.';
 const strF2HallPendulum = '콘솔 위에 작은 괘종시계 장식이 놓여 있다. 이건 그냥 장식품 — 태엽 구멍조차 없다.';
 const strF2HallRailing = '계단 난간이 반들반들 윤이 난다. 오랫동안 누군가 타고 미끄러졌던 것처럼.';
+
+// ── 방 8 안방 (room8_bed, f2_bed_ 플래그) ──
+const strF2BedIntro =
+    '문이 조용히 열린다. 캐노피 침대와 화장대, 낡은 옷장이 어둠 속에 가라앉아 있다. 어디선가 희미한 콧노래가 들리는 것 같다.';
+const strF2BedCanopy = '캐노피 자락이 낡아 여기저기 늘어져 있다. 오랫동안 아무도 여미지 않은 것처럼.';
+const strF2BedBed = '이불이 단정히 정돈돼 있다. 마치 누군가 금방이라도 돌아와 누울 것처럼.';
+const strF2BedWindow = '창밖은 짙은 안개뿐이다. 유리에 성에가 낀 것처럼 뿌옇다.';
+const strF2BedCurtain = '커튼이 빛바랜 자주색이다. 자락 끝이 좀먹은 듯 해져 있다.';
+const strF2BedSconce = '벽등이 낮게 타오른다. 그림자가 침대 위로 길게 드리운다.';
+const strF2BedNightstandGive = '협탁 위에서 머리핀 하나를 발견했다. 은은한 빛이 감돈다.';
+const strF2BedNightstandEmpty = '협탁 위엔 이제 아무것도 없다.';
+const strF2BedDoorLocked = '문이 잠겨 있다. 작은 열쇠가 필요해 보인다.';
+const strF2BedDoorOpened = '철컥, 문이 열렸다.';
+const strF2BedChair = '자수 의자가 화장대를 향해 놓여 있다. 방석이 움푹 꺼져 있다.';
+const strF2BedCandelabra = '촛대의 초 세 자루가 나란히 타오른다.';
+const strF2BedFrameLeft = '낡은 초상화가 걸려 있다. 얼굴은 세월에 바래 흐릿하다.';
+const strF2BedFrameRight = '맞은편에도 초상화 하나. 액자 금박이 군데군데 벗겨졌다.';
+const strF2BedMirrorLook =
+    '오래된 거울이 방 안을 고스란히 비춘다. 유령들은 이 거울에 단 한 번도 비친 적이 없다고 한다.';
+const strF2BedBroochGive = '화장대 위에서 브로치 하나를 집었다. 만지자 서늘하고 은은한 빛이 손끝에 감돈다.';
+const strF2BedVanityEmpty = '화장대 위엔 이제 아무것도 남지 않았다.';
+const strF2BedCombGive = '화장대 위에 낡은 빗이 놓여 있다. 평범한 나무 빗이다.';
+const strF2BedJewelboxAccept = '보석함이 조용히 물건을 받아들인다. 딸깍.';
+const strF2BedJewelboxWrong = '함이 부르르 떨며 뱉어낸다. 뚜껑의 거울 문양이 차갑게 빛난다.';
+const strF2BedJewelboxOpen = '세 자리가 모두 채워지자 뚜껑이 스르르 열린다. 안에서 은실 타래와 작은 열쇠가 나타났다.';
+const strF2BedJewelboxDone = '보석함은 이제 조용하다. 텅 빈 채로 뚜껑이 열려 있다.';
+const strF2BedSmallMirror = '작은 손거울이 걸려 있다. 금이 가 있어 비치는 모습이 일그러진다.';
+const strF2BedFramePhoto1 = '낡은 초상화 하나가 걸려 있다.';
+const strF2BedFramePhoto2 = '그 아래로도 초상화가 하나 더. 먼지가 뽀얗게 앉았다.';
+const strF2BedDresserCandles = '서랍장 위 촛대가 은은히 타오른다.';
+const strF2BedWardrobeSearch1 = '옷들 사이를 뒤진다. 낡은 천 냄새만 풀썩 인다.';
+const strF2BedWardrobeSearch2 = '조금 더 깊이 뒤진다. 옷자락 밑에서 뭔가 딸깍, 스치는 느낌이 든다.';
+const strF2BedWardrobeFound = '옷자락 밑, 어둠 속에서 작은 단추 하나를 찾았다. 은은한 빛이 감돈다.';
+const strF2BedWardrobeEmpty = '더 이상 옷장 속에서 나올 건 없어 보인다.';
+const strF2BedBasketThread1 = '반짇고리에서 파란 실타래 하나를 꺼냈다.';
+const strF2BedBasketThread2 = '반짇고리 안에서 파란 실타래를 하나 더 찾았다.';
+const strF2BedBasketEmpty = '반짇고리엔 이제 실이 남지 않았다.';
+const strF2BedStitchThread1 = '파란 실이 자수틀에 사뿐히 얹힌다.';
+const strF2BedStitchThread2 = '은실이 자수틀 위에서 조용히 반짝인다.';
+const strF2BedStitchWrong = '실이 엉킨다. 마님의 한숨이 들리는 것 같다… 처음부터 다시.';
+const strF2BedStitchComplete = '마지막 실이 자리를 잡는 순간, 구름까지 완성된 자수가 은은히 빛난다.';

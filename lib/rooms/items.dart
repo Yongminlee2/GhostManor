@@ -46,6 +46,21 @@ const Map<String, Item> itemsById = {
   'winder': Item('winder', '태엽 손잡이'),
   'key_f2bed': Item('key_f2bed', '리본 달린 안방 열쇠'),
   'emblem_hall': Item('emblem_hall', '사진틀 문양'),
+
+  // ── 챕터 2: 방 8 안방 ──
+  'brooch': Item('brooch', '브로치'),
+  'hairpin': Item('hairpin', '머리핀'),
+  'button_gh': Item('button_gh', '단추'),
+  'comb': Item('comb', '빗'), // 미끼(유령 물건 아님) — 보석함이 거부한다.
+  'thread_blue1': Item('thread_blue1', '파란 실타래'),
+  // 파란 실 2타래가 동시에 인벤토리에 들어올 수 있어 id를 분리했다
+  // (InventoryBar가 Key('inv_$id')로 슬롯을 구분 — 위 fuse/fuse2와 동일 이유).
+  // 전용 아이콘은 아직 없어 thread_blue1과 같은 경로를 공유(라벨 폴백으로 동작).
+  'thread_blue2':
+      Item('thread_blue2', '파란 실타래', iconOverride: 'assets/items/thread_blue1.png'),
+  'silver_thread': Item('silver_thread', '은실 타래'),
+  'key_f2child': Item('key_f2child', '작은 장난감풍 열쇠'),
+  'emblem_bed': Item('emblem_bed', '실타래 매듭 문양'),
 };
 
 /// 키 = 두 id를 사전순 정렬해 '+'로 연결. 주방 리마스터로 수프는 인벤토리
