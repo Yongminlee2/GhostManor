@@ -73,7 +73,8 @@ Room buildBed() {
   // 쓴다(hall의 "벽 A=문" 관례 유지, 재배선은 Task 9 몫).
   const doorArea = Rect.fromLTWH(0.85, 0.05, 0.15, 0.90);
   const sconceArea = Rect.fromLTWH(0.85, 0.27, 0.13, 0.16);
-  const curtainArea = Rect.fromLTWH(0.02, 0.08, 0.20, 0.34);
+  // 커튼=상단 드레이프 띠, 창=유리 — 겹치지 않게 분리(Task 9 정밀 재배선).
+  const curtainArea = Rect.fromLTWH(0.02, 0.08, 0.20, 0.13);
   const windowArea = Rect.fromLTWH(0.06, 0.22, 0.16, 0.30);
   const canopyArea = Rect.fromLTWH(0.32, 0.12, 0.52, 0.20);
   const bedArea = Rect.fromLTWH(0.30, 0.48, 0.54, 0.42);

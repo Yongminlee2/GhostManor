@@ -52,7 +52,7 @@ const _emblemOrder = ['emblem_hall', 'emblem_bed', 'emblem_child', 'emblem_lab']
 /// 순서가 틀리면 0으로 리셋하고 false. 상징이 아닌 아이템/미선택/이미
 /// 완성이면 아무 것도 바꾸지 않고 false. emblem은 인벤토리에서 소모되지
 /// 않는다 — 배치는 플래그일 뿐이라 오답 리셋에도 아이템을 돌려줄 필요가
-/// 없고, 완성 시에만 호출부가 4개를 한꺼번에 소모한다(계획 명시).
+/// 없고, 완성 시에만 호출부가 4개를 한꺼번에 소모한다(오순서 반환 로직을 없애는 설계 선택).
 bool placeEmblem(GameState s, String? itemId) {
   final stage = s.flag('f2_seal_altar_seq');
   if (stage >= _emblemOrder.length) return false;

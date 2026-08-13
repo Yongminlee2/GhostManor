@@ -25,12 +25,8 @@ void main() {
     // living_b: TV가 꺼진 동안(tv_on==0) 부우가 문 앞을 막는 연출 — door 중심점이
     // boo 사각형 안에 있고, 뒤에 선언된 boo가 우선한다(최종 리뷰 Finding 3의 전제).
     'living_b': {'door': 'boo'},
-    // bed_a: 창 앞을 감싼 커튼 rect의 중심이 창(window, 뒤에 선언) 안에
-    // 들어간다 — 챕터2 방8(room8_bed.dart)에서 이미 존재하던 조합, 이번에
-    // rooms.dart에 처음 등록되며 드러남. rect 재조정은 계획상 Task 9(일괄
-    // 검수) 몫이라 여기서는 지금 배선이 의도한 우선순위(구체적 소품인 창이
-    // 넓은 커튼보다 우선)임을 명시하는 예외로 기록.
-    'bed_a': {'curtain': 'window'},
+    // (bed_a curtain→window 예외는 Task 9 재배선에서 rect 분리로 해소됨 —
+    // 커튼=상단 드레이프 띠, 창=유리로 겹침 자체를 제거.)
     // lab_a: 문(door)은 좌측 벽 전체를 덮는 가장 넓은 배경 rect로 먼저
     // 선언되고, 그 위에 겹치는 벽등(sconce)·촛불선반이 나중에 선언돼 우선권을
     // 가진다(room10_lab.dart 코드 주석에 명시된 의도적 z순서: "문을 가장

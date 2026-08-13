@@ -71,6 +71,13 @@ Room buildChild() {
   const switch1Area = Rect.fromLTWH(0.398, 0.538, 0.293, 0.176); // 중단 스위치(sw2r)
   const switch2Area = Rect.fromLTWH(0.154, 0.447, 0.293, 0.176); // 상단 스위치(sw3r, 터널 근접)
   const switchAreas = [switch0Area, switch1Area, switch2Area];
+  // 탭 영역은 크롭(오버레이) rect가 아니라 손잡이 중심으로 좁힌다 — 크롭끼리
+  // 세로로 겹쳐 경계 탭이 엉뚱한 스위치를 토글하던 것을 분리(Task 9 재배선).
+  const switchTapAreas = [
+    Rect.fromLTWH(0.24, 0.685, 0.16, 0.10),
+    Rect.fromLTWH(0.465, 0.576, 0.16, 0.10),
+    Rect.fromLTWH(0.22, 0.485, 0.16, 0.10),
+  ];
   const switchOverlayImages = [
     'assets/scenes/f2_child_b_sw1r.png',
     'assets/scenes/f2_child_b_sw2r.png',
@@ -249,7 +256,7 @@ Room buildChild() {
         for (var i = 0; i < 3; i++)
           Hotspot(
               id: 'switch${i + 1}',
-              area: switchAreas[i],
+              area: switchTapAreas[i],
               onTap: (c) => tapChildSwitchAt(c, i)),
         Hotspot(id: 'train_start', area: trainStartArea, onTap: tapTrainStart),
         Hotspot(
