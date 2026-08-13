@@ -168,7 +168,8 @@ void main() {
 
     s.select('vial_amber'); // 순서 오답(둘째는 초록이어야 함)
     tap('lab_c', 'lamp');
-    expect(s.flag('f2_lab_lamp_stage'), 0);
+    // 오답이어도 단계 유지(정답 병은 소모라 리셋=소프트락)
+    expect(s.flag('f2_lab_lamp_stage'), 1);
     expect(s.dialog, strF2LabLampWrong);
     expect(s.flag('f2_lab_c_lamp'), 0);
     expect(s.has('vial_amber'), isTrue, reason: '오답 시 약병은 소모되지 않는다');
@@ -191,10 +192,10 @@ void main() {
       expect(s.flag('f2_lab_lamp_stage'), 0);
     });
 
-    test('둘째 순서에서 틀리면 false + stage가 0으로 리셋', () {
+    test('둘째 순서에서 틀리면 false + 단계 유지(리셋=소프트락 방지)', () {
       pourVial(s, 'vial_purple');
       expect(pourVial(s, 'vial_amber'), isFalse);
-      expect(s.flag('f2_lab_lamp_stage'), 0);
+      expect(s.flag('f2_lab_lamp_stage'), 1);
     });
 
     test('약병이 아닌 아이템/미선택은 false, 진행은 건드리지 않는다', () {

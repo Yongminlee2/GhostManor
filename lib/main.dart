@@ -365,6 +365,7 @@ class _RoomScreenState extends State<RoomScreen> {
     for (final sc in [...room.walls, ...room.closeups.values]) {
       for (final path in [
         if (sc.image != null) sc.image!,
+        ...sc.alternateImages,
         for (final o in sc.overlays) o.image,
       ]) {
         precacheImage(AssetImage(path), context, onError: (_, _) {});

@@ -43,8 +43,10 @@ void tapGlobeArrow(GameState s) {
 // ── 방 정의 ──
 
 Room buildStudy() {
-  Cond flagSet(String k) => (s) => s.flag(k) >= 1;
-  Cond flagZero(String k) => (s) => s.flag(k) == 0;
+  Cond flagSet(String k) =>
+      (s) => s.flag(k) >= 1;
+  Cond flagZero(String k) =>
+      (s) => s.flag(k) == 0;
   bool always(GameState s) => true; // 책등 각인 오버레이 4장은 상시 표시
 
   const bookRedArea = Rect.fromLTWH(0.16, 0.22, 0.10, 0.11);
@@ -82,15 +84,17 @@ Room buildStudy() {
   const globeOpenShift = 0.09;
   bool globeOpen(GameState s) => s.flag('study_r_globe_taps') == 3;
   Rect globeLeftRect(GameState s) => Rect.fromLTWH(
-      globeClosedLeftX - (globeOpen(s) ? globeOpenShift : 0),
-      globeTop,
-      globeHalfW,
-      globeHalfH);
+    globeClosedLeftX - (globeOpen(s) ? globeOpenShift : 0),
+    globeTop,
+    globeHalfW,
+    globeHalfH,
+  );
   Rect globeRightRect(GameState s) => Rect.fromLTWH(
-      globeClosedRightX + (globeOpen(s) ? globeOpenShift : 0),
-      globeTop,
-      globeHalfW,
-      globeHalfH);
+    globeClosedRightX + (globeOpen(s) ? globeOpenShift : 0),
+    globeTop,
+    globeHalfW,
+    globeHalfH,
+  );
   // 화살표(회전 탭) 핫스팟 — 반쪽 이동 범위 전체를 덮는 고정 영역(닫힘·열림
   // 어느 위치에서도 탭 가능).
   const globeArrowArea = Rect.fromLTWH(0.11, 0.42, 0.36, 0.08);
@@ -138,50 +142,70 @@ Room buildStudy() {
     cleared: flagSet('study_r_done'),
     walls: [
       // 벽면 A: 책장 벽 (기존 아트 재사용 + 책등 문양 각인 오버레이 4장)
-      Scene(id: 'study_a', image: 'assets/scenes/study_a.png', overlays: [
-        SceneOverlay(
+      Scene(
+        id: 'study_a',
+        image: 'assets/scenes/study_a.png',
+        overlays: [
+          SceneOverlay(
             image: 'assets/scenes/study_a_book_red.png',
             area: bookRedArea,
-            when: always),
-        SceneOverlay(
+            when: always,
+          ),
+          SceneOverlay(
             image: 'assets/scenes/study_a_book_blue.png',
             area: bookBlueArea,
-            when: always),
-        SceneOverlay(
+            when: always,
+          ),
+          SceneOverlay(
             image: 'assets/scenes/study_a_book_yellow.png',
             area: bookYellowArea,
-            when: always),
-        SceneOverlay(
+            when: always,
+          ),
+          SceneOverlay(
             image: 'assets/scenes/study_a_book_green.png',
             area: bookGreenArea,
-            when: always),
-        SceneOverlay(
+            when: always,
+          ),
+          SceneOverlay(
             image: 'assets/scenes/study_a_nook_open2.png',
             area: nookArea,
-            when: flagSet('study_r_nook_open'),
-            motion: OverlayMotion.slideDown),
-      ], hotspots: [
-        Hotspot(
+            when: (s) =>
+                s.flag('study_r_nook_open') >= 1 &&
+                s.flag('study_r_got_lens') == 0,
+            motion: OverlayMotion.slideDown,
+          ),
+          SceneOverlay(
+            image: 'assets/scenes/study_a_nook_empty.png',
+            area: nookArea,
+            when: flagSet('study_r_got_lens'),
+          ),
+        ],
+        hotspots: [
+          Hotspot(
             id: 'book_red',
             area: bookRedArea,
             when: flagZero('study_r_nook_open'),
-            onTap: (c) => tapBookSpot(c, 1)),
-        Hotspot(
+            onTap: (c) => tapBookSpot(c, 1),
+          ),
+          Hotspot(
             id: 'book_blue',
             area: bookBlueArea,
             when: flagZero('study_r_nook_open'),
-            onTap: (c) => tapBookSpot(c, 2)),
-        Hotspot(
+            onTap: (c) => tapBookSpot(c, 2),
+          ),
+          Hotspot(
             id: 'book_yellow',
             area: bookYellowArea,
             when: flagZero('study_r_nook_open'),
-            onTap: (c) => tapBookSpot(c, 3)),
-        Hotspot(
+            onTap: (c) => tapBookSpot(c, 3),
+          ),
+          Hotspot(
             id: 'book_green',
             area: bookGreenArea,
             when: flagZero('study_r_nook_open'),
-            onTap: (c) => tapBookSpot(c, 4)),
-        Hotspot(
+            onTap: (c) => tapBookSpot(c, 4),
+          ),
+          Hotspot(
             id: 'nook',
             area: nookArea,
             when: (s) =>
@@ -193,107 +217,133 @@ Room buildStudy() {
               c.give('note2');
               c.s.setFlag('study_r_got_lens', 1);
               c.say(strStudyRNookLoot);
-            }),
-        Hotspot(
+            },
+          ),
+          Hotspot(
             id: 'lower_shelf',
             area: lowerShelfArea,
-            onTap: (c) => c.say(strStudyRLowerShelf)),
-        Hotspot(
+            onTap: (c) => c.say(strStudyRLowerShelf),
+          ),
+          Hotspot(
             id: 'ned',
             area: nedArea,
             onTap: (c) {
               c.sfx('ghost_giggle');
               c.say(strStudyNed);
-            }),
-      ]),
+            },
+          ),
+        ],
+      ),
       // 벽면 B: 책상·지구본·문 벽 (배경판 study_b_plate.png — 지구본 몸통을
       // 제거하고 받침대만 유지, 갈라진 틈에 열쇠를 미리 그려 넣은 판)
       Scene(
-          id: 'study_b',
-          image: 'assets/scenes/study_b_plate.png',
-          objects: [
-            SceneObject(
-                image: 'assets/scenes/study_globe_left.png',
-                area: globeLeftRect),
-            SceneObject(
-                image: 'assets/scenes/study_globe_right.png',
-                area: globeRightRect),
-          ],
-          overlays: [
-            SceneOverlay(
-                image: 'assets/scenes/study_b_door_open.png',
-                area: doorArea,
-                when: flagSet('study_r_done'),
-                motion: OverlayMotion.grow),
-          ],
-          hotspots: [
-            Hotspot(
-                id: 'paper',
-                area: paperArea,
-                onTap: (c) {
-                  c.sfx('paper_rustle');
-                  c.openCloseup('paper');
-                }),
-            Hotspot(
-                id: 'shelf_top',
-                area: shelfTopArea,
-                onTap: (c) => c.say(strStudyRShelfTop)),
-            Hotspot(
-                id: 'globe_arrow',
-                area: globeArrowArea,
-                onTap: tapGlobeArrowSpot),
-            // gap은 arrow와 상단 구간이 겹친다 — 반드시 arrow보다 뒤에 선언해
-            // 열림(taps==3) 상태에서 겹침 탭이 gap(열쇠 수령)으로 풀리게 한다
-            // (z순서 의존 — room3_study_test의 열림 상태 히트테스트가 고정).
-            Hotspot(
-                id: 'globe_gap',
-                area: globeGapArea,
-                when: (s) =>
-                    s.flag('study_r_globe_taps') == 3 &&
-                    s.flag('study_r_got_key') == 0,
-                onTap: (c) {
-                  c.sfx('metal_key');
-                  c.give('key_study');
-                  c.s.setFlag('study_r_got_key', 1);
-                  c.say(strStudyGlobeKey);
-                }),
-            Hotspot(
-                id: 'door',
-                area: doorArea,
-                onTap: (c) {
-                  final s = c.s;
-                  final unlocked = s.flag('study_r_door_unlocked') >= 1;
-                  final oiled = s.flag('study_r_door_oiled') >= 1;
-                  if (unlocked && oiled) {
-                    c.sfx('door_open');
-                    s.setFlag('study_r_done', 1);
-                  } else if (c.using('key_study')) {
-                    c.consume('key_study');
-                    c.sfx('metal_key');
-                    s.setFlag('study_r_door_unlocked', 1);
-                    c.say(strStudyDoorUnlocked);
-                  } else if (c.using('oil')) {
-                    c.consume('oil');
-                    c.sfx('liquid_pour');
-                    s.setFlag('study_r_door_oiled', 1);
-                    c.say(strStudyDoorOiled);
-                  } else if (unlocked && !oiled) {
-                    c.sfx('locked');
-                    c.say(strStudyDoorSqueak);
-                  } else {
-                    c.sfx('locked');
-                    c.say(strStudyDoorLocked);
-                  }
-                }),
-            Hotspot(
-                id: 'desk', area: deskArea, onTap: (c) => c.say(strStudyDesk)),
-          ]),
+        id: 'study_b',
+        image: 'assets/scenes/study_b_plate.png',
+          imageFor: (s) => s.flag('study_r_got_key') >= 1
+              ? 'assets/scenes/study_b_plate_empty.png'
+              : 'assets/scenes/study_b_plate.png',
+          alternateImages: const ['assets/scenes/study_b_plate_empty.png'],
+        objects: [
+          SceneObject(
+            image: 'assets/scenes/study_globe_left.png',
+            area: globeLeftRect,
+          ),
+          SceneObject(
+            image: 'assets/scenes/study_globe_right.png',
+            area: globeRightRect,
+          ),
+        ],
+        overlays: [
+          SceneOverlay(
+            image: 'assets/scenes/study_b_door_open.png',
+            area: doorArea,
+            when: flagSet('study_r_done'),
+            motion: OverlayMotion.grow,
+          ),
+        ],
+        hotspots: [
+          Hotspot(
+            id: 'paper',
+            area: paperArea,
+            onTap: (c) {
+              c.sfx('paper_rustle');
+              c.openCloseup('paper');
+            },
+          ),
+          Hotspot(
+            id: 'shelf_top',
+            area: shelfTopArea,
+            onTap: (c) => c.say(strStudyRShelfTop),
+          ),
+          Hotspot(
+            id: 'globe_arrow',
+            area: globeArrowArea,
+            onTap: tapGlobeArrowSpot,
+          ),
+          // gap은 arrow와 상단 구간이 겹친다 — 반드시 arrow보다 뒤에 선언해
+          // 열림(taps==3) 상태에서 겹침 탭이 gap(열쇠 수령)으로 풀리게 한다
+          // (z순서 의존 — room3_study_test의 열림 상태 히트테스트가 고정).
+          Hotspot(
+            id: 'globe_gap',
+            area: globeGapArea,
+            when: (s) =>
+                s.flag('study_r_globe_taps') == 3 &&
+                s.flag('study_r_got_key') == 0,
+            onTap: (c) {
+              c.sfx('metal_key');
+              c.give('key_study');
+              c.s.setFlag('study_r_got_key', 1);
+              c.say(strStudyGlobeKey);
+            },
+          ),
+          Hotspot(
+            id: 'door',
+            area: doorArea,
+            onTap: (c) {
+              final s = c.s;
+              final unlocked = s.flag('study_r_door_unlocked') >= 1;
+              final oiled = s.flag('study_r_door_oiled') >= 1;
+              if (unlocked && oiled) {
+                c.sfx('door_open');
+                s.setFlag('study_r_done', 1);
+              } else if (c.using('key_study')) {
+                c.consume('key_study');
+                c.sfx('metal_key');
+                s.setFlag('study_r_door_unlocked', 1);
+                c.say(strStudyDoorUnlocked);
+              } else if (c.using('oil')) {
+                c.consume('oil');
+                c.sfx('liquid_pour');
+                s.setFlag('study_r_door_oiled', 1);
+                c.say(strStudyDoorOiled);
+              } else if (unlocked && !oiled) {
+                c.sfx('locked');
+                c.say(strStudyDoorSqueak);
+              } else {
+                c.sfx('locked');
+                c.say(strStudyDoorLocked);
+              }
+            },
+          ),
+          Hotspot(
+            id: 'desk',
+            area: deskArea,
+            onTap: (c) => c.say(strStudyDesk),
+          ),
+        ],
+      ),
       // 벽면 C: 관측 창가 (신규)
-      Scene(id: 'study_c', image: 'assets/scenes/study_c.png', hotspots: [
-        // 창(큰 풍미 rect)을 먼저 — 뒤 선언인 망원경·지구의가 겹침에서 이긴다.
-        Hotspot(
-            id: 'window', area: windowArea, onTap: (c) => c.say(strStudyRWindow)),
-        Hotspot(
+      Scene(
+        id: 'study_c',
+        image: 'assets/scenes/study_c.png',
+        hotspots: [
+          // 창(큰 풍미 rect)을 먼저 — 뒤 선언인 망원경·지구의가 겹침에서 이긴다.
+          Hotspot(
+            id: 'window',
+            area: windowArea,
+            onTap: (c) => c.say(strStudyRWindow),
+          ),
+          Hotspot(
             id: 'telescope',
             area: telescopeArea,
             onTap: (c) {
@@ -308,54 +358,73 @@ Room buildStudy() {
               } else {
                 c.say(strStudyRTelescopeNoLens);
               }
-            }),
-        Hotspot(
+            },
+          ),
+          Hotspot(
             id: 'starmap_frame',
             area: starmapArea,
             onTap: (c) {
               c.sfx('paper_rustle');
               c.openCloseup('starmap');
-            }),
-        Hotspot(
+            },
+          ),
+          Hotspot(
             id: 'globe_replica',
             area: globeReplicaArea,
-            onTap: (c) => c.say(strStudyRGlobeReplica)),
-      ]),
+            onTap: (c) => c.say(strStudyRGlobeReplica),
+          ),
+        ],
+      ),
     ],
     closeups: {
       'paper': Scene(
-          id: 'paper',
-          custom: (_, c) => RubbableScene(
-                ctx: c,
-                baseImage: 'assets/scenes/study_paper_clean2.png',
-                coverImage: 'assets/scenes/study_paper_ink.png',
-                cleaned: (s) => s.flag('study_r_paper_rubbed') >= 1,
-                onCleaned: (c) {
-                  c.s.setFlag('study_r_paper_rubbed', 1);
-                  c.sfx('sparkle');
-                },
-                gestureKey: const Key('paper_rub'),
-              )),
+        id: 'paper',
+        custom: (_, c) => RubbableScene(
+          ctx: c,
+          baseImage: 'assets/scenes/study_paper_clean2.png',
+          coverImage: 'assets/scenes/study_paper_ink.png',
+          cleaned: (s) => s.flag('study_r_paper_rubbed') >= 1,
+          onCleaned: (c) {
+            c.s.setFlag('study_r_paper_rubbed', 1);
+            c.sfx('sparkle');
+          },
+          gestureKey: const Key('paper_rub'),
+        ),
+      ),
       'stars': Scene(id: 'stars', image: 'assets/scenes/study_stars.png'),
-      'starmap':
-          Scene(id: 'starmap', image: 'assets/scenes/study_starmap.png'),
+      'starmap': Scene(id: 'starmap', image: 'assets/scenes/study_starmap.png'),
     },
     hints: [
-      PuzzleHint(puzzleId: 'p_study_r_books', title: '문양과 책', steps: [
-        '얼룩 종이의 문양들은 책과 연결돼요',
-        '책등의 작은 각인과 대조 — 문양 순서를 색 순서로',
-        '정답: 파→초→빨→노',
-      ], solved: (s) => s.flag('study_r_nook_open') >= 1),
-      PuzzleHint(puzzleId: 'p_study_r_stars', title: '별자리와 지구본', steps: [
-        '망원경엔 빠진 부품이',
-        '숨은공간의 렌즈. 관측한 별 모양을 지도에서 찾으면 옆에 조작법이',
-        '정답: W자=여우자리, 화살표 셋 = 지구본 3탭',
-      ], solved: (s) => s.flag('study_r_got_key') >= 1),
-      PuzzleHint(puzzleId: 'p_study_r_door', title: '녹슨 문', steps: [
-        '이 문은 자물쇠 말고도 문제가 하나 더 있어요',
-        '열쇠로 잠금을 풀어도 경첩이 녹슬어 안 열려요. 지난 방에서 챙긴 물건 중에 도움이 될 것이?',
-        '정답: 거실 비밀칸의 기름병을 문에 사용한 뒤, 서재 열쇠로 열기',
-      ], solved: (s) => s.flag('study_r_done') >= 1),
+      PuzzleHint(
+        puzzleId: 'p_study_r_books',
+        title: '문양과 책',
+        steps: [
+          '얼룩 종이의 문양들은 책과 연결돼요',
+          '책등의 작은 각인과 대조 — 문양 순서를 색 순서로',
+          '정답: 파→초→빨→노',
+        ],
+        solved: (s) => s.flag('study_r_nook_open') >= 1,
+      ),
+      PuzzleHint(
+        puzzleId: 'p_study_r_stars',
+        title: '별자리와 지구본',
+        steps: [
+          '망원경엔 빠진 부품이',
+          '숨은공간의 렌즈. 관측한 별 모양을 지도에서 찾으면 옆에 조작법이',
+          '정답: W자=여우자리, 화살표 셋 = 지구본 3탭',
+        ],
+        solved: (s) => s.flag('study_r_got_key') >= 1,
+      ),
+      PuzzleHint(
+        puzzleId: 'p_study_r_door',
+        title: '녹슨 문',
+        steps: [
+          '이 문은 자물쇠 말고도 문제가 하나 더 있어요',
+          '열쇠로 잠금을 풀어도 경첩이 녹슬어 안 열려요. 지난 방에서 챙긴 물건 중에 도움이 될 것이?',
+          '정답: 거실 비밀칸의 기름병을 문에 사용한 뒤, 서재 열쇠로 열기',
+        ],
+        solved: (s) => s.flag('study_r_done') >= 1,
+      ),
     ],
   );
 }

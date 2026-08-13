@@ -75,7 +75,8 @@ class _HandPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final center = size.center(Offset.zero);
     final angle = hour * 2 * math.pi / 12;
-    final tip = center +
+    final tip =
+        center +
         Offset(math.sin(angle), -math.cos(angle)) * size.shortestSide * 0.28;
     canvas.drawLine(
       center,
@@ -97,7 +98,8 @@ class _HandPainter extends CustomPainter {
 // ‖ T2 시계 코드(액자 문지르기→시계 4개 그림 / 우편함→편지 "셋째 시계의 시각" /
 // 벽시계를 3시로) → 교차: 서랍은 어두워 T1의 불 켠 초가 필요 → 열쇠 → 문.
 Room buildFoyer() {
-  Cond flagSet(String k) => (s) => s.flag(k) >= 1;
+  Cond flagSet(String k) =>
+      (s) => s.flag(k) >= 1;
 
   // 벽면 C(계단참) 핫스팟 rect — foyer_c.png 실측(우편함 좌중단, 거울 우측,
   // 초상화 2점 상단, 촛대 장식은 거울 아래, 중앙엔 어디로도 안 이어지는 장식 문).
@@ -271,6 +273,13 @@ Room buildFoyer() {
       'mailbox': Scene(
         id: 'mailbox',
         image: 'assets/scenes/foyer_mailbox.png',
+        overlays: [
+          SceneOverlay(
+            image: 'assets/scenes/foyer_mailbox_empty.png',
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: flagSet('foyer_r_got_letter'),
+          ),
+        ],
         hotspots: [
           Hotspot(
             id: 'letter_in_box',
@@ -289,18 +298,20 @@ Room buildFoyer() {
       ),
       'coat': Scene(
         id: 'coat',
-        custom: (_, c) => RubbableScene(
-          ctx: c,
-          baseImage: 'assets/scenes/foyer_coat_clean.png',
-          coverImage: 'assets/scenes/foyer_coat_dust.png',
-          cleaned: (s) => s.flag('foyer_r_got_match') >= 1,
-          onCleaned: (c) {
-            finishCoatRub(c.s);
-            c.sfx('sparkle');
-            c.say(strFoyerRCoatMatch);
-          },
-          gestureKey: const Key('coat_rub'),
-        ),
+        custom: (_, c) => c.s.flag('foyer_r_got_match') >= 1
+            ? gameImage('assets/scenes/foyer_coat_empty.png')
+            : RubbableScene(
+                ctx: c,
+                baseImage: 'assets/scenes/foyer_coat_clean.png',
+                coverImage: 'assets/scenes/foyer_coat_dust.png',
+                cleaned: (s) => false,
+                onCleaned: (c) {
+                  finishCoatRub(c.s);
+                  c.sfx('sparkle');
+                  c.say(strFoyerRCoatMatch);
+                },
+                gestureKey: const Key('coat_rub'),
+              ),
       ),
       'shoes': Scene(
         id: 'shoes',

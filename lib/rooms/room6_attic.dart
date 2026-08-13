@@ -75,35 +75,43 @@ class OrganKeys extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, box) {
-      return Stack(children: [
-        Positioned.fill(
-            child: gameImage('assets/scenes/attic_organ_close.png')),
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: 0,
-          height: box.maxHeight * 0.4,
-          child: Row(children: [
-            for (var i = 1; i <= 4; i++)
-              Expanded(
-                child: GestureDetector(
-                  key: Key('organ_key_$i'),
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => _tapKey(i),
-                ),
+    return LayoutBuilder(
+      builder: (context, box) {
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: gameImage('assets/scenes/attic_organ_close.png'),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: box.maxHeight * 0.4,
+              child: Row(
+                children: [
+                  for (var i = 1; i <= 4; i++)
+                    Expanded(
+                      child: GestureDetector(
+                        key: Key('organ_key_$i'),
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => _tapKey(i),
+                      ),
+                    ),
+                ],
               ),
-          ]),
-        ),
-      ]);
-    });
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 
 // ── 방 정의 ──
 
 Room buildAttic() {
-  Cond flagSet(String k) => (s) => s.flag(k) >= 1;
+  Cond flagSet(String k) =>
+      (s) => s.flag(k) >= 1;
 
   // 벽C 잡동사니 다락 — 브리프 binding 좌표(궤짝·쪽지)는 그대로, 나머지
   // 소품은 좌표 미정(아트 의뢰서 비고)이라 서로 겹치지 않게 배치
@@ -131,14 +139,19 @@ Room buildAttic() {
     cleared: flagSet('attic_r_done'),
     walls: [
       // 벽면 A: 오르간 벽 (기존 아트+로직 재사용, 플래그만 attic_r_)
-      Scene(id: 'attic_a', image: 'assets/scenes/attic_a.png', overlays: [
-        SceneOverlay(
+      Scene(
+        id: 'attic_a',
+        image: 'assets/scenes/attic_a.png',
+        overlays: [
+          SceneOverlay(
             image: 'assets/scenes/attic_a_cards.png',
             area: const Rect.fromLTWH(0, 0, 1, 1),
             when: (s) => s.flag('attic_r_cards_placed') >= 4,
-            motion: OverlayMotion.fade),
-      ], hotspots: [
-        Hotspot(
+            motion: OverlayMotion.fade,
+          ),
+        ],
+        hotspots: [
+          Hotspot(
             id: 'organ',
             area: const Rect.fromLTWH(0.24, 0.44, 0.52, 0.34),
             onTap: (c) {
@@ -147,18 +160,25 @@ Room buildAttic() {
               } else {
                 c.openCloseup('organ');
               }
-            }),
-        Hotspot(
+            },
+          ),
+          Hotspot(
             id: 'music_stand',
             area: const Rect.fromLTWH(0.30, 0.50, 0.40, 0.10),
             onTap: (c) {
               final s = c.s;
-              final note = const ['note1', 'note2', 'note3', 'note4']
-                  .firstWhere((n) => c.using(n), orElse: () => '');
+              final note = const [
+                'note1',
+                'note2',
+                'note3',
+                'note4',
+              ].firstWhere((n) => c.using(n), orElse: () => '');
               if (note.isEmpty) {
-                c.say(s.flag('attic_r_cards_placed') < 4
-                    ? strAtticStandEmpty
-                    : strAtticStandFull);
+                c.say(
+                  s.flag('attic_r_cards_placed') < 4
+                      ? strAtticStandEmpty
+                      : strAtticStandFull,
+                );
                 return;
               }
               c.consume(note);
@@ -170,27 +190,37 @@ Room buildAttic() {
               } else {
                 c.say(strAtticCardPlaced);
               }
-            }),
-        Hotspot(
+            },
+          ),
+          Hotspot(
             id: 'ghospo',
             area: const Rect.fromLTWH(0.78, 0.36, 0.18, 0.28),
             onTap: (c) {
               c.sfx('ghost_giggle');
-              c.say(c.s.flag('attic_r_organ_played') == 1
-                  ? strAtticGhospoProud
-                  : strAtticGhospoHint);
-            }),
-      ]),
+              c.say(
+                c.s.flag('attic_r_organ_played') == 1
+                    ? strAtticGhospoProud
+                    : strAtticGhospoHint,
+              );
+            },
+          ),
+        ],
+      ),
       // 벽면 B: 트렁크·창문·자수 벽 (기존 아트+로직 재사용, 플래그만
       // attic_r_ — 자수 클로즈업만 찢긴 버전으로 교체, 창은 리액션 추가)
-      Scene(id: 'attic_b', image: 'assets/scenes/attic_b.png', overlays: [
-        SceneOverlay(
+      Scene(
+        id: 'attic_b',
+        image: 'assets/scenes/attic_b.png',
+        overlays: [
+          SceneOverlay(
             image: 'assets/scenes/attic_b_trunk_open.png',
             area: const Rect.fromLTWH(0, 0, 1, 1),
             when: (s) => s.flag('attic_r_organ_played') == 1,
-            motion: OverlayMotion.fade),
-      ], hotspots: [
-        Hotspot(
+            motion: OverlayMotion.fade,
+          ),
+        ],
+        hotspots: [
+          Hotspot(
             id: 'embroidery',
             area: const Rect.fromLTWH(0.26, 0.19, 0.36, 0.28),
             onTap: (c) {
@@ -205,8 +235,9 @@ Room buildAttic() {
               } else {
                 c.openCloseup('embroidery');
               }
-            }),
-        Hotspot(
+            },
+          ),
+          Hotspot(
             id: 'trunk',
             area: const Rect.fromLTWH(0.36, 0.54, 0.34, 0.28),
             onTap: (c) {
@@ -222,22 +253,35 @@ Room buildAttic() {
                 c.sfx('wood_creak_open');
                 s.setFlag('attic_r_done', 1);
               }
-            }),
-        Hotspot(
+            },
+          ),
+          Hotspot(
             id: 'window',
             area: const Rect.fromLTWH(0.76, 0.28, 0.20, 0.26),
-            onTap: (c) => c.say(strAtticWindow)),
-      ]),
+            onTap: (c) => c.say(strAtticWindow),
+          ),
+        ],
+      ),
       // 벽면 C: 잡동사니 다락 (신규) — T2 궤짝·쪽지 + 소품 개수 단서(촛대·책
       // 더미) + 조사 전용 잡동사니(정답 정보 없음, 고스포 톤 유지).
-      Scene(id: 'attic_c', image: 'assets/scenes/attic_c.png', overlays: [
-        SceneOverlay(
+      Scene(
+        id: 'attic_c',
+        image: 'assets/scenes/attic_c.png',
+        overlays: [
+          SceneOverlay(
             image: 'assets/scenes/attic_c_chest_open.png',
-            area: chestArea,
-            when: flagSet('attic_r_chest_open'),
-            motion: OverlayMotion.grow),
-      ], hotspots: [
-        Hotspot(
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: (s) => s.flag('attic_r_chest_open') >= 1 && s.has('shred'),
+            motion: OverlayMotion.grow,
+          ),
+          SceneOverlay(
+            image: 'assets/scenes/attic_c_chest_empty.png',
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: (s) => s.flag('attic_r_chest_open') >= 1 && !s.has('shred'),
+          ),
+        ],
+        hotspots: [
+          Hotspot(
             id: 'chest',
             area: chestArea,
             onTap: (c) {
@@ -246,94 +290,130 @@ Room buildAttic() {
               } else {
                 c.openCloseup('chest');
               }
-            }),
-        Hotspot(
+            },
+          ),
+          Hotspot(
             id: 'old_note',
             area: oldNoteArea,
             onTap: (c) {
               c.sfx('paper_rustle');
               c.openCloseup('old_note');
-            }),
-        Hotspot(
+            },
+          ),
+          Hotspot(
             id: 'candle_holder',
             area: candleHolderArea,
-            onTap: (c) => c.say(strAtticRCandleHolder)),
-        Hotspot(
+            onTap: (c) => c.say(strAtticRCandleHolder),
+          ),
+          Hotspot(
             id: 'books_pile',
             area: booksPileArea,
-            onTap: (c) => c.say(strAtticRBooksPile)),
-        Hotspot(
+            onTap: (c) => c.say(strAtticRBooksPile),
+          ),
+          Hotspot(
             id: 'round_window',
             area: roundWindowArea,
-            onTap: (c) => c.say(strAtticRWindowMoon)),
-        Hotspot(
+            onTap: (c) => c.say(strAtticRWindowMoon),
+          ),
+          Hotspot(
             id: 'stitch_frame',
             area: stitchFrameArea,
-            onTap: (c) => c.say(strAtticRStitchFrame)),
-        Hotspot(
+            onTap: (c) => c.say(strAtticRStitchFrame),
+          ),
+          Hotspot(
             id: 'round_table',
             area: roundTableArea,
-            onTap: (c) => c.say(strAtticRRoundTable)),
-        Hotspot(id: 'rug', area: rugArea, onTap: (c) => c.say(strAtticRRug)),
-        Hotspot(id: 'doll', area: dollArea, onTap: (c) => c.say(strAtticRDoll)),
-        Hotspot(
+            onTap: (c) => c.say(strAtticRRoundTable),
+          ),
+          Hotspot(id: 'rug', area: rugArea, onTap: (c) => c.say(strAtticRRug)),
+          Hotspot(
+            id: 'doll',
+            area: dollArea,
+            onTap: (c) => c.say(strAtticRDoll),
+          ),
+          Hotspot(
             id: 'ghospo_c',
             area: ghospoCArea,
             onTap: (c) {
               c.sfx('ghost_giggle');
               c.say(strAtticRGhospoC);
-            }),
-      ]),
+            },
+          ),
+        ],
+      ),
     ],
     closeups: {
       // 클로즈업 배경 자체가 "찢긴" 상태 — 완성되면 attic_embroidery_full.png가
       // 그 위를 덮는다(오버레이, living TV 장면전환과 동일 패턴).
       'embroidery': Scene(
-          id: 'embroidery',
-          image: 'assets/scenes/attic_embroidery2.png',
-          overlays: [
-            SceneOverlay(
-                image: 'assets/scenes/attic_embroidery_full.png',
-                area: const Rect.fromLTWH(0, 0, 1, 1),
-                when: flagSet('attic_r_embroidery_full'),
-                motion: OverlayMotion.fade),
-          ]),
-      'organ': Scene(id: 'organ', custom: (_, c) => OrganKeys(ctx: c)),
-      'old_note':
-          Scene(id: 'old_note', image: 'assets/scenes/attic_note.png'),
+        id: 'embroidery',
+        image: 'assets/scenes/attic_embroidery2.png',
+        overlays: [
+          SceneOverlay(
+            image: 'assets/scenes/attic_embroidery_full.png',
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: flagSet('attic_r_embroidery_full'),
+            motion: OverlayMotion.fade,
+          ),
+        ],
+      ),
+      'organ': Scene(
+        id: 'organ',
+        custom: (_, c) => OrganKeys(ctx: c),
+      ),
+      'old_note': Scene(id: 'old_note', image: 'assets/scenes/attic_note.png'),
       // 다이얼 궤짝: 배경은 여기서 겹쳐 쌓고(DialSafe는 배경을 그리지 않음),
       // 위젯이 휠 3개+확인 버튼을 그 위에 올린다(거실 4자리 금고와 동일
       // 패턴 — digits만 3으로, flagPrefix가 달라 플래그 네임스페이스도 분리).
       'chest': Scene(
-          id: 'chest',
-          custom: (_, c) => Stack(fit: StackFit.expand, children: [
-                gameImage('assets/scenes/attic_c_chest_dial.png'),
-                DialSafe(
-                  ctx: c,
-                  digits: 3,
-                  code: '342',
-                  flagPrefix: 'attic_r_chest',
-                  wrongSay: strAtticRChestWrong,
-                  onOpened: openChest,
-                ),
-              ])),
+        id: 'chest',
+        custom: (_, c) => Stack(
+          fit: StackFit.expand,
+          children: [
+            gameImage('assets/scenes/attic_c_chest_dial.png'),
+            DialSafe(
+              ctx: c,
+              digits: 3,
+              code: '342',
+              flagPrefix: 'attic_r_chest',
+              wrongSay: strAtticRChestWrong,
+              onOpened: openChest,
+            ),
+          ],
+        ),
+      ),
     },
     hints: [
-      PuzzleHint(puzzleId: 'p_attic_r_chest', title: '작은 궤짝', steps: [
-        '쪽지의 세 그림이 이 다락 어딘가의 "개수"예요',
-        '촛불·창문 칸·책 더미를 세어보세요',
-        '정답: 3-4-2',
-      ], solved: (s) => s.flag('attic_r_chest_open') >= 1),
-      PuzzleHint(puzzleId: 'p_attic_r_order', title: '연주 순서', steps: [
-        '자수가 찢겨 있어요 — 나머지 반쪽이 어딘가에',
-        '궤짝 속 조각을 자수에 맞추면 순서 완성',
-        '정답: 달해별구름 = 도미레파 = 건반 1·3·2·4',
-      ], solved: (s) => s.flag('attic_r_organ_played') >= 1),
-      PuzzleHint(puzzleId: 'p_attic_r_trunk', title: '삼촌의 트렁크', steps: [
-        '이 트렁크엔 열쇠 구멍이 없어요. 음악으로 여는 자물쇠',
-        '오르간을 올바로 연주하면 열려요',
-        '정답: 연주 성공 후 트렁크를 탭 — 유언장을 읽고 한 번 더 탭하면 탈출.',
-      ], solved: (s) => s.flag('attic_r_done') >= 1),
+      PuzzleHint(
+        puzzleId: 'p_attic_r_chest',
+        title: '작은 궤짝',
+        steps: [
+          '쪽지의 세 그림이 이 다락 어딘가의 "개수"예요',
+          '촛불·창문 칸·책 더미를 세어보세요',
+          '정답: 3-4-2',
+        ],
+        solved: (s) => s.flag('attic_r_chest_open') >= 1,
+      ),
+      PuzzleHint(
+        puzzleId: 'p_attic_r_order',
+        title: '연주 순서',
+        steps: [
+          '자수가 찢겨 있어요 — 나머지 반쪽이 어딘가에',
+          '궤짝 속 조각을 자수에 맞추면 순서 완성',
+          '정답: 달해별구름 = 도미레파 = 건반 1·3·2·4',
+        ],
+        solved: (s) => s.flag('attic_r_organ_played') >= 1,
+      ),
+      PuzzleHint(
+        puzzleId: 'p_attic_r_trunk',
+        title: '삼촌의 트렁크',
+        steps: [
+          '이 트렁크엔 열쇠 구멍이 없어요. 음악으로 여는 자물쇠',
+          '오르간을 올바로 연주하면 열려요',
+          '정답: 연주 성공 후 트렁크를 탭 — 유언장을 읽고 한 번 더 탭하면 탈출.',
+        ],
+        solved: (s) => s.flag('attic_r_done') >= 1,
+      ),
     ],
   );
 }

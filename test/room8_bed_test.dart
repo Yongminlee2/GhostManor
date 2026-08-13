@@ -106,7 +106,7 @@ void main() {
 
   // ── T2 자수 ──
 
-  test('부정: 실 순서 오류(은실을 먼저) → 오답 전문 + 단계 리셋', () {
+  test('부정: 실 순서 오류(은실을 먼저) → 오답 전문 + 단계 유지', () {
     s.give('silver_thread');
     s.select('silver_thread');
     tap('bed_c', 'embroidery');
@@ -199,10 +199,10 @@ void main() {
       expect(s.flag('f2_bed_stitch_stage'), 3);
     });
 
-    test('순서가 틀리면 false + 0으로 리셋', () {
+    test('순서가 틀리면 false + 단계 유지(정답 실은 소모라 리셋=소프트락)', () {
       stitchThread(s, 'thread_blue1'); // stage 1
       expect(stitchThread(s, 'thread_blue2'), isFalse); // 파랑 다음은 은이어야
-      expect(s.flag('f2_bed_stitch_stage'), 0);
+      expect(s.flag('f2_bed_stitch_stage'), 1);
     });
 
     test('실이 아닌 아이템/미선택은 상태를 바꾸지 않고 false', () {

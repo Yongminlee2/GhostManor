@@ -352,7 +352,7 @@ const strF2BedBasketThread2 = '반짇고리 안에서 파란 실타래를 하나
 const strF2BedBasketEmpty = '반짇고리엔 이제 실이 남지 않았다.';
 const strF2BedStitchThread1 = '파란 실이 자수틀에 사뿐히 얹힌다.';
 const strF2BedStitchThread2 = '은실이 자수틀 위에서 조용히 반짝인다.';
-const strF2BedStitchWrong = '실이 엉킨다. 마님의 한숨이 들리는 것 같다… 처음부터 다시.';
+const strF2BedStitchWrong = '실이 엉킨다. 마님의 한숨이 들리는 것 같다… 이 순서가 아니다.';
 const strF2BedStitchComplete = '마지막 실이 자리를 잡는 순간, 구름까지 완성된 자수가 은은히 빛난다.';
 
 // ── 방 9 아이 방 (room9_child, f2_child_ 플래그) ──

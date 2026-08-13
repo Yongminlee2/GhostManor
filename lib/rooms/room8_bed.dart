@@ -56,7 +56,9 @@ bool stitchThread(GameState s, String? item) {
     s.setFlag('f2_bed_stitch_stage', stage + 1);
     return true;
   }
-  s.setFlag('f2_bed_stitch_stage', 0);
+  // 오답이어도 단계는 유지한다 — 정답 실은 영구 소모(파랑 2·은 1이 정확히
+  // 재고)라 0으로 리셋하면 남은 실로는 복구 불가 소프트락이 된다(주방 냄비와
+  // 동일한 부류, 실기기 검수에서 발견된 원칙).
   return false;
 }
 

@@ -85,26 +85,28 @@ class BarrelDrag extends StatelessWidget {
       builder: (context, _) {
         final moved = s.flag('cellar_r_barrel_moved') >= 1;
         final progress = s.flag('cellar_r_barrel_px') / 100;
-        return LayoutBuilder(builder: (context, box) {
-          return GestureDetector(
-            key: const Key('barrel_drag'),
-            behavior: HitTestBehavior.opaque,
-            onPanUpdate: moved
-                ? null
-                : (d) {
-                    final before = s.flag('cellar_r_barrel_moved');
-                    moveBarrel(s, d.delta.dx.abs());
-                    if (before == 0 && s.flag('cellar_r_barrel_moved') >= 1) {
-                      ctx.sfx('wood_slide');
-                      ctx.say(strCellarBarrelDone);
-                    }
-                  },
-            child: Transform.translate(
-              offset: Offset(progress * box.maxWidth * 0.2, 0),
-              child: gameImage('assets/scenes/cellar_barrel_close.png'),
-            ),
-          );
-        });
+        return LayoutBuilder(
+          builder: (context, box) {
+            return GestureDetector(
+              key: const Key('barrel_drag'),
+              behavior: HitTestBehavior.opaque,
+              onPanUpdate: moved
+                  ? null
+                  : (d) {
+                      final before = s.flag('cellar_r_barrel_moved');
+                      moveBarrel(s, d.delta.dx.abs());
+                      if (before == 0 && s.flag('cellar_r_barrel_moved') >= 1) {
+                        ctx.sfx('wood_slide');
+                        ctx.say(strCellarBarrelDone);
+                      }
+                    },
+              child: Transform.translate(
+                offset: Offset(progress * box.maxWidth * 0.2, 0),
+                child: gameImage('assets/scenes/cellar_barrel_close.png'),
+              ),
+            );
+          },
+        );
       },
     );
   }
@@ -155,11 +157,16 @@ class _ShelfShakeState extends State<ShelfShake> {
 
   @override
   Widget build(BuildContext context) {
+    final keyDropped = widget.ctx.s.flag('cellar_r_key_dropped') >= 1;
     return GestureDetector(
       key: const Key('shelf_tap'),
       behavior: HitTestBehavior.opaque,
       onTap: () => _fire(() => tapShelf(widget.ctx.s)),
-      child: gameImage('assets/scenes/cellar_shelf_close.png'),
+      child: gameImage(
+        keyDropped
+            ? 'assets/scenes/cellar_shelf_empty.png'
+            : 'assets/scenes/cellar_shelf_close.png',
+      ),
     );
   }
 }
@@ -167,8 +174,10 @@ class _ShelfShakeState extends State<ShelfShake> {
 // ── 방 정의 ──
 
 Room buildCellar() {
-  Cond flagSet(String k) => (s) => s.flag(k) >= 1;
-  Cond flagZero(String k) => (s) => s.flag(k) == 0;
+  Cond flagSet(String k) =>
+      (s) => s.flag(k) >= 1;
+  Cond flagZero(String k) =>
+      (s) => s.flag(k) == 0;
   bool dark(GameState s) => s.flag('cellar_r_light') == 0; // 오버레이 when에 반복 사용
 
   // 와인 랙 병 5개(왼쪽부터) — 실제 납품 아트(cellar_c.png) 라벨의 촛불 개수를
@@ -234,7 +243,11 @@ Room buildCellar() {
     c.consume(c.using('fuse') ? 'fuse' : 'fuse2');
     s.addFlag('cellar_r_fuse_count');
     c.sfx('metal_click');
-    c.say(s.flag('cellar_r_fuse_count') == 1 ? strCellarRFuse1In : strCellarRFuse2In);
+    c.say(
+      s.flag('cellar_r_fuse_count') == 1
+          ? strCellarRFuse1In
+          : strCellarRFuse2In,
+    );
   }
 
   void tapLightSwitch(GameCtx c) {
@@ -254,24 +267,37 @@ Room buildCellar() {
     cleared: flagSet('cellar_r_done'),
     walls: [
       // 벽면 A: 선반·상자들 벽 (기존 아트+로직 재사용, 플래그만 cellar_r_)
-      Scene(id: 'cellar_a', image: 'assets/scenes/cellar_a.png', overlays: [
-        // 선언 순서 중요 — 어둠막 먼저, 야광은 그 위에 그려져야 함.
-        SceneOverlay(
+      Scene(
+        id: 'cellar_a',
+        image: 'assets/scenes/cellar_a.png',
+          imageFor: (s) => s.flag('cellar_r_key_dropped') >= 1
+              ? 'assets/scenes/cellar_a_key_removed.png'
+              : 'assets/scenes/cellar_a.png',
+          alternateImages: const ['assets/scenes/cellar_a_key_removed.png'],
+        overlays: [
+          // 선언 순서 중요 — 어둠막 먼저, 야광은 그 위에 그려져야 함.
+          SceneOverlay(
             image: 'assets/scenes/cellar_a_dark.png',
             area: const Rect.fromLTWH(0, 0, 1, 1),
-            when: dark),
-        SceneOverlay(
+            when: dark,
+          ),
+          // 야광 표시는 퓨즈를 집고 나면 꺼진다(루팅 완료 표지의 시각 상태
+          // 원칙) — 어둠막 자체는 퓨즈와 무관하게 소등 내내 유지.
+          SceneOverlay(
             image: 'assets/scenes/cellar_a_glow.png',
             area: const Rect.fromLTWH(0.11, 0.50, 0.24, 0.24),
-            when: dark),
-        SceneOverlay(
+            when: (s) => dark(s) && s.flag('cellar_r_got_fuse') == 0,
+          ),
+          SceneOverlay(
             image: 'assets/scenes/cellar_a_key_floor.png',
             area: const Rect.fromLTWH(0.40, 0.80, 0.12, 0.065),
             when: (s) =>
                 s.flag('cellar_r_key_dropped') == 1 &&
-                s.flag('cellar_r_got_key') == 0),
-      ], hotspots: [
-        Hotspot(
+                s.flag('cellar_r_got_key') == 0,
+          ),
+        ],
+        hotspots: [
+          Hotspot(
             id: 'glow_box',
             area: const Rect.fromLTWH(0.10, 0.62, 0.18, 0.16),
             when: (s) => s.flag('cellar_r_got_fuse') == 0,
@@ -285,29 +311,36 @@ Room buildCellar() {
               } else {
                 c.say(strCellarBoxPlain);
               }
-            }),
-        Hotspot(
+            },
+          ),
+          Hotspot(
             id: 'box2',
             area: const Rect.fromLTWH(0.34, 0.64, 0.16, 0.14),
-            onTap: (c) => c.say(strCellarBoxEmpty)),
-        Hotspot(
+            onTap: (c) => c.say(strCellarBoxEmpty),
+          ),
+          Hotspot(
             id: 'box3',
             area: const Rect.fromLTWH(0.56, 0.64, 0.16, 0.14),
-            onTap: (c) => c.say(strCellarBoxEmpty)),
-        Hotspot(
+            onTap: (c) => c.say(strCellarBoxEmpty),
+          ),
+          Hotspot(
             id: 'shelf',
             area: const Rect.fromLTWH(0.34, 0.20, 0.40, 0.26),
-            onTap: (c) => c.openCloseup('shelf')),
-        Hotspot(
+            onTap: (c) => c.openCloseup('shelf'),
+          ),
+          Hotspot(
             id: 'deoldeol',
             area: const Rect.fromLTWH(0.78, 0.44, 0.16, 0.26),
             onTap: (c) {
               c.sfx('ghost_giggle');
-              c.say(c.s.flag('cellar_r_light') >= 1
-                  ? strCellarDeoldeolLight
-                  : strCellarDeoldeolDark);
-            }),
-        Hotspot(
+              c.say(
+                c.s.flag('cellar_r_light') >= 1
+                    ? strCellarDeoldeolLight
+                    : strCellarDeoldeolDark,
+              );
+            },
+          ),
+          Hotspot(
             id: 'key_floor',
             area: const Rect.fromLTWH(0.36, 0.76, 0.20, 0.14),
             when: (s) =>
@@ -318,104 +351,155 @@ Room buildCellar() {
               c.give('key_cellar');
               c.s.setFlag('cellar_r_got_key', 1);
               c.say(strCellarKeyTaken);
-            }),
-      ]),
+            },
+          ),
+        ],
+      ),
       // 벽면 B: 배전반·와인통(SceneObject)·쪽문 벽. 배경판은 통을 제거하고
       // 쪽문을 온전히 노출한 cellar_b_plate.png(구 cellar_b.png/
       // cellar_b_barrel_moved.png 대체 — art/remaster-assets.md A그룹).
       Scene(
-          id: 'cellar_b',
-          image: 'assets/scenes/cellar_b_plate.png',
-          objects: [
-            SceneObject(
-                image: 'assets/scenes/cellar_barrel_sprite.png',
-                area: (s) => s.flag('cellar_r_barrel_moved') >= 1
-                    ? const Rect.fromLTWH(0.80, 0.40, 0.50, 0.40)
-                    : const Rect.fromLTWH(0.30, 0.40, 0.50, 0.40)),
-          ],
-          overlays: [
-            // 배전반 소켓 상태는 어둠막보다 먼저 선언 — 불이 꺼지면 다른
-            // 정상 디테일처럼 어둠에 덮인다(글로우류만 어둠 위에 그려짐).
-            SceneOverlay(
-                image: 'assets/scenes/cellar_b_fuse1.png',
-                area: const Rect.fromLTWH(0, 0, 1, 1),
-                when: (s) => s.flag('cellar_r_fuse_count') == 1),
-            SceneOverlay(
-                image: 'assets/scenes/cellar_b_fuse2.png',
-                area: const Rect.fromLTWH(0, 0, 1, 1),
-                when: (s) => s.flag('cellar_r_fuse_count') == 2),
-            SceneOverlay(
-                image: 'assets/scenes/cellar_b_dark.png',
-                area: const Rect.fromLTWH(0, 0, 1, 1),
-                when: dark),
-            SceneOverlay(
-                image: 'assets/scenes/cellar_b_glow2.png',
-                area: const Rect.fromLTWH(0.26, 0.18, 0.16, 0.24),
-                when: dark),
-          ],
-          hotspots: [
-            Hotspot(id: 'fusebox', area: const Rect.fromLTWH(0.08, 0.28, 0.16, 0.18), onTap: tapFusebox),
-            Hotspot(
-                id: 'light_switch',
-                area: const Rect.fromLTWH(0.80, 0.33, 0.16, 0.14),
-                onTap: tapLightSwitch),
-            Hotspot(
-                id: 'barrel',
-                area: const Rect.fromLTWH(0.30, 0.40, 0.50, 0.40),
-                when: flagZero('cellar_r_barrel_moved'),
-                onTap: (c) {
-                  if (c.s.flag('cellar_r_light') == 0) {
-                    c.say(strCellarTooDark);
-                  } else {
-                    c.openCloseup('barrel');
-                  }
-                }),
-            Hotspot(
-                id: 'small_door',
-                area: const Rect.fromLTWH(0.56, 0.30, 0.20, 0.30),
-                when: flagSet('cellar_r_barrel_moved'),
-                onTap: (c) {
-                  final s = c.s;
-                  if (s.flag('cellar_r_door_open') >= 1) {
-                    if (s.flag('cellar_r_power') >= 1) {
-                      c.sfx('door_open');
-                      s.setFlag('cellar_r_done', 1);
-                    } else {
-                      c.say(strCellarRExitNeedsPower);
-                    }
-                  } else if (c.using('key_cellar')) {
-                    c.consume('key_cellar');
-                    c.sfx('metal_key');
-                    s.setFlag('cellar_r_door_open', 1);
-                    c.say(strCellarDoorOpened);
-                  } else {
-                    c.sfx('locked');
-                    c.say(strCellarDoorLocked);
-                  }
-                }),
-          ]),
+        id: 'cellar_b',
+        image: 'assets/scenes/cellar_b_plate.png',
+        objects: [
+          SceneObject(
+            image: 'assets/scenes/cellar_barrel_sprite.png',
+            area: (s) => s.flag('cellar_r_barrel_moved') >= 1
+                ? const Rect.fromLTWH(0.80, 0.40, 0.50, 0.40)
+                : const Rect.fromLTWH(0.30, 0.40, 0.50, 0.40),
+          ),
+        ],
+        overlays: [
+          // 배전반 소켓 상태는 어둠막보다 먼저 선언 — 불이 꺼지면 다른
+          // 정상 디테일처럼 어둠에 덮인다(글로우류만 어둠 위에 그려짐).
+          SceneOverlay(
+            image: 'assets/scenes/cellar_b_fuse1.png',
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: (s) => s.flag('cellar_r_fuse_count') == 1,
+          ),
+          SceneOverlay(
+            image: 'assets/scenes/cellar_b_fuse2.png',
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: (s) => s.flag('cellar_r_fuse_count') == 2,
+          ),
+          SceneOverlay(
+            image: 'assets/scenes/cellar_b_dark.png',
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: dark,
+          ),
+          SceneOverlay(
+            image: 'assets/scenes/cellar_b_glow2.png',
+            area: const Rect.fromLTWH(0.26, 0.18, 0.16, 0.24),
+            when: dark,
+          ),
+        ],
+        hotspots: [
+          Hotspot(
+            id: 'fusebox',
+            area: const Rect.fromLTWH(0.08, 0.28, 0.16, 0.18),
+            onTap: tapFusebox,
+          ),
+          Hotspot(
+            id: 'light_switch',
+            area: const Rect.fromLTWH(0.80, 0.33, 0.16, 0.14),
+            onTap: tapLightSwitch,
+          ),
+          Hotspot(
+            id: 'barrel',
+            area: const Rect.fromLTWH(0.30, 0.40, 0.50, 0.40),
+            when: flagZero('cellar_r_barrel_moved'),
+            onTap: (c) {
+              if (c.s.flag('cellar_r_light') == 0) {
+                c.say(strCellarTooDark);
+              } else {
+                c.openCloseup('barrel');
+              }
+            },
+          ),
+          Hotspot(
+            id: 'small_door',
+            area: const Rect.fromLTWH(0.56, 0.30, 0.20, 0.30),
+            when: flagSet('cellar_r_barrel_moved'),
+            onTap: (c) {
+              final s = c.s;
+              if (s.flag('cellar_r_door_open') >= 1) {
+                if (s.flag('cellar_r_power') >= 1) {
+                  c.sfx('door_open');
+                  s.setFlag('cellar_r_done', 1);
+                } else {
+                  c.say(strCellarRExitNeedsPower);
+                }
+              } else if (c.using('key_cellar')) {
+                c.consume('key_cellar');
+                c.sfx('metal_key');
+                s.setFlag('cellar_r_door_open', 1);
+                c.say(strCellarDoorOpened);
+              } else {
+                c.sfx('locked');
+                c.say(strCellarDoorLocked);
+              }
+            },
+          ),
+        ],
+      ),
       // 벽면 C: 와인 랙 벽 (신규) — 병 5개(T2 핵심), 랙 하단 상자B, 야광
       // 낙서3(랙 옆, 어둠 전용), 소품 리액션 3개.
-      Scene(id: 'cellar_c', image: 'assets/scenes/cellar_c.png', overlays: [
-        SceneOverlay(
-            image: 'assets/scenes/cellar_c_dark.png',
-            area: const Rect.fromLTWH(0, 0, 1, 1),
-            when: dark),
-        SceneOverlay(
+      Scene(
+        id: 'cellar_c',
+        image: 'assets/scenes/cellar_c.png',
+        overlays: [
+          // 상자 상태판은 어둠막 아래에 둔다. 반대로 두면 불을 껐을 때
+          // 열린 상자 전체 벽면만 밝게 튀어나오는 레이어 오류가 생긴다.
+          SceneOverlay(
             image: 'assets/scenes/cellar_c_boxb_open.png',
             area: const Rect.fromLTWH(0, 0, 1, 1),
-            when: flagSet('cellar_r_wine_open')),
-        SceneOverlay(
+            when: (s) =>
+                s.flag('cellar_r_wine_open') >= 1 &&
+                s.flag('cellar_r_boxb_looted') == 0,
+          ),
+          SceneOverlay(
+            image: 'assets/scenes/cellar_c_boxb_empty.png',
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: flagSet('cellar_r_boxb_looted'),
+          ),
+          SceneOverlay(
+            image: 'assets/scenes/cellar_c_dark.png',
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: dark,
+          ),
+          SceneOverlay(
             image: 'assets/scenes/cellar_c_glow3.png',
             area: const Rect.fromLTWH(0.22, 0.03, 0.56, 0.19),
-            when: dark),
-      ], hotspots: [
-        Hotspot(id: 'wine1', area: wine1Area, onTap: (c) => tapWineBottle(c, 0)),
-        Hotspot(id: 'wine2', area: wine2Area, onTap: (c) => tapWineBottle(c, 1)),
-        Hotspot(id: 'wine3', area: wine3Area, onTap: (c) => tapWineBottle(c, 2)),
-        Hotspot(id: 'wine4', area: wine4Area, onTap: (c) => tapWineBottle(c, 3)),
-        Hotspot(id: 'wine5', area: wine5Area, onTap: (c) => tapWineBottle(c, 4)),
-        Hotspot(
+            when: dark,
+          ),
+        ],
+        hotspots: [
+          Hotspot(
+            id: 'wine1',
+            area: wine1Area,
+            onTap: (c) => tapWineBottle(c, 0),
+          ),
+          Hotspot(
+            id: 'wine2',
+            area: wine2Area,
+            onTap: (c) => tapWineBottle(c, 1),
+          ),
+          Hotspot(
+            id: 'wine3',
+            area: wine3Area,
+            onTap: (c) => tapWineBottle(c, 2),
+          ),
+          Hotspot(
+            id: 'wine4',
+            area: wine4Area,
+            onTap: (c) => tapWineBottle(c, 3),
+          ),
+          Hotspot(
+            id: 'wine5',
+            area: wine5Area,
+            onTap: (c) => tapWineBottle(c, 4),
+          ),
+          Hotspot(
             id: 'boxb',
             area: const Rect.fromLTWH(0.35, 0.58, 0.28, 0.13),
             onTap: (c) {
@@ -431,45 +515,70 @@ Room buildCellar() {
               } else {
                 c.say(strCellarRBoxbEmpty);
               }
-            }),
-        Hotspot(
+            },
+          ),
+          Hotspot(
             id: 'sconce',
             area: const Rect.fromLTWH(0.02, 0.28, 0.15, 0.18),
-            onTap: (c) => c.say(strCellarRSconce)),
-        Hotspot(
+            onTap: (c) => c.say(strCellarRSconce),
+          ),
+          Hotspot(
             id: 'crate',
             area: const Rect.fromLTWH(0.0, 0.75, 0.20, 0.20),
-            onTap: (c) => c.say(strCellarRCrate)),
-        Hotspot(
+            onTap: (c) => c.say(strCellarRCrate),
+          ),
+          Hotspot(
             id: 'deoldeol_c',
             area: const Rect.fromLTWH(0.78, 0.45, 0.20, 0.30),
             onTap: (c) {
               c.sfx('ghost_giggle');
               c.say(strCellarRDeoldeolC);
-            }),
-      ]),
+            },
+          ),
+        ],
+      ),
     ],
     closeups: {
-      'barrel': Scene(id: 'barrel', custom: (_, c) => BarrelDrag(ctx: c)),
-      'shelf': Scene(id: 'shelf', custom: (_, c) => ShelfShake(ctx: c)),
-      'switches': Scene(id: 'switches', custom: (_, c) => SwitchPanel(ctx: c)),
+      'barrel': Scene(
+        id: 'barrel',
+        custom: (_, c) => BarrelDrag(ctx: c),
+      ),
+      'shelf': Scene(
+        id: 'shelf',
+        custom: (_, c) => ShelfShake(ctx: c),
+      ),
+      'switches': Scene(
+        id: 'switches',
+        custom: (_, c) => SwitchPanel(ctx: c),
+      ),
     },
     hints: [
-      PuzzleHint(puzzleId: 'p_cellar_r_power', title: '전력 복구', steps: [
-        '퓨즈가 두 개 필요해요 — 하나는 빛나는 곳, 하나는 잠긴 상자',
-        '배전반 옆 야광 기호가 스위치 순서',
-        '정답: 퓨즈 2개 장착 후 △○□ 순서',
-      ], solved: (s) => s.flag('cellar_r_power') >= 1),
-      PuzzleHint(puzzleId: 'p_cellar_r_wine', title: '와인 라벨의 순서', steps: [
-        '어둠 속 낙서와 병 라벨을 오가며 보세요',
-        '촛불 개수 그림 = 병 순서',
-        '정답: 5→1→3',
-      ], solved: (s) => s.flag('cellar_r_wine_open') >= 1),
-      PuzzleHint(puzzleId: 'p_cellar_r_exit', title: '통 뒤의 쪽문', steps: [
-        '통 뒤가 수상해요 — 밀 수 있을 것 같은데',
-        '통을 민 뒤 쪽문 — 쪽문 걸쇠는 전기가 들어와야 풀려요',
-        '정답: 전력 복구 후, 셰이크(또는 선반 연타)로 열쇠 낙하 → 쪽문',
-      ], solved: (s) => s.flag('cellar_r_done') >= 1),
+      PuzzleHint(
+        puzzleId: 'p_cellar_r_power',
+        title: '전력 복구',
+        steps: [
+          '퓨즈가 두 개 필요해요 — 하나는 빛나는 곳, 하나는 잠긴 상자',
+          '배전반 옆 야광 기호가 스위치 순서',
+          '정답: 퓨즈 2개 장착 후 △○□ 순서',
+        ],
+        solved: (s) => s.flag('cellar_r_power') >= 1,
+      ),
+      PuzzleHint(
+        puzzleId: 'p_cellar_r_wine',
+        title: '와인 라벨의 순서',
+        steps: ['어둠 속 낙서와 병 라벨을 오가며 보세요', '촛불 개수 그림 = 병 순서', '정답: 5→1→3'],
+        solved: (s) => s.flag('cellar_r_wine_open') >= 1,
+      ),
+      PuzzleHint(
+        puzzleId: 'p_cellar_r_exit',
+        title: '통 뒤의 쪽문',
+        steps: [
+          '통 뒤가 수상해요 — 밀 수 있을 것 같은데',
+          '통을 민 뒤 쪽문 — 쪽문 걸쇠는 전기가 들어와야 풀려요',
+          '정답: 전력 복구 후, 셰이크(또는 선반 연타)로 열쇠 낙하 → 쪽문',
+        ],
+        solved: (s) => s.flag('cellar_r_done') >= 1,
+      ),
     ],
   );
 }

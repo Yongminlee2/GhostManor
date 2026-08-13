@@ -68,7 +68,8 @@ bool pourVial(GameState s, String? itemId) {
     s.setFlag('f2_lab_lamp_stage', stage + 1);
     return true;
   }
-  s.setFlag('f2_lab_lamp_stage', 0);
+  // 오답이어도 단계 유지 — 정답 약병은 영구 소모(각 1병)라 리셋하면
+  // 복구 불가 소프트락(주방 냄비·안방 자수와 동일 원칙).
   return false;
 }
 

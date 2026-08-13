@@ -16,7 +16,8 @@ import '../core/strings.dart';
 void toggleCandle(GameState s, int i) {
   final key = 'living_r_candle$i';
   s.setFlag(key, s.flag(key) >= 1 ? 0 : 1);
-  final patternMatched = s.flag('living_r_candle1') == 0 &&
+  final patternMatched =
+      s.flag('living_r_candle1') == 0 &&
       s.flag('living_r_candle2') == 1 &&
       s.flag('living_r_candle3') == 0 &&
       s.flag('living_r_candle4') == 1;
@@ -38,8 +39,10 @@ void openSafe(GameCtx c) {
 // ── 방 정의 ──
 
 Room buildLiving() {
-  Cond flagSet(String k) => (s) => s.flag(k) >= 1;
-  Cond flagZero(String k) => (s) => s.flag(k) == 0;
+  Cond flagSet(String k) =>
+      (s) => s.flag(k) >= 1;
+  Cond flagZero(String k) =>
+      (s) => s.flag(k) == 0;
 
   const candle1Area = Rect.fromLTWH(0.06, 0.52, 0.10, 0.16);
   const candle2Area = Rect.fromLTWH(0.28, 0.52, 0.10, 0.16);
@@ -87,67 +90,84 @@ Room buildLiving() {
     cleared: flagSet('living_r_done'),
     walls: [
       // 벽면 A: 벽난로 벽 (기존 아트 재사용)
-      Scene(id: 'living_a', image: 'assets/scenes/living_a.png', overlays: [
-        SceneOverlay(
+      Scene(
+        id: 'living_a',
+        image: 'assets/scenes/living_a.png',
+        overlays: [
+          SceneOverlay(
             image: 'assets/scenes/living_a_candle1_on.png',
             area: candle1Area,
             when: flagSet('living_r_candle1'),
-            motion: OverlayMotion.grow),
-        SceneOverlay(
+            motion: OverlayMotion.grow,
+          ),
+          SceneOverlay(
             image: 'assets/scenes/living_a_candle2_on.png',
             area: candle2Area,
             when: flagSet('living_r_candle2'),
-            motion: OverlayMotion.grow),
-        SceneOverlay(
+            motion: OverlayMotion.grow,
+          ),
+          SceneOverlay(
             image: 'assets/scenes/living_a_candle3_on.png',
             area: candle3Area,
             when: flagSet('living_r_candle3'),
-            motion: OverlayMotion.grow),
-        SceneOverlay(
+            motion: OverlayMotion.grow,
+          ),
+          SceneOverlay(
             image: 'assets/scenes/living_a_candle4_on.png',
             area: candle4Area,
             when: flagSet('living_r_candle4'),
-            motion: OverlayMotion.grow),
-        SceneOverlay(
+            motion: OverlayMotion.grow,
+          ),
+          SceneOverlay(
             image: 'assets/scenes/living_a_fire.png',
             area: fireplaceArea,
             when: flagSet('living_r_fireplace_lit'),
-            motion: OverlayMotion.grow),
-        SceneOverlay(
+            motion: OverlayMotion.grow,
+          ),
+          SceneOverlay(
             image: 'assets/scenes/living_a_nook_open.png',
             area: nookArea,
             when: flagSet('living_r_fireplace_lit'),
-            motion: OverlayMotion.slideDown),
-      ], hotspots: [
-        // fireplace는 큰 배경 rect라 목록 맨 앞(= 탭 우선순위 최하) 선언 —
-        // 뒤에 오는 candle2/candle3와 겹쳐도 촛대가 항상 이긴다.
-        Hotspot(
+            motion: OverlayMotion.slideDown,
+          ),
+        ],
+        hotspots: [
+          // fireplace는 큰 배경 rect라 목록 맨 앞(= 탭 우선순위 최하) 선언 —
+          // 뒤에 오는 candle2/candle3와 겹쳐도 촛대가 항상 이긴다.
+          Hotspot(
             id: 'fireplace',
             area: fireplaceArea,
-            onTap: (c) => c.say(c.s.flag('living_r_fireplace_lit') >= 1
-                ? strLivingFireplaceLit
-                : strLivingFireplaceCold)),
-        Hotspot(
+            onTap: (c) => c.say(
+              c.s.flag('living_r_fireplace_lit') >= 1
+                  ? strLivingFireplaceLit
+                  : strLivingFireplaceCold,
+            ),
+          ),
+          Hotspot(
             id: 'candle1',
             area: candle1Area,
             when: flagZero('living_r_fireplace_lit'),
-            onTap: (c) => tapCandle(c, 1)),
-        Hotspot(
+            onTap: (c) => tapCandle(c, 1),
+          ),
+          Hotspot(
             id: 'candle2',
             area: candle2Area,
             when: flagZero('living_r_fireplace_lit'),
-            onTap: (c) => tapCandle(c, 2)),
-        Hotspot(
+            onTap: (c) => tapCandle(c, 2),
+          ),
+          Hotspot(
             id: 'candle3',
             area: candle3Area,
             when: flagZero('living_r_fireplace_lit'),
-            onTap: (c) => tapCandle(c, 3)),
-        Hotspot(
+            onTap: (c) => tapCandle(c, 3),
+          ),
+          Hotspot(
             id: 'candle4',
             area: candle4Area,
             when: flagZero('living_r_fireplace_lit'),
-            onTap: (c) => tapCandle(c, 4)),
-        Hotspot(
+            onTap: (c) => tapCandle(c, 4),
+          ),
+          Hotspot(
             id: 'secret_nook',
             area: nookArea,
             onTap: (c) {
@@ -162,32 +182,43 @@ Room buildLiving() {
               } else {
                 c.say(strLivingSecretEmpty);
               }
-            }),
-      ]),
+            },
+          ),
+        ],
+      ),
       // 벽면 B: 소파·TV·문 벽 (기존 아트 재사용)
-      Scene(id: 'living_b', image: 'assets/scenes/living_b.png', overlays: [
-        SceneOverlay(
+      Scene(
+        id: 'living_b',
+        image: 'assets/scenes/living_b.png',
+        overlays: [
+          SceneOverlay(
             image: 'assets/scenes/living_b_tv_on.png',
             area: tvArea,
-            when: flagSet('living_r_tv_on')),
-        SceneOverlay(
+            when: flagSet('living_r_tv_on'),
+          ),
+          SceneOverlay(
             image: 'assets/scenes/living_b_door_open.png',
             area: doorArea,
             when: flagSet('living_r_door_open'),
-            motion: OverlayMotion.grow),
-      ], idles: [
-        IdleSprite(
+            motion: OverlayMotion.grow,
+          ),
+        ],
+        idles: [
+          IdleSprite(
             image: 'assets/scenes/living_b_boo_door.png',
             area: const Rect.fromLTWH(0.60, 0.28, 0.24, 0.34),
             when: flagZero('living_r_tv_on'),
-            bobPx: 8),
-        IdleSprite(
+            bobPx: 8,
+          ),
+          IdleSprite(
             image: 'assets/scenes/living_b_boo_sofa.png',
             area: booSofaArea,
             when: flagSet('living_r_tv_on'),
-            bobPx: 5),
-      ], hotspots: [
-        Hotspot(
+            bobPx: 5,
+          ),
+        ],
+        hotspots: [
+          Hotspot(
             id: 'cushion',
             area: const Rect.fromLTWH(0.08, 0.62, 0.18, 0.14),
             onTap: (c) {
@@ -199,8 +230,9 @@ Room buildLiving() {
               } else {
                 c.say(strLivingCushionEmpty);
               }
-            }),
-        Hotspot(
+            },
+          ),
+          Hotspot(
             id: 'tv',
             area: tvArea,
             onTap: (c) {
@@ -214,11 +246,12 @@ Room buildLiving() {
               } else {
                 c.say(strLivingTvOff);
               }
-            }),
-        // door는 boo/boo_sofa를 감싸는 더 큰 rect라 그 앞에 선언 —
-        // TV 끄고 켠 상태 각각에서 boo/boo_sofa(뒤 선언)가 자기 자리를 이기고,
-        // 문 나머지 테두리는 door가 받는다.
-        Hotspot(
+            },
+          ),
+          // door는 boo/boo_sofa를 감싸는 더 큰 rect라 그 앞에 선언 —
+          // TV 끄고 켠 상태 각각에서 boo/boo_sofa(뒤 선언)가 자기 자리를 이기고,
+          // 문 나머지 테두리는 door가 받는다.
+          Hotspot(
             id: 'door',
             area: doorArea,
             onTap: (c) {
@@ -237,72 +270,106 @@ Room buildLiving() {
                 c.sfx('locked');
                 c.say(strLivingDoorLocked);
               }
-            }),
-        Hotspot(
+            },
+          ),
+          Hotspot(
             id: 'boo',
             area: const Rect.fromLTWH(0.62, 0.30, 0.20, 0.30),
             when: flagZero('living_r_tv_on'),
             onTap: (c) {
               c.sfx('ghost_giggle');
               c.say(strLivingBooScare);
-            }),
-        Hotspot(
+            },
+          ),
+          Hotspot(
             id: 'boo_sofa',
             area: booSofaArea,
             when: flagSet('living_r_tv_on'),
             onTap: (c) {
               c.sfx('ghost_giggle');
               c.say(strLivingBooHappy);
-            }),
-      ]),
+            },
+          ),
+        ],
+      ),
       // 벽면 C: 서가·금고 벽 (신규) — 초상화 4점(그림 속 소품이 매핑 단서),
       // 소품 개수 × 나이순(TV) = 금고 코드 3274.
       // safe_knob/safe_open은 원본 전체를 edit한 풀프레임(1024×1536)이라
       // 전체 rect로 깔아야 한다 — 소rect에 넣으면 벽 전체가 찌그러져 들어간다.
-      Scene(id: 'living_c', image: 'assets/scenes/living_c.png', overlays: [
-        SceneOverlay(
+      Scene(
+        id: 'living_c',
+        image: 'assets/scenes/living_c.png',
+        overlays: [
+          SceneOverlay(
             image: 'assets/scenes/living_c_safe_knob.png',
             area: const Rect.fromLTWH(0, 0, 1, 1),
             when: (s) =>
                 s.flag('living_r_safe_knob') >= 1 &&
-                s.flag('living_r_safe_open') == 0),
-        SceneOverlay(
-            image: 'assets/scenes/living_c_safe_open.png',
+                s.flag('living_r_safe_open') == 0,
+          ),
+          SceneOverlay(
+            image: 'assets/scenes/living_c_safe_empty.png',
             area: const Rect.fromLTWH(0, 0, 1, 1),
-            when: flagSet('living_r_safe_open')),
-      ], hotspots: [
-        Hotspot(
+            when: flagSet('living_r_safe_open'),
+          ),
+        ],
+        hotspots: [
+          Hotspot(
             id: 'portrait_baby',
             area: portraitBabyArea,
-            onTap: (c) => c.say(strLivingRPortraitBaby)),
-        Hotspot(
+            onTap: (c) => c.say(strLivingRPortraitBaby),
+          ),
+          Hotspot(
             id: 'portrait_youth',
             area: portraitYouthArea,
-            onTap: (c) => c.say(strLivingRPortraitYouth)),
-        Hotspot(
+            onTap: (c) => c.say(strLivingRPortraitYouth),
+          ),
+          Hotspot(
             id: 'portrait_middle',
             area: portraitMiddleArea,
-            onTap: (c) => c.say(strLivingRPortraitMiddle)),
-        Hotspot(
+            onTap: (c) => c.say(strLivingRPortraitMiddle),
+          ),
+          Hotspot(
             id: 'portrait_old',
             area: portraitOldArea,
-            onTap: (c) => c.say(strLivingRPortraitOld)),
-        Hotspot(
-            id: 'lamp', area: lamp1Area, onTap: (c) => c.say(strLivingRLamp)),
-        Hotspot(
-            id: 'lamp2', area: lamp2Area, onTap: (c) => c.say(strLivingRLamp)),
-        Hotspot(
-            id: 'lamp3', area: lamp3Area, onTap: (c) => c.say(strLivingRLamp)),
-        Hotspot(
-            id: 'lamp4', area: lamp4Area, onTap: (c) => c.say(strLivingRLamp)),
-        Hotspot(
+            onTap: (c) => c.say(strLivingRPortraitOld),
+          ),
+          Hotspot(
+            id: 'lamp',
+            area: lamp1Area,
+            onTap: (c) => c.say(strLivingRLamp),
+          ),
+          Hotspot(
+            id: 'lamp2',
+            area: lamp2Area,
+            onTap: (c) => c.say(strLivingRLamp),
+          ),
+          Hotspot(
+            id: 'lamp3',
+            area: lamp3Area,
+            onTap: (c) => c.say(strLivingRLamp),
+          ),
+          Hotspot(
+            id: 'lamp4',
+            area: lamp4Area,
+            onTap: (c) => c.say(strLivingRLamp),
+          ),
+          Hotspot(
             id: 'pendulum',
             area: pendulumArea,
-            onTap: (c) => c.say(strLivingRPendulum)),
-        Hotspot(id: 'vase', area: vaseArea, onTap: (c) => c.say(strLivingRVase)),
-        Hotspot(
-            id: 'books', area: booksArea, onTap: (c) => c.say(strLivingRBooks)),
-        Hotspot(
+            onTap: (c) => c.say(strLivingRPendulum),
+          ),
+          Hotspot(
+            id: 'vase',
+            area: vaseArea,
+            onTap: (c) => c.say(strLivingRVase),
+          ),
+          Hotspot(
+            id: 'books',
+            area: booksArea,
+            onTap: (c) => c.say(strLivingRBooks),
+          ),
+          Hotspot(
             id: 'safe',
             area: safeArea,
             onTap: (c) {
@@ -319,59 +386,89 @@ Room buildLiving() {
               } else {
                 c.say(strLivingRSafeNoKnob);
               }
-            }),
-      ]),
+            },
+          ),
+        ],
+      ),
     ],
     closeups: {
       // 탭마다 living_r_tv_scene 토글 — 촛불 패턴(기본, T2 단서) ↔ 나이 순서
       // 아이콘 행렬(living_tv2 오버레이, T1 단서) 순환.
-      'tv': Scene(id: 'tv', image: 'assets/scenes/living_tv.png', overlays: [
-        SceneOverlay(
+      'tv': Scene(
+        id: 'tv',
+        image: 'assets/scenes/living_tv.png',
+        overlays: [
+          SceneOverlay(
             image: 'assets/scenes/living_tv2.png',
             area: const Rect.fromLTWH(0, 0, 1, 1),
-            when: (s) => s.flag('living_r_tv_scene') == 1),
-      ], hotspots: [
-        Hotspot(
+            when: (s) => s.flag('living_r_tv_scene') == 1,
+          ),
+        ],
+        hotspots: [
+          Hotspot(
             id: 'tv_scene_toggle',
             area: const Rect.fromLTWH(0, 0, 1, 1),
             onTap: (c) {
               c.s.setFlag(
-                  'living_r_tv_scene', c.s.flag('living_r_tv_scene') == 0 ? 1 : 0);
+                'living_r_tv_scene',
+                c.s.flag('living_r_tv_scene') == 0 ? 1 : 0,
+              );
               c.sfx('tv_static');
-            }),
-      ]),
+            },
+          ),
+        ],
+      ),
       // 다이얼 금고: 배경은 여기서 겹쳐 쌓고(DialSafe는 배경을 그리지 않음),
       // 위젯이 휠 4개+확인 버튼을 그 위에 올린다.
       'safe': Scene(
-          id: 'safe',
-          custom: (_, c) => Stack(fit: StackFit.expand, children: [
-                gameImage('assets/scenes/living_c_safe_dial.png'),
-                DialSafe(
-                  ctx: c,
-                  digits: 4,
-                  code: '3274',
-                  flagPrefix: 'living_r_safe',
-                  wrongSay: strLivingRSafeWrong,
-                  onOpened: openSafe,
-                ),
-              ])),
+        id: 'safe',
+        custom: (_, c) => Stack(
+          fit: StackFit.expand,
+          children: [
+            gameImage('assets/scenes/living_c_safe_dial.png'),
+            DialSafe(
+              ctx: c,
+              digits: 4,
+              code: '3274',
+              flagPrefix: 'living_r_safe',
+              wrongSay: strLivingRSafeWrong,
+              onOpened: openSafe,
+            ),
+          ],
+        ),
+      ),
     },
     hints: [
-      PuzzleHint(puzzleId: 'p_living_r_safe', title: '초상화 속 물건', steps: [
-        '금고 숫자는 이 방의 "그림"과 "세는 것"에서 나와요.',
-        '초상화마다 함께 그려진 물건이 있어요 — 그 물건의 개수를 세요. 순서는 TV가 알려줘요.',
-        '정답: 나이순 3·2·7·4 → 3274.',
-      ], solved: (s) => s.flag('living_r_safe_open') >= 1),
-      PuzzleHint(puzzleId: 'p_living_r_candle', title: '촛대와 벽난로', steps: [
-        '촛대 네 개는 켜고 끌 수 있어요. 정답 배열이 이 방 어딘가에 그림으로 나와요.',
-        'TV를 켜고 화면을 자세히 보세요 — 탭할 때마다 다른 그림이 나와요. 촛불이 그려진 장면을 찾으세요.',
-        '정답: 2번째와 4번째 촛대만 켜세요(1·3번은 끈 상태). 벽난로가 점화되고 비밀칸이 열려요.',
-      ], solved: (s) => s.flag('living_r_fireplace_lit') >= 1),
-      PuzzleHint(puzzleId: 'p_living_r_boo', title: '문을 막는 유령', steps: [
-        '문을 막은 유령은 겁을 주고 싶은 게 아니라 뭔가 아쉬운 게 있어요. 대사를 잘 들어보세요.',
-        '부우는 TV를 못 봐서 시무룩해요. 소파 쿠션 속을 뒤져 보면 도움이 될 것이 나올지도.',
-        '정답: 쿠션에서 리모컨을 얻고, 리모컨을 선택한 채 TV를 탭하면 부우가 비켜 줘요.',
-      ], solved: (s) => s.flag('living_r_tv_on') >= 1),
+      PuzzleHint(
+        puzzleId: 'p_living_r_safe',
+        title: '초상화 속 물건',
+        steps: [
+          '금고 숫자는 이 방의 "그림"과 "세는 것"에서 나와요.',
+          '초상화마다 함께 그려진 물건이 있어요 — 그 물건의 개수를 세요. 순서는 TV가 알려줘요.',
+          '정답: 나이순 3·2·7·4 → 3274.',
+        ],
+        solved: (s) => s.flag('living_r_safe_open') >= 1,
+      ),
+      PuzzleHint(
+        puzzleId: 'p_living_r_candle',
+        title: '촛대와 벽난로',
+        steps: [
+          '촛대 네 개는 켜고 끌 수 있어요. 정답 배열이 이 방 어딘가에 그림으로 나와요.',
+          'TV를 켜고 화면을 자세히 보세요 — 탭할 때마다 다른 그림이 나와요. 촛불이 그려진 장면을 찾으세요.',
+          '정답: 2번째와 4번째 촛대만 켜세요(1·3번은 끈 상태). 벽난로가 점화되고 비밀칸이 열려요.',
+        ],
+        solved: (s) => s.flag('living_r_fireplace_lit') >= 1,
+      ),
+      PuzzleHint(
+        puzzleId: 'p_living_r_boo',
+        title: '문을 막는 유령',
+        steps: [
+          '문을 막은 유령은 겁을 주고 싶은 게 아니라 뭔가 아쉬운 게 있어요. 대사를 잘 들어보세요.',
+          '부우는 TV를 못 봐서 시무룩해요. 소파 쿠션 속을 뒤져 보면 도움이 될 것이 나올지도.',
+          '정답: 쿠션에서 리모컨을 얻고, 리모컨을 선택한 채 TV를 탭하면 부우가 비켜 줘요.',
+        ],
+        solved: (s) => s.flag('living_r_tv_on') >= 1,
+      ),
     ],
   );
 }

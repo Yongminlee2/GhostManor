@@ -72,13 +72,13 @@ class GameState extends ChangeNotifier {
   }
 
   Map<String, dynamic> toJson() => {
-        'saveVersion': currentSaveVersion,
-        'flags': flags,
-        'inventory': inventory,
-        'selectedItem': selectedItem,
-        'roomIndex': roomIndex,
-        'sceneIndex': sceneIndex,
-      };
+    'saveVersion': currentSaveVersion,
+    'flags': flags,
+    'inventory': inventory,
+    'selectedItem': selectedItem,
+    'roomIndex': roomIndex,
+    'sceneIndex': sceneIndex,
+  };
 
   static GameState fromJson(Map<String, dynamic> json) {
     final s = GameState();
@@ -87,6 +87,29 @@ class GameState extends ChangeNotifier {
     s.selectedItem = json['selectedItem'] as String?;
     s.roomIndex = json['roomIndex'] as int;
     s.sceneIndex = json['sceneIndex'] as int;
+    s._repairKitchenPotSoftlock();
     return s;
+  }
+
+  /// Repairs chapter-1 saves created by the former pot-reset behavior.
+  /// Only ingredients whose source was already looted and which the persisted
+  /// stage still requires are restored.
+  void _repairKitchenPotSoftlock() {
+    final stage = flag('kitchen_r_pot_stage');
+    if (stage >= 4 || flag('entered_kitchen') == 0) return;
+
+    void restore(String itemId, bool sourceCollected, int requiredAfterStage) {
+      if (!sourceCollected || stage >= requiredAfterStage || has(itemId)) {
+        return;
+      }
+      inventory.add(itemId);
+    }
+
+    final bottleWasConverted =
+        flag('kitchen_r_got_bottle') >= 1 && !has('empty_bottle');
+    restore('water_bottle', bottleWasConverted, 1);
+    restore('mushroom', flag('kitchen_r_got_mushroom') >= 1, 2);
+    restore('herb', flag('kitchen_r_ice_looted') >= 1, 3);
+    restore('kettle_singing', flag('kitchen_r_got_kettle') >= 1, 4);
   }
 }

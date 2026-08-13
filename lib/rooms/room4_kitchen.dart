@@ -36,7 +36,8 @@ bool usePotIngredient(GameState s, String? item) {
   }
   final wrongIngredient =
       stage < _potOrder.length && item != null && _potOrder.contains(item);
-  if (wrongIngredient) s.setFlag('kitchen_r_pot_stage', 0);
+  // Correct ingredients are consumed permanently. Resetting the stage here
+  // made any later wrong tap an unrecoverable save softlock.
   s.setFlag('kitchen_r_pot_wrong', wrongIngredient ? 1 : 0);
   return false;
 }
@@ -53,16 +54,17 @@ bool meltIce(GameState s, String? item) {
 }
 
 String _potStageSay(int stage) => switch (stage) {
-      1 => strKitchenRPotWater,
-      2 => strKitchenRPotMushroom,
-      3 => strKitchenRPotHerb,
-      _ => strKitchenRPotDone,
-    };
+  1 => strKitchenRPotWater,
+  2 => strKitchenRPotMushroom,
+  3 => strKitchenRPotHerb,
+  _ => strKitchenRPotDone,
+};
 
 // ── 방 정의 ──
 
 Room buildKitchen() {
-  Cond flagSet(String k) => (s) => s.flag(k) >= 1;
+  Cond flagSet(String k) =>
+      (s) => s.flag(k) >= 1;
 
   const counterArea = Rect.fromLTWH(0.04, 0.48, 0.18, 0.18);
   const jarArea = Rect.fromLTWH(0.05, 0.12, 0.16, 0.14);
@@ -167,10 +169,26 @@ Room buildKitchen() {
     onEnter: (c) => c.say(strKitchenIntro),
     cleared: flagSet('kitchen_r_done'),
     walls: [
-      // 벽면 A: 화덕·조리대·국자 벽 (기존 아트 재사용, 무수정 — 냄비 상태는
-      // 클로즈업에서만 그려진다)
-      Scene(id: 'kitchen_a', image: 'assets/scenes/kitchen_a.png', hotspots: [
-        Hotspot(
+      // 벽면 A: 병과 버섯을 획득하면 실제 벽에서도 각각 사라진 상태판을 쓴다.
+      // 냄비 단계는 별도 클로즈업에서만 표시한다.
+      Scene(
+        id: 'kitchen_a',
+        image: 'assets/scenes/kitchen_a.png',
+        imageFor: (s) {
+          final bottle = s.flag('kitchen_r_got_bottle') >= 1;
+          final mushroom = s.flag('kitchen_r_got_mushroom') >= 1;
+          if (bottle && mushroom) return 'assets/scenes/kitchen_a_empty.png';
+          if (bottle) return 'assets/scenes/kitchen_a_no_bottle.png';
+          if (mushroom) return 'assets/scenes/kitchen_a_empty_jar.png';
+          return 'assets/scenes/kitchen_a.png';
+        },
+        alternateImages: const [
+          'assets/scenes/kitchen_a_no_bottle.png',
+          'assets/scenes/kitchen_a_empty_jar.png',
+          'assets/scenes/kitchen_a_empty.png',
+        ],
+        hotspots: [
+          Hotspot(
             id: 'counter',
             area: counterArea,
             onTap: (c) {
@@ -182,9 +200,14 @@ Room buildKitchen() {
               } else {
                 c.say(strKitchenCounterEmpty);
               }
-            }),
-        Hotspot(id: 'stove', area: stoveArea, onTap: (c) => c.say(strKitchenStove)),
-        Hotspot(
+            },
+          ),
+          Hotspot(
+            id: 'stove',
+            area: stoveArea,
+            onTap: (c) => c.say(strKitchenStove),
+          ),
+          Hotspot(
             id: 'gukja',
             area: gukjaArea,
             onTap: (c) {
@@ -201,8 +224,9 @@ Room buildKitchen() {
                 c.sfx('ghost_giggle');
                 c.say(strKitchenRGukjaAsk);
               }
-            }),
-        Hotspot(
+            },
+          ),
+          Hotspot(
             id: 'jar',
             area: jarArea,
             onTap: (c) {
@@ -214,11 +238,12 @@ Room buildKitchen() {
               } else {
                 c.say(strKitchenJarEmpty);
               }
-            }),
-        // pot/stove_poker_slot은 stove의 부분집합 rect라 뒤에 선언 — z순서상
-        // 이 둘이 자기 영역에서 stove를 이긴다(§ 위 주석과 동일한 이유).
-        Hotspot(id: 'pot', area: potArea, onTap: tapPot),
-        Hotspot(
+            },
+          ),
+          // pot/stove_poker_slot은 stove의 부분집합 rect라 뒤에 선언 — z순서상
+          // 이 둘이 자기 영역에서 stove를 이긴다(§ 위 주석과 동일한 이유).
+          Hotspot(id: 'pot', area: potArea, onTap: tapPot),
+          Hotspot(
             id: 'stove_poker_slot',
             area: stovePokerSlotArea,
             onTap: (c) {
@@ -230,22 +255,37 @@ Room buildKitchen() {
               } else {
                 c.say(strKitchenRPokerSlotEmpty);
               }
-            }),
-      ]),
+            },
+          ),
+        ],
+      ),
       // 벽면 B: 찬장·싱크대·뒷문 벽 (기존 아트+로직 재사용, 플래그만 kitchen_r_)
-      Scene(id: 'kitchen_b', image: 'assets/scenes/kitchen_b.png', overlays: [
-        SceneOverlay(
+      Scene(
+        id: 'kitchen_b',
+        image: 'assets/scenes/kitchen_b.png',
+        overlays: [
+          SceneOverlay(
             image: 'assets/scenes/kitchen_b_cup2_open.png',
             area: cupboard2Area,
-            when: flagSet('kitchen_r_hollow_found'),
-            motion: OverlayMotion.slideDown),
-        SceneOverlay(
+            when: (s) =>
+                s.flag('kitchen_r_hollow_found') >= 1 &&
+                s.flag('kitchen_r_got_kettle') == 0,
+            motion: OverlayMotion.slideDown,
+          ),
+          SceneOverlay(
+            image: 'assets/scenes/kitchen_b_cup2_empty.png',
+            area: cupboard2Area,
+            when: flagSet('kitchen_r_got_kettle'),
+          ),
+          SceneOverlay(
             image: 'assets/scenes/kitchen_b_door_open.png',
             area: backdoorArea,
             when: flagSet('kitchen_r_door_open'),
-            motion: OverlayMotion.grow),
-      ], hotspots: [
-        Hotspot(
+            motion: OverlayMotion.grow,
+          ),
+        ],
+        hotspots: [
+          Hotspot(
             id: 'sink',
             area: sinkArea,
             onTap: (c) {
@@ -257,9 +297,10 @@ Room buildKitchen() {
               } else {
                 c.say(strKitchenSink);
               }
-            }),
-        Hotspot(id: 'cupboard1', area: cupboard1Area, onTap: knockDull),
-        Hotspot(
+            },
+          ),
+          Hotspot(id: 'cupboard1', area: cupboard1Area, onTap: knockDull),
+          Hotspot(
             id: 'cupboard2',
             area: cupboard2Area,
             onTap: (c) {
@@ -276,10 +317,11 @@ Room buildKitchen() {
               } else {
                 c.say(strKitchenCupboardEmpty);
               }
-            }),
-        Hotspot(id: 'cupboard3', area: cupboard3Area, onTap: knockDull),
-        Hotspot(id: 'cupboard4', area: cupboard4Area, onTap: knockDull),
-        Hotspot(
+            },
+          ),
+          Hotspot(id: 'cupboard3', area: cupboard3Area, onTap: knockDull),
+          Hotspot(id: 'cupboard4', area: cupboard4Area, onTap: knockDull),
+          Hotspot(
             id: 'backdoor',
             area: backdoorArea,
             onTap: (c) {
@@ -296,33 +338,47 @@ Room buildKitchen() {
                 c.sfx('locked');
                 c.say(strKitchenDoorLocked);
               }
-            }),
-      ]),
+            },
+          ),
+        ],
+      ),
       // 벽면 C: 저장실 (신규) — 빙실 함(T2), 레시피판(T1 지식·게이트 아님),
       // 부지깽이 걸이(T2 시작점), 소시지·항아리 리액션 3개.
-      Scene(id: 'kitchen_c', image: 'assets/scenes/kitchen_c.png', overlays: [
-        SceneOverlay(
+      Scene(
+        id: 'kitchen_c',
+        image: 'assets/scenes/kitchen_c.png',
+        imageFor: (s) => s.flag('kitchen_r_got_poker') >= 1
+            ? 'assets/scenes/kitchen_c_no_poker.png'
+            : 'assets/scenes/kitchen_c.png',
+        alternateImages: const ['assets/scenes/kitchen_c_no_poker.png'],
+        overlays: [
+          SceneOverlay(
             image: 'assets/scenes/kitchen_c_ice1.png',
             area: iceCropArea,
-            when: (s) => s.flag('kitchen_r_ice_stage') == 1),
-        SceneOverlay(
+            when: (s) => s.flag('kitchen_r_ice_stage') == 1,
+          ),
+          SceneOverlay(
             image: 'assets/scenes/kitchen_c_ice2.png',
             area: iceCropArea,
-            when: (s) => s.flag('kitchen_r_ice_stage') == 2),
-        SceneOverlay(
+            when: (s) => s.flag('kitchen_r_ice_stage') == 2,
+          ),
+          SceneOverlay(
             image: 'assets/scenes/kitchen_c_ice3.png',
             area: iceCropArea,
-            when: (s) => s.flag('kitchen_r_ice_stage') >= 3),
-      ], hotspots: [
-        Hotspot(id: 'icebox', area: iceArea, onTap: tapIcebox),
-        Hotspot(
+            when: (s) => s.flag('kitchen_r_ice_stage') >= 3,
+          ),
+        ],
+        hotspots: [
+          Hotspot(id: 'icebox', area: iceArea, onTap: tapIcebox),
+          Hotspot(
             id: 'recipe_board',
             area: recipeArea,
             onTap: (c) {
               c.sfx('paper_rustle');
               c.openCloseup('recipe');
-            }),
-        Hotspot(
+            },
+          ),
+          Hotspot(
             id: 'poker_rack',
             area: pokerRackArea,
             onTap: (c) {
@@ -334,80 +390,103 @@ Room buildKitchen() {
               } else {
                 c.say(strKitchenRPokerRackEmpty);
               }
-            }),
-        Hotspot(
+            },
+          ),
+          Hotspot(
             id: 'sausages',
             area: sausagesArea,
-            onTap: (c) => c.say(strKitchenRSausages)),
-        Hotspot(
+            onTap: (c) => c.say(strKitchenRSausages),
+          ),
+          Hotspot(
             id: 'jar_pickles',
             area: jarPicklesArea,
-            onTap: (c) => c.say(strKitchenRJarPickles)),
-        Hotspot(
+            onTap: (c) => c.say(strKitchenRJarPickles),
+          ),
+          Hotspot(
             id: 'jar_flour',
             area: jarFlourArea,
-            onTap: (c) => c.say(strKitchenRJarFlour)),
-      ]),
+            onTap: (c) => c.say(strKitchenRJarFlour),
+          ),
+        ],
+      ),
     ],
     closeups: {
       // 냄비: 5단계 그림 시리즈. base=pot1(빈 냄비), stage 1~4가 각각 pot2~5를
       // 덮어씌운다. wrong=1이면(순서 오류 직후 1프레임) pot_wrong이 최상단에.
       'pot': Scene(
-          id: 'pot',
-          image: 'assets/scenes/kitchen_pot1.png',
-          overlays: [
-            SceneOverlay(
-                image: 'assets/scenes/kitchen_pot2.png',
-                area: const Rect.fromLTWH(0, 0, 1, 1),
-                when: (s) => s.flag('kitchen_r_pot_stage') == 1),
-            SceneOverlay(
-                image: 'assets/scenes/kitchen_pot3.png',
-                area: const Rect.fromLTWH(0, 0, 1, 1),
-                when: (s) => s.flag('kitchen_r_pot_stage') == 2),
-            SceneOverlay(
-                image: 'assets/scenes/kitchen_pot4.png',
-                area: const Rect.fromLTWH(0, 0, 1, 1),
-                when: (s) => s.flag('kitchen_r_pot_stage') == 3),
-            SceneOverlay(
-                image: 'assets/scenes/kitchen_pot5.png',
-                area: const Rect.fromLTWH(0, 0, 1, 1),
-                when: (s) => s.flag('kitchen_r_pot_stage') >= 4,
-                motion: OverlayMotion.grow),
-            SceneOverlay(
-                image: 'assets/scenes/kitchen_pot_wrong.png',
-                area: const Rect.fromLTWH(0, 0, 1, 1),
-                when: (s) => s.flag('kitchen_r_pot_wrong') >= 1),
-          ]),
+        id: 'pot',
+        image: 'assets/scenes/kitchen_pot1.png',
+        overlays: [
+          SceneOverlay(
+            image: 'assets/scenes/kitchen_pot2.png',
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: (s) => s.flag('kitchen_r_pot_stage') == 1,
+          ),
+          SceneOverlay(
+            image: 'assets/scenes/kitchen_pot3.png',
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: (s) => s.flag('kitchen_r_pot_stage') == 2,
+          ),
+          SceneOverlay(
+            image: 'assets/scenes/kitchen_pot4.png',
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: (s) => s.flag('kitchen_r_pot_stage') == 3,
+          ),
+          SceneOverlay(
+            image: 'assets/scenes/kitchen_pot5.png',
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: (s) => s.flag('kitchen_r_pot_stage') >= 4,
+            motion: OverlayMotion.grow,
+          ),
+          SceneOverlay(
+            image: 'assets/scenes/kitchen_pot_wrong.png',
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: (s) => s.flag('kitchen_r_pot_wrong') >= 1,
+          ),
+        ],
+      ),
       'recipe': Scene(
-          id: 'recipe',
-          custom: (_, c) => RubbableScene(
-                ctx: c,
-                baseImage: 'assets/scenes/kitchen_recipe_clean.png',
-                coverImage: 'assets/scenes/kitchen_recipe_stain.png',
-                cleaned: (s) => s.flag('kitchen_r_recipe_rubbed') >= 1,
-                onCleaned: (c) {
-                  c.s.setFlag('kitchen_r_recipe_rubbed', 1);
-                  c.sfx('sparkle');
-                },
-                gestureKey: const Key('recipe_rub'),
-              )),
+        id: 'recipe',
+        custom: (_, c) => RubbableScene(
+          ctx: c,
+          baseImage: 'assets/scenes/kitchen_recipe_clean.png',
+          coverImage: 'assets/scenes/kitchen_recipe_stain.png',
+          cleaned: (s) => s.flag('kitchen_r_recipe_rubbed') >= 1,
+          onCleaned: (c) {
+            c.s.setFlag('kitchen_r_recipe_rubbed', 1);
+            c.sfx('sparkle');
+          },
+          gestureKey: const Key('recipe_rub'),
+        ),
+      ),
     },
     hints: [
-      PuzzleHint(puzzleId: 'p_kitchen_r_soup', title: '유령 수프', steps: [
-        '레시피는 벽에 있어요 — 닦아야 보이지만',
-        '그림 순서대로 냄비에. 세 번째 재료는 차가운 곳에',
-        '정답: 물→버섯→약초(빙실)→주전자 노래',
-      ], solved: (s) => s.flag('kitchen_r_pot_stage') >= 4),
-      PuzzleHint(puzzleId: 'p_kitchen_r_ice', title: '언 자물쇠', steps: [
-        '얼음은 뜨거운 것에 약해요',
-        '부지깽이를 화덕에 달구세요',
-        '정답: 달군 부지깽이를 자물쇠에',
-      ], solved: (s) => s.flag('kitchen_r_ice_looted') >= 1),
-      PuzzleHint(puzzleId: 'p_kitchen_r_door', title: '뒷문', steps: [
-        '뒷문 열쇠는 국자가 갖고 있어요',
-        '국자는 그냥 주지 않아요 — 뭔가 만들어 주길 바라는 눈치예요',
-        '정답: 국자에게 완성 수프 → 열쇠',
-      ], solved: (s) => s.flag('kitchen_r_done') >= 1),
+      PuzzleHint(
+        puzzleId: 'p_kitchen_r_soup',
+        title: '유령 수프',
+        steps: [
+          '레시피는 벽에 있어요 — 닦아야 보이지만',
+          '그림 순서대로 냄비에. 세 번째 재료는 차가운 곳에',
+          '정답: 물→버섯→약초(빙실)→주전자 노래',
+        ],
+        solved: (s) => s.flag('kitchen_r_pot_stage') >= 4,
+      ),
+      PuzzleHint(
+        puzzleId: 'p_kitchen_r_ice',
+        title: '언 자물쇠',
+        steps: ['얼음은 뜨거운 것에 약해요', '부지깽이를 화덕에 달구세요', '정답: 달군 부지깽이를 자물쇠에'],
+        solved: (s) => s.flag('kitchen_r_ice_looted') >= 1,
+      ),
+      PuzzleHint(
+        puzzleId: 'p_kitchen_r_door',
+        title: '뒷문',
+        steps: [
+          '뒷문 열쇠는 국자가 갖고 있어요',
+          '국자는 그냥 주지 않아요 — 뭔가 만들어 주길 바라는 눈치예요',
+          '정답: 국자에게 완성 수프 → 열쇠',
+        ],
+        solved: (s) => s.flag('kitchen_r_done') >= 1,
+      ),
     ],
   );
 }

@@ -54,7 +54,9 @@ void main() {
 
     s.select('kettle_singing'); // 2번째는 mushroom이어야 함 — 순서 위반
     tap('kitchen_a', 'pot');
-    expect(s.flag('kitchen_r_pot_stage'), 0);
+    // 오답이어도 진행 단계는 유지된다 — 정답 재료(물병 등)는 영구 소모라
+    // 0으로 리셋하면 복구 불가 소프트락이 되기 때문(실기기 검수에서 발견).
+    expect(s.flag('kitchen_r_pot_stage'), 1);
     expect(s.flag('kitchen_r_pot_wrong'), 1);
     expect(s.closeupId, 'pot', reason: '오답 프레임이 보이려면 오답 탭이 클로즈업을 열어야 한다');
     expect(s.dialog, strKitchenRPotWrong);
@@ -204,10 +206,10 @@ void main() {
       },
     );
 
-    test('순서가 틀린 재료(넷 중 다른 것)는 stage를 0으로 리셋 + wrong=1', () {
+    test('순서가 틀린 재료는 현재 stage 유지 + wrong=1', () {
       usePotIngredient(s, 'water_bottle'); // stage 1
       expect(usePotIngredient(s, 'kettle_singing'), isFalse); // 2번째가 아님
-      expect(s.flag('kitchen_r_pot_stage'), 0);
+      expect(s.flag('kitchen_r_pot_stage'), 1);
       expect(s.flag('kitchen_r_pot_wrong'), 1);
     });
 
@@ -223,7 +225,7 @@ void main() {
       usePotIngredient(s, 'water_bottle');
       usePotIngredient(s, 'kettle_singing'); // 오답 → wrong=1
       expect(s.flag('kitchen_r_pot_wrong'), 1);
-      usePotIngredient(s, 'water_bottle'); // 정답으로 재시도
+      usePotIngredient(s, 'mushroom'); // 보존된 다음 단계 정답
       expect(s.flag('kitchen_r_pot_wrong'), 0);
     });
 
