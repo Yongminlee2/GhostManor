@@ -222,6 +222,59 @@ write("door_open", mix(tone(180, 0.42, 0.3, harmonics=((1, 1.0), (3, 0.2)),
 write("clock_tick", mix(click(0.008, 0.35, 5),
                         tone(900, 0.045, 0.22, attack=0.002, release=0.12)))
 
+
+# ── 챕터 2 신규 3종 ──────────────────────────────────────────────
+
+def _bell(freq, dur, vol):
+    """오르골 벨 톤 — 비조화 부분음 + 빠른 감쇠."""
+    return mix(
+        tone(freq, dur, vol * 0.7, attack=0.002, release=0.9),
+        tone(freq * 3.01, dur * 0.7, vol * 0.22, attack=0.002, release=0.6),
+        tone(freq * 5.4, dur * 0.45, vol * 0.10, attack=0.002, release=0.4))
+
+
+def _music_box(skip_third):
+    """도·미·레·파 오르골. skip_third면 3번째 음(레) 자리가 무음."""
+    c4, e4, d4, f4 = 523.25, 659.25, 587.33, 698.46  # 한 옥타브 위(오르골답게)
+    seq = []
+    for i, f in enumerate((c4, e4, d4, f4)):
+        if skip_third and i == 2:
+            seq.append(silence(0.34))
+        else:
+            seq.append(_bell(f, 0.5, 0.24))
+            seq.append(silence(0.02))
+    return hall(cat(*seq), taps=((0.11, 0.18), (0.22, 0.07)))
+
+
+write("music_box", _music_box(False))
+write("music_box_broken", _music_box(True))
+
+# 축음기: 왁스 크랙클 + 희미하게 일그러진 멜로디 배경 (2초)
+_ph = noise(2.0, 0.06, seed=81, lp=0.35)
+_ph_rnd = random.Random(82)
+for _k in range(14):
+    overlay(_ph, click(0.004, 0.16 + 0.12 * _ph_rnd.random(), seed=1100 + _k),
+            _ph_rnd.random() * 1.9)
+_ph_mel = mix(
+    tone(392, 2.0, 0.05, harmonics=((1, 1.0), (2, 0.3)),
+         vib_hz=5.5, vib_amt=0.02, attack=0.3, release=0.6),
+    tone(494, 2.0, 0.035, harmonics=((1, 1.0),),
+         vib_hz=4.8, vib_amt=0.025, attack=0.6, release=0.6))
+write("phonograph", fade_edges(mix(_ph, _ph_mel), 0.05))
+
+# 괘종 차임: 깊은 종 3연타를 파일에 굽는다(재생 측 타이머 불필요)
+def _chime_strike():
+    return mix(
+        tone(196, 1.1, 0.30, harmonics=((1, 1.0), (2.76, 0.35), (5.4, 0.12)),
+             attack=0.003, release=0.95),
+        tone(98, 1.1, 0.12, attack=0.003, release=0.9))
+
+
+write("clock_chime", fade_edges(cat(
+    _chime_strike(), silence(0.25),
+    _chime_strike(), silence(0.25),
+    _chime_strike()), 0.01))
+
 # 반짝: 아주 높은 4음 셋잇단
 write("sparkle", cat(tone(1319, 0.06, 0.18), tone(1568, 0.06, 0.18),
                      tone(1976, 0.06, 0.18), tone(2637, 0.14, 0.2, release=0.7)))

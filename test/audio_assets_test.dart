@@ -18,6 +18,8 @@ void main() {
     'wood_knock_hollow', 'wood_slide',
     // 리마스터 신규 슬롯
     'uncork', 'pot_stir', 'paper_tear', 'pills_shake', 'floor_creak',
+    // 챕터 2 신규 슬롯 (자체 제작)
+    'music_box', 'music_box_broken', 'phonograph', 'clock_chime',
     // 루프
     'bgm_manor', 'ambient_foyer', 'ambient_living', 'ambient_study',
     'ambient_kitchen', 'ambient_cellar', 'ambient_attic',
