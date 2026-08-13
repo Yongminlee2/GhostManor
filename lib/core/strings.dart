@@ -226,7 +226,8 @@ const strResetProgress = '진행 초기화';
 const strResetConfirm = '정말 모든 진행을 삭제할까요?';
 const strRoomClear = '방 탈출 성공!';
 const strNextRoom = '다음 방으로';
-const strChapterEnd = '챕터 1 클리어!\n삼촌(유령)의 저택은 이제 당신 것.\n…2층의 이야기는 다음 챕터에서.';
+const strChapterEnd =
+    '저택의 문이 모두 열렸다.\n에드가도, 유령들도 — 이제는 자유롭게 오간다.\n…그래도 이 집엔, 아직 다 풀리지 않은 것이 남아 있는 듯하다.';
 const strBackToTitle = '처음으로';
 const strCancel = '취소';
 const strOk = '확인';
@@ -411,3 +412,58 @@ const strF2LabSconceB = '벽에 걸린 촛대. 작은 불꽃이 조용히 흔들
 const strF2LabRugB = '빛바랜 카펫. 발소리를 죽인다.';
 const strF2LabWindow = '고딕풍 창 너머로 짙은 밤하늘과 저택의 첨탑이 보인다.';
 const strF2LabCurtain = '낡은 커튼이 좀먹어 가장자리가 해졌다.';
+
+// ── 방 11 봉인의 방 (room11_seal, f2_seal_ 플래그) ──
+const strF2SealIntro =
+    '차가운 공기가 가라앉은 방. 정면엔 밧줄로 겹겹이 묶인 육중한 문, 한쪽 벽엔 낡은 벽화, 다른 쪽엔 촛불 다섯이 걸려 있다. 다섯 중 하나는 이미 꺼져 있다.';
+
+// 벽 A: 제단·매듭·문
+const strF2SealAltarWallLook = '차가운 돌 제단. 네 개의 홈이 텅 비어 있다. 무언가 놓여야 할 자리 같다.';
+const strF2SealAltarWallDone = '제단이 완성되어 있다. 홈마다 상징이 은은히 빛난다.';
+const strF2SealAltarPlace1 = '딸깍. 첫 번째 홈에 상징이 자리를 잡는다.';
+const strF2SealAltarPlace2 = '딸깍. 두 번째 홈도 채워졌다.';
+const strF2SealAltarPlace3 = '딸깍. 세 번째 홈까지 — 이제 하나 남았다.';
+const strF2SealAltarComplete = '네 상징이 동시에 은은히 빛나며 제단에 새겨진다. 위쪽 밧줄 매듭이 희미하게 떨린다.';
+const strF2SealAltarWrong = '제단이 웅— 낮게 울며 상징들을 밀어낸다. 순서가 있다.';
+const strF2SealAltarNeedEmblem = '홈에 맞는 무언가가 필요해 보인다.';
+const strF2SealAltarFullLook = '제단은 이미 완성되어 있다.';
+const strF2SealKnotLocked = '매듭이 단단히 조여 있다. 제단이 먼저 채워져야 할 것 같다.';
+const strF2SealKnotProgress1 = '맨 위 매듭이 스르르 풀린다.';
+const strF2SealKnotProgress2 = '가운데 매듭까지 풀렸다. 하나 남았다.';
+const strF2SealKnotWrong = '매듭이 오히려 더 단단히 조여든다. 위에서부터, 다시.';
+const strF2SealKnotOpen = '마지막 매듭이 풀리며 밧줄이 바닥에 떨어진다. 육중한 문이, 안쪽에서부터 천천히 열린다…';
+const strF2SealKnotAfterOpen = '문틈으로 아침 햇살 같은 빛이 스며든다. 이 저택은, 이제 조용하다.';
+const strF2SealKeyhole = '문 아래 낡은 열쇠 구멍. 어떤 열쇠도 여기엔 맞지 않을 것 같다 — 애초에 열쇠로 잠근 문이 아니었으니까.';
+const strF2SealCandelabra = '벽에 걸린 다섯 갈래 촛대. 초 두 자루가 나란히 타오른다.';
+const strF2SealFrameEmpty = '텅 빈 액자. 유리가 깨져 안이 훤히 드러나 있다. 원래 무엇이 걸려 있었는지는 알 수 없다.';
+const strF2SealFloorCandle = '바닥에 놓인 초 하나. 촛농이 두껍게 흘러내려 굳어 있다.';
+
+// 벽 B: 봉인 벽화
+const strF2SealMuralHouseDormant = '벽화 속 저택이 어둡게 웅크리고 있다. 창문 하나하나가 낯익다.';
+const strF2SealMuralFamilyDormant = '벽화 속 다섯 사람이 이쪽을 가만히 보고 있다. 표정은 그려지지 않았는데도, 왠지 마음이 저릿하다.';
+const strF2SealSconce = '벽에 걸린 촛대 하나가 낮게 타오른다.';
+const strF2SealCornerCandle = '구석에 놓인 초. 이미 오래전에 꺼져, 가느다란 연기 한 줄만 피어오른다.';
+const strF2SealWainscoting = '벽 아래쪽 나무 판벽. 손자국 하나 없이 먼지만 소복하다.';
+
+// 벽 C: 촛불 고리·기록 선반
+const strF2SealCandleSnuff = '후— 촛불이 꺼진다. 연기 한 줄이 조용히 피어오른다.';
+const strF2SealCandleAlreadyOut = '이미 꺼진 초. 가는 연기만 피어오른다.';
+const strF2SealCandleCenterOut = '가운데 초는 진작부터 꺼져 있다. 언제부터 저랬는지는 아무도 모른다.';
+const strF2SealMuralAwake = '마지막 촛불이 꺼지는 순간, 벽화 속 다섯 사람이 일제히 빛나기 시작한다 — 마치 그날 밤이 되풀이되는 것처럼.';
+const strF2SealShelfBooks = '낡은 기록 선반. 곰팡내 나는 장부와 일기가 빼곡하다.';
+const strF2SealShelfRecord = '먼지 쌓인 음반 하나가 삐죽 꽂혀 있다. 라벨은 색이 바래 읽을 수 없다.';
+const strF2SealRug = '해진 깔개. 밟을 때마다 먼지가 폴싹 인다.';
+
+// 에드가와의 대화(탭마다 다음 줄, 마지막은 계획 원문 그대로 — 한 글자도 변경 금지)
+const strF2SealEdgarLine1 =
+    '"허, 허허… 드디어 왔구나." 안경 너머 눈가가 살짝 젖어 있다. "네가 올 줄 알았다. 아니, 사실 몰랐다. 그냥 그러길 바랐어."';
+const strF2SealEdgarLine2 = '"인사가 늦었지. 에드가다. 네 삼촌이자… 뭐, 보다시피 300년 묵은 유령이지."';
+const strF2SealEdgarLine3 = '"미안하다. 헤어지는 게 무서워서 문을 잠갔어. 다들 떠나보내는 것보다, 가둬두는 쪽이 쉬워 보였거든."';
+const strF2SealEdgarLine4 = '"그런데 네가 그 문을, 하나씩 다 열어버렸구나. …고맙다. 정말로."';
+const strF2SealEdgarLine5 = '"오래 기다리게 했구나. …다들, 문 열렸다. 집에 가자."';
+
+// 유령들의 작별(farewell 클로즈업, MemoryPlayer 재사용)
+const strF2SealFarewellGhospo = '"조카, 정말 고생 많았다. …삼촌 잘 부탁한다는 말은, 이제 안 해도 되겠군." 고스포가 활짝 웃는다.';
+const strF2SealFarewellBoo = '"밖에서도 TV가 나오려나…? 아니, 지금 그게 중요한 게 아니지. 고마워!" 부우가 방방 뛰며 손을 흔든다.';
+const strF2SealFarewellOthers =
+    '멀리서 덜덜의 훌쩍이는 소리, 국자의 "요리 배워둘걸!" 하는 외침, 안경 쓴 유령의 헛기침 소리가 뒤섞여 들린다.';

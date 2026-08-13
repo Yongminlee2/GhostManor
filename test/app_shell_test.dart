@@ -23,7 +23,7 @@ void main() {
   });
 
   testWidgets(
-      '클리어 흐름: foyer_r_done → 다음 방 → living_r_done → 다음 방 → study_r_done → 다음 방 → kitchen_r_done → 다음 방 → cellar_r_done → 다음 방 → 다락방 클리어 → 엔딩',
+      '클리어 흐름: foyer_r_done → 다음 방 → living_r_done → 다음 방 → study_r_done → 다음 방 → kitchen_r_done → 다음 방 → cellar_r_done → 다음 방 → 다락방 클리어 → 계단홀(챕터2로 이어짐, 아직 엔딩 아님)',
       (t) async {
     final s = GameState()..setFlag('entered_foyer', 1);
     await t.pumpWidget(app(state: s));
@@ -69,10 +69,24 @@ void main() {
     expect(find.text(strRoomClear), findsOneWidget);
     await t.tap(find.text(strNextRoom));
     await t.pumpAndSettle();
-    expect(find.text(strChapterEnd), findsOneWidget); // 마지막 방 클리어 → 엔딩
+    // 다락(챕터1 마지막 콘텐츠 방)은 더 이상 목록의 마지막이 아니다 —
+    // rooms.length가 6→11로 늘어난 뒤에도 _showClear/_ended는 하드코딩된
+    // 인덱스가 아니라 roomIndex+1 vs rooms.length 제네릭 비교라, 클리어
+    // 다이얼로그를 넘기면 챕터2 첫 방(계단홀)으로 자연히 이어진다(챕터2
+    // 계획 Task 7 — "챕터1 엔딩 흐름을 챕터2 진입으로 연결").
+    expect(find.text('계단홀·복도'), findsOneWidget);
+    expect(find.text(strChapterEnd), findsNothing);
   });
 
-  testWidgets('챕터 완료 상태로 재개하면 엔딩 화면', (t) async {
+  testWidgets('구 챕터1 완료 세이브(방 인덱스 5, attic_r_done)를 로드하면 엔딩이 아니라 방7(계단홀)로 자연 전진',
+      (t) async {
+    // rooms.dart가 6방뿐이던 시절 만들어진 "챕터 클리어" 세이브의 형태
+    // 그대로(roomIndex=5=다락, cleared_shown_attic=1 — 그 시절엔 이 조합이
+    // 곧 챕터 끝이었다). 챕터2 계획 Task 7의 명시적 요구: 이 세이브가 지금
+    // 로드되면 방7로 자연 전진해야 한다. _selfHealStrandedClear는 원래
+    // "다이얼로그를 못 보고 남겨진 세이브"를 복구하려고 만든 로직이지만,
+    // roomIndex+1 < rooms.length 조건만 보는 제네릭 구현이라 이 구 세이브도
+    // 같은 경로로 자동 복구된다 — 별도 가드 추가 없이 그대로 통과.
     final s = GameState()
       ..setFlag('entered_foyer', 1)
       ..setFlag('foyer_r_done', 1)
@@ -97,7 +111,63 @@ void main() {
       ..setFlag('cleared_shown_attic', 1);
     await t.pumpWidget(app(state: s));
     await t.pumpAndSettle();
+    expect(find.text('계단홀·복도'), findsOneWidget);
+    expect(find.text(strChapterEnd), findsNothing);
+    expect(find.text('다락방'), findsNothing);
+  });
+
+  testWidgets('봉인의 방(마지막 방) 클리어 → 진짜 엔딩 화면', (t) async {
+    // 11방 전부를 실제로 풀지 않고(그 검증은 chapter1_integration_test.dart
+    // 몫), 앱 셸의 클리어→전진→엔딩 배선만 직접 플래그로 확인한다 —
+    // 위 '챕터 완료' 테스트가 예전에 하던 역할을 이제는 방11이 넘겨받는다.
+    final s = GameState()
+      ..setFlag('entered_foyer', 1)
+      ..setFlag('foyer_r_done', 1)
+      ..setFlag('cleared_shown_foyer', 1)
+      ..setFlag('entered_living', 1)
+      ..setFlag('living_r_done', 1)
+      ..setFlag('cleared_shown_living', 1)
+      ..setFlag('entered_study', 1)
+      ..setFlag('study_r_done', 1)
+      ..setFlag('cleared_shown_study', 1)
+      ..setFlag('entered_kitchen', 1)
+      ..setFlag('kitchen_r_done', 1)
+      ..setFlag('cleared_shown_kitchen', 1)
+      ..setFlag('entered_cellar', 1)
+      ..setFlag('cellar_r_done', 1)
+      ..setFlag('cleared_shown_cellar', 1)
+      ..setFlag('entered_attic', 1)
+      ..setFlag('attic_r_done', 1)
+      ..setFlag('cleared_shown_attic', 1)
+      ..setFlag('entered_hall', 1)
+      ..setFlag('f2_hall_done', 1)
+      ..setFlag('cleared_shown_hall', 1)
+      ..setFlag('entered_bed', 1)
+      ..setFlag('f2_bed_done', 1)
+      ..setFlag('cleared_shown_bed', 1)
+      ..setFlag('entered_child', 1)
+      ..setFlag('f2_child_done', 1)
+      ..setFlag('cleared_shown_child', 1)
+      ..setFlag('entered_lab', 1)
+      ..setFlag('f2_lab_done', 1)
+      ..setFlag('cleared_shown_lab', 1)
+      ..roomIndex = 10
+      ..setFlag('entered_seal', 1);
+    await t.pumpWidget(app(state: s));
+    await t.pumpAndSettle();
+    expect(find.text('봉인의 방'), findsOneWidget);
+
+    s.setFlag('f2_seal_done', 1);
+    await t.pumpAndSettle();
+    expect(find.text(strRoomClear), findsOneWidget);
+    await t.tap(find.text(strNextRoom));
+    await t.pumpAndSettle();
     expect(find.text(strChapterEnd), findsOneWidget);
+    expect(find.text(strBackToTitle), findsOneWidget);
+
+    await t.tap(find.text(strBackToTitle));
+    await t.pumpAndSettle();
+    expect(find.text(strAppTitle), findsOneWidget);
   });
 
   testWidgets(

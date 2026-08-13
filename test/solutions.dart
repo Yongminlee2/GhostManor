@@ -933,3 +933,93 @@ int solveLab(GameState s, GameCtx c, Room room) {
 
   return steps;
 }
+
+/// 봉인의 방(챕터2 방11, 마지막 콘텐츠 방) 정답 시퀀스 (room11_seal_test.dart의
+/// 해피패스와 동일 절차, 스텝 카운팅 — solveHall~solveLab과 동일 관례).
+/// rooms.dart에 이미 등록된 room11을 그대로 받는다(챕터2 계획 Task 7이
+/// rooms.dart 일괄 등록도 함께 맡았다 — 이 방은 방7~10과 달리 buildAllRooms()
+/// 경유 통합 테스트가 곧 이 방의 유일한 "전제 충족" 검증이기도 하다). T1
+/// (촛불 고리)과 T2(제단)는 완전히 독립 스레드다 — 교차 잠금이 전혀 없다
+/// (계획 Self-Review: "회상5는 지식일 뿐 게이트 아님"). 전제: emblem_hall/
+/// bed/child/lab 4종을 이미 보유한 상태 — 이 함수는 상징을 지급하지 않는다
+/// (solveStudy가 oil을 지급하지 않는 것과 동일 관례). 방 단독 테스트는
+/// setUp에서 4종을 지급한 뒤 이 함수를 호출한다. farewell 클로즈업은
+/// MemoryPlayer 커스텀 위젯이라 헤드리스 테스트에선 위젯을 펌프하지 않고
+/// onDone이 하는 일(ending 클로즈업 열기)을 직접 재현한다(room10 solveLab의
+/// RubbableScene/DialSafe 우회와 동일 원칙 — 위젯 자체의 탭-전진은
+/// room11_seal_test.dart의 별도 위젯 테스트가 검증). 다른 방이 없으므로
+/// "다음 방 열쇠"는 만들지 않는다 — 대신 f2_seal_done이 챕터 전체의 마지막
+/// cleared 플래그다.
+int solveSeal(GameState s, GameCtx c, Room room) {
+  var steps = 0;
+  void tap(String sceneId, String hotspotId) {
+    tapSpot(room, s, c, sceneId, hotspotId);
+    steps++;
+  }
+
+  void pure(void Function() fn) {
+    fn();
+    steps++;
+  }
+
+  // T1 촛불 고리: 켜진 초 4개를 전부 꺼서 벽화를 깨운다 → 회상5(가운데
+  // 다섯째 초는 처음부터 꺼져 있어 손대지 않는다).
+  tap('seal_c', 'candle0');
+  tap('seal_c', 'candle1');
+  tap('seal_c', 'candle2');
+  tap('seal_c', 'candle3'); // 네 번째 — 벽화가 깨어난다
+  expect(s.flag('f2_seal_b_awake'), 1);
+
+  tap('seal_b', 'mural_family');
+  expect(s.closeupId, 'memory');
+  expect(s.flag('f2_seal_memory'), 1);
+  s.closeCloseup();
+
+  // T2 제단: emblem 4종을 hall→bed→child→lab 순서로 배치(회상 촛불 수
+  // 오름차순과 대응 — 회상5를 안 봐도 순서만 맞으면 통과한다, 부정 테스트로
+  // 별도 확인).
+  tap('seal_a', 'altar');
+  expect(s.closeupId, 'altar');
+
+  s.select('emblem_hall');
+  tap('altar', 'grooves');
+  expect(s.flag('f2_seal_altar_seq'), 1);
+
+  s.select('emblem_bed');
+  tap('altar', 'grooves');
+  expect(s.flag('f2_seal_altar_seq'), 2);
+
+  s.select('emblem_child');
+  tap('altar', 'grooves');
+  expect(s.flag('f2_seal_altar_seq'), 3);
+
+  s.select('emblem_lab');
+  tap('altar', 'grooves');
+  expect(s.flag('f2_seal_altar_full'), 1);
+  expect(s.has('emblem_hall'), isFalse); // 완성 시에만 4개 한꺼번에 소모
+  s.closeCloseup();
+
+  // 매듭 3개를 위→아래 순서로 문질러 봉인 해제.
+  tap('seal_a', 'knot_top');
+  tap('seal_a', 'knot_mid');
+  tap('seal_a', 'knot_bottom');
+  expect(s.flag('f2_seal_a_open'), 1);
+
+  // 에드가 등장 → 대화 5줄(탭마다 다음 줄, 마지막은 계획 원문 고정 대사) →
+  // 유령 작별(farewell, MemoryPlayer 우회) → 아침 컷(ending) → 클리어.
+  tap('seal_a', 'edgar'); // 1
+  tap('seal_a', 'edgar'); // 2
+  tap('seal_a', 'edgar'); // 3
+  tap('seal_a', 'edgar'); // 4
+  tap('seal_a', 'edgar'); // 5(고정 대사)
+  expect(s.flag('f2_seal_edgar_lines'), 5);
+
+  tap('seal_a', 'edgar'); // farewell 클로즈업 열기
+  expect(s.closeupId, 'farewell');
+  pure(() => s.openCloseup('ending')); // farewell onDone 재현
+
+  tap('ending', 'continue');
+  expect(s.flag('f2_seal_done'), 1);
+
+  return steps;
+}
