@@ -230,3 +230,30 @@ const strChapterEnd = '챕터 1 클리어!\n삼촌(유령)의 저택은 이제 �
 const strBackToTitle = '처음으로';
 const strCancel = '취소';
 const strOk = '확인';
+
+// ── 챕터 2 기억 회상 (memory_player, strF2Mem<N>p<페이지>) ──
+const strMemoryTapHint = '탭하여 계속';
+
+// 회상1(방7 계단홀·복도): 가족과 어린 에드가
+const strF2Mem1p1 = '이층 복도엔 늘 웃음소리가 굴러다녔다.';
+const strF2Mem1p2 = '막내 에드가는 계단 난간을 미끄럼틀 삼다 혼나곤 했다.';
+const strF2Mem1p3 = '사진 속 가족은, 아직 아무것도 모른 채 웃고 있다.';
+
+// 회상2(방8 안방): 마님의 자수와 자장가
+const strF2Mem2p1 = '마님은 밤마다 자수를 놓으며 노래를 흥얼거렸다.';
+const strF2Mem2p2 = '달과 해, 별과 구름 — 어린 에드가가 잠들 때까지.';
+const strF2Mem2p3 = '그 곡조를, 에드가는 평생 잊지 않았다.';
+
+// 회상3(방9 아이 방): 에드가와 고스포의 첫 만남 — 회상 중 유일하게 2페이지
+const strF2Mem3p1 = '처음 유령을 본 날, 에드가는 울지 않았다.';
+const strF2Mem3p2 = '"아저씨, 숨바꼭질 잘 못하네." — 고스포는 그날 처음으로 웃었다고 한다.';
+
+// 회상4(방10 서고·작업실): 병상의 결심
+const strF2Mem4p1 = '병상의 에드가는 창밖 대신 천장을 보며 말했다.';
+const strF2Mem4p2 = '"내가 떠나면, 이 집의 가족들은 누가 지키지."';
+const strF2Mem4p3 = '그날 밤, 서고의 불은 아침까지 꺼지지 않았다.';
+
+// 회상5(방11 봉인의 방): 봉인의 순간
+const strF2Mem5p1 = '봉인을 걸던 밤, 에드가는 촛불을 전부 껐다.';
+const strF2Mem5p2 = '"미안. 조금만… 조금만 더 같이 있자."';
+const strF2Mem5p3 = '문이 잠기는 소리를, 유령들은 300년째 기억한다.';
