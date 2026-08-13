@@ -18,11 +18,12 @@ Widget gameImage(String path) => Image.asset(
     );
 
 /// 벽면/클로즈업 렌더 + 비율 좌표 히트테스트. 부모가 2:3 박스를 보장한다.
-/// 씬 숨쉬기·핫스팟 글린트·탭 리플·유령 둥실 같은 생동감 연출은 non-custom
-/// 씬에서만, 4초 주기 Timer 하나로 구동한다(반복 AnimationController 없음 —
+/// 씬 숨쉬기·탭 리플·유령 둥실 같은 생동감 연출은 non-custom 씬에서만,
+/// 4초 주기 Timer 하나로 구동한다(반복 AnimationController 없음 —
 /// pumpAndSettle 안전). 벽 전환은 슬라이드, 클로즈업 여닫기는 줌으로 넘어가고
-/// (둘 다 finite AnimatedSwitcher), 오버레이는 등장 모션 타입별로, 지급받은
-/// 아이템은 탭 지점에서 인벤토리 쪽으로 짧게 날아간다 — 전부 유한 애니메이션.
+/// (둘 다 finite AnimatedSwitcher), 오버레이는 등장 모션 타입별로, 오브젝트는
+/// area(s) 변화에 AnimatedPositioned로 실이동, 지급받은 아이템은 탭 지점에서
+/// 인벤토리 쪽으로 짧게 날아간다 — 전부 유한 애니메이션.
 class SceneView extends StatefulWidget {
   final Room room;
   final GameCtx ctx;
@@ -33,11 +34,8 @@ class SceneView extends StatefulWidget {
 }
 
 class _SceneViewState extends State<SceneView> {
-  final _rng = Random();
   Timer? _timer;
   bool _breatheIn = false;
-  Rect? _glintRect;
-  int _glintSeq = 0;
   Offset? _lastTapPos;
   int _rippleSeq = 0;
   int _navDir = 1; // 마지막 화살표 방향(+1 오른쪽/-1 왼쪽) — 슬라이드 방향 결정
@@ -58,23 +56,7 @@ class _SceneViewState extends State<SceneView> {
     super.dispose();
   }
 
-  void _onTick(Timer _) {
-    final s = widget.ctx.s;
-    setState(() {
-      _breatheIn = !_breatheIn;
-      if (s.closeupId == null) {
-        final scene = widget.room.walls[s.sceneIndex % widget.room.walls.length];
-        if (scene.custom == null) {
-          final active =
-              scene.hotspots.where((h) => h.when?.call(s) ?? true).toList();
-          if (active.isNotEmpty) {
-            _glintSeq++;
-            _glintRect = active[_rng.nextInt(active.length)].area;
-          }
-        }
-      }
-    });
-  }
+  void _onTick(Timer _) => setState(() => _breatheIn = !_breatheIn);
 
   /// 오버레이 등장 모션(스펙 §3): fade/slideDown/grow 공통 350→450ms 트윈.
   Widget _overlayContent(SceneOverlay o, Rect rectPx) => TweenAnimationBuilder<double>(
@@ -100,7 +82,7 @@ class _SceneViewState extends State<SceneView> {
         child: AnimatedSlide(
           offset: Offset(
               0, rectPx.height == 0 ? 0 : (_breatheIn ? idle.bobPx : -idle.bobPx) / rectPx.height),
-          duration: const Duration(seconds: 3),
+          duration: const Duration(milliseconds: 3400),
           curve: Curves.easeInOut,
           child: gameImage(idle.image),
         ),
@@ -144,6 +126,20 @@ class _SceneViewState extends State<SceneView> {
             return Positioned.fromRect(rect: r, child: _idleContent(idle, r));
           }
 
+          Widget objectItem(SceneObject o) => AnimatedPositioned.fromRect(
+                // 같은 씬에 오브젝트가 2개 이상일 때 image 경로로 고유 식별 —
+                // 없으면 Flutter가 리스트 위치로만 매칭해 위젯 상태가 섞일 수
+                // 있다(지구본 반쪽 2개가 첫 사례, 스펙 §4-1).
+                // 제약: 한 씬 안에서 SceneObject들의 image 경로는 서로 달라야
+                // 한다(같으면 중복 키 assertion) — 같은 그림 2개가 필요해지면
+                // 그때 인덱스 조합 키로 바꾼다.
+                key: ValueKey(o.image),
+                rect: px(o.area(s)),
+                duration: o.duration,
+                curve: Curves.easeInOut,
+                child: IgnorePointer(child: gameImage(o.image)),
+              );
+
           Widget wallBody() {
             if (scene.custom != null) return scene.custom!(context, ctx);
             return Stack(children: [
@@ -160,6 +156,8 @@ class _SceneViewState extends State<SceneView> {
                   child: gameImage(scene.image!),
                 ),
               ),
+              for (final o in scene.objects)
+                if (o.visible?.call(s) ?? true) objectItem(o),
               for (final o in scene.overlays)
                 if (o.when(s)) overlayItem(o),
               for (final idle in scene.idles)
@@ -218,27 +216,6 @@ class _SceneViewState extends State<SceneView> {
                 ),
               ),
             ),
-            if (_glintRect != null && s.closeupId == null)
-              Positioned.fromRect(
-                rect: px(_glintRect!),
-                child: IgnorePointer(
-                  child: Center(
-                    child: TweenAnimationBuilder<double>(
-                      key: ValueKey(_glintSeq),
-                      tween: Tween(begin: 0.0, end: 1.0),
-                      duration: const Duration(milliseconds: 900),
-                      builder: (context, t, child) => Opacity(
-                        opacity: sin(t * pi).clamp(0.0, 1.0),
-                        child: Transform.scale(
-                          scale: 0.6 + 0.5 * t,
-                          child: const Icon(Icons.auto_awesome,
-                              color: Colors.white70, size: 22),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
             if (_lastTapPos != null)
               TweenAnimationBuilder<double>(
                 key: ValueKey(_rippleSeq),

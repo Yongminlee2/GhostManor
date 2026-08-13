@@ -43,6 +43,15 @@ Room _testRoom() => Room(
       },
     );
 
+Room _objRoom(List<SceneObject> objects) => Room(
+      id: 'to',
+      name: '오브젝트테스트',
+      cleared: (s) => false,
+      walls: [
+        Scene(id: 'oa', image: 'assets/scenes/wall_a.png', objects: objects),
+      ],
+    );
+
 void main() {
   late GameState s;
   late GameCtx c;
@@ -156,6 +165,14 @@ void main() {
     expect(find.byKey(const ValueKey('fly_1')), findsNothing);
   });
 
+  testWidgets('인벤토리: 레지스트리에 없는 id(구세이브 잔재)는 건너뛰고 렌더가 산다', (t) async {
+    s.give('candle');
+    s.inventory.add('ghost_soup'); // 제거된 구세대 아이템 id를 세이브 잔재처럼 주입
+    await pump(t, InventoryBar(ctx: c));
+    expect(find.byKey(const Key('inv_candle')), findsOneWidget);
+    expect(find.byKey(const Key('inv_ghost_soup')), findsNothing);
+  });
+
   testWidgets('인벤토리: 선택 → 조합 성공, 실패 시 선택 이동', (t) async {
     s.give('candle');
     s.give('match');
@@ -173,5 +190,96 @@ void main() {
     await t.pump();
     expect(s.has('lit_candle'), isTrue);
     expect(s.selectedItem, isNull);
+  });
+
+  testWidgets('SceneObject: visible 조건 위양성/위음성 + 없는 에셋은 파일명 라벨', (t) async {
+    final room = _objRoom([
+      SceneObject(
+        image: 'assets/scenes/obj_test.png',
+        area: (s) => const Rect.fromLTWH(0.1, 0.1, 0.2, 0.2),
+        visible: (s) => s.flag('obj_visible') == 1,
+      ),
+    ]);
+    await pump(t, SceneView(room: room, ctx: c));
+    await t.pump();
+    expect(find.text('obj_test.png'), findsNothing);
+    s.setFlag('obj_visible', 1);
+    await t.pump();
+    await t.pump(); // 새로 마운트된 이미지의 errorBuilder 해석에 한 프레임 더 필요
+    expect(find.text('obj_test.png'), findsOneWidget);
+  });
+
+  testWidgets('SceneObject: 플래그로 area가 바뀌면 AnimatedPositioned로 실이동(트윈, 점프 아님)',
+      (t) async {
+    const rectA = Rect.fromLTWH(0.1, 0.1, 0.2, 0.2);
+    const rectB = Rect.fromLTWH(0.6, 0.6, 0.2, 0.2);
+    final room = _objRoom([
+      SceneObject(
+        image: 'assets/scenes/obj_move.png',
+        area: (s) => s.flag('obj_moved') == 1 ? rectB : rectA,
+      ),
+    ]);
+    await pump(t, SceneView(room: room, ctx: c));
+    await t.pump();
+    final origin = t.getTopLeft(find.byType(SceneView));
+    final start = origin + const Offset(40, 60); // rectA @ 400x600 박스
+    final end = origin + const Offset(240, 360); // rectB @ 400x600 박스
+    expect(t.getTopLeft(find.byType(AnimatedPositioned)),
+        offsetMoreOrLessEquals(start, epsilon: 1.0));
+
+    s.setFlag('obj_moved', 1);
+    await t.pump();
+    await t.pump(const Duration(milliseconds: 300));
+    final mid = t.getTopLeft(find.byType(AnimatedPositioned));
+    expect(mid.dx, greaterThan(start.dx));
+    expect(mid.dx, lessThan(end.dx));
+    expect(mid.dy, greaterThan(start.dy));
+    expect(mid.dy, lessThan(end.dy));
+
+    await t.pump(const Duration(milliseconds: 400)); // 누적 700ms > duration(600ms)
+    expect(t.getTopLeft(find.byType(AnimatedPositioned)),
+        offsetMoreOrLessEquals(end, epsilon: 1.0));
+  });
+
+  testWidgets(
+      'SceneObject 2개(같은 씬): image 기반 key로 서로 다른 실이동 목적지에 각자 도달(상태 혼선 방지, study_r_globe 첫 사례)',
+      (t) async {
+    const leftClosed = Rect.fromLTWH(0.10, 0.10, 0.15, 0.15);
+    const leftOpen = Rect.fromLTWH(0.02, 0.10, 0.15, 0.15);
+    const rightClosed = Rect.fromLTWH(0.30, 0.10, 0.15, 0.15);
+    const rightOpen = Rect.fromLTWH(0.40, 0.10, 0.15, 0.15);
+    final room = _objRoom([
+      SceneObject(
+        image: 'assets/scenes/obj_left.png',
+        area: (s) => s.flag('opened') == 1 ? leftOpen : leftClosed,
+      ),
+      SceneObject(
+        image: 'assets/scenes/obj_right.png',
+        area: (s) => s.flag('opened') == 1 ? rightOpen : rightClosed,
+      ),
+    ]);
+    await pump(t, SceneView(room: room, ctx: c));
+    await t.pump();
+
+    final origin = t.getTopLeft(find.byType(SceneView));
+    const leftKey = ValueKey('assets/scenes/obj_left.png');
+    const rightKey = ValueKey('assets/scenes/obj_right.png');
+
+    // 닫힘: 각자 자기 이미지 키가 자기 rect에서 시작 (400x600 박스 기준).
+    expect(t.getTopLeft(find.byKey(leftKey)),
+        offsetMoreOrLessEquals(origin + const Offset(40, 60), epsilon: 1.0));
+    expect(t.getTopLeft(find.byKey(rightKey)),
+        offsetMoreOrLessEquals(origin + const Offset(120, 60), epsilon: 1.0));
+
+    s.setFlag('opened', 1);
+    await t.pump();
+    await t.pump(const Duration(milliseconds: 700)); // 트윈 완료(600ms) 대기
+
+    // 열림: 왼쪽 키는 왼쪽으로, 오른쪽 키는 오른쪽으로 — key가 없으면 리스트
+    // 위치로만 매칭돼 자리가 뒤섞일 수 있는 지점(스펙 §4-1 엔진 수정 대상).
+    expect(t.getTopLeft(find.byKey(leftKey)),
+        offsetMoreOrLessEquals(origin + const Offset(8, 60), epsilon: 1.0));
+    expect(t.getTopLeft(find.byKey(rightKey)),
+        offsetMoreOrLessEquals(origin + const Offset(160, 60), epsilon: 1.0));
   });
 }

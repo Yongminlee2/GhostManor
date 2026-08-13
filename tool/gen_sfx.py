@@ -60,7 +60,21 @@ def cat(*parts):
     return out
 
 
+# 실음원(CC0)으로 교체된 슬롯 — 다시 생성하지 않는다 (출처: docs/CREDITS.md)
+REPLACED_BY_REAL = {
+    "ceramic_clink", "clock_tick", "cloth_rub", "combine", "door_open",
+    "glass_clink", "metal_click", "metal_drop", "pickup", "switch_click",
+    "wood_creak_open", "wood_knock_dull", "wood_knock_hollow",
+    "book_flip", "bottle_fill", "fire_ignite", "liquid_pour", "locked",
+    "metal_key", "paper_rustle", "sparkle", "unlock", "wood_slide",
+    "ambient_foyer", "ambient_living", "ambient_study", "ambient_kitchen",
+    "ambient_cellar", "ambient_attic", "bgm_manor",
+}
+
+
 def write(name, samples):
+    if name in REPLACED_BY_REAL:
+        return
     path = os.path.join(OUT, name + ".wav")
     with wave.open(path, "wb") as w:
         w.setnchannels(1)
@@ -73,7 +87,32 @@ def write(name, samples):
     print(name + ".wav", len(samples) / SR, "s")
 
 
-ORGAN = ((1, 1.0), (2, 0.5), (3, 0.25))  # 오르간풍 배음
+ORGAN = ((1, 1.0), (2, 0.5), (3, 0.25))  # 오르간풍 배음 (구식 — organ_voice가 대체)
+
+
+def hall(samples, taps=((0.09, 0.30), (0.19, 0.15), (0.30, 0.07))):
+    """간단한 홀 잔향 — 지연 복사 탭. 길이가 늘어난 새 리스트를 돌려준다."""
+    n = len(samples)
+    total = n + int(SR * taps[-1][0]) + int(SR * 0.05)
+    out = [0.0] * total
+    for i, v in enumerate(samples):
+        out[i] += v
+    for dt, g in taps:
+        off = int(SR * dt)
+        for i, v in enumerate(samples):
+            out[i + off] += v * g
+    return out
+
+
+def organ_voice(freq, dur, vol=0.2, attack=0.05, release=0.5):
+    """파이프 오르간풍 단음: 살짝 디튠된 2랭크 + 드로바 배음 + 트레뮬런트 +
+       홀 잔향. 다락방 오르간의 실제 목소리."""
+    harm = ((1, 1.0), (2, 0.62), (3, 0.28), (4, 0.34), (6, 0.12), (8, 0.09))
+    a = tone(freq * 0.9985, dur, vol * 0.55, harmonics=harm,
+             vib_hz=4.6, vib_amt=0.012, attack=attack, release=release)
+    b = tone(freq * 1.0015, dur, vol * 0.55, harmonics=harm,
+             vib_hz=4.2, vib_amt=0.012, attack=attack, release=release)
+    return hall(mix(a, b))
 
 os.makedirs(OUT, exist_ok=True)
 
@@ -187,13 +226,27 @@ write("clock_tick", mix(click(0.008, 0.35, 5),
 write("sparkle", cat(tone(1319, 0.06, 0.18), tone(1568, 0.06, 0.18),
                      tone(1976, 0.06, 0.18), tone(2637, 0.14, 0.2, release=0.7)))
 
-# 유령 웃음: 흔들리는 상승 워블
-write("ghost_giggle", tone(360, 0.4, 0.22, harmonics=((1, 1.0), (2, 0.35)),
-                            vib_hz=9, vib_amt=0.12, sweep_to=520, release=0.5))
+# 유령 웃음: "히히히힛" — 상승 처프 4연속(점점 낮아지다 마지막만 치켜 올림)
+# + 숨소리 레이어 + 짧은 잔향. 귀엽고 으스스한 부우 톤.
+def _giggle_chirp(f0, f1, dur, vol, seed):
+    body = tone(f0, dur, vol, harmonics=((1, 1.0), (2, 0.4), (3, 0.12)),
+                vib_hz=26, vib_amt=0.05, attack=0.012, release=0.5,
+                sweep_to=f1)
+    breath = noise(dur, vol * 0.16, seed=seed, lp=0.55)
+    return mix(body, breath)
 
-# 오르간 도레미파
-for name, f in (("note1", 262), ("note2", 294), ("note3", 330), ("note4", 349)):
-    write(name, tone(f, 0.55, 0.26, harmonics=ORGAN, attack=0.04, release=0.45))
+
+write("ghost_giggle", hall(cat(
+    _giggle_chirp(640, 990, 0.11, 0.20, 71), silence(0.05),
+    _giggle_chirp(600, 930, 0.10, 0.19, 72), silence(0.045),
+    _giggle_chirp(560, 870, 0.10, 0.18, 73), silence(0.05),
+    _giggle_chirp(540, 1050, 0.16, 0.17, 74)),
+    taps=((0.07, 0.22), (0.15, 0.09))))
+
+# 오르간 도레미파 — organ_voice(디튠 2랭크+잔향)로 실제 파이프 느낌
+for name, f in (("note1", 261.63), ("note2", 293.66),
+                ("note3", 329.63), ("note4", 349.23)):
+    write(name, organ_voice(f, 0.8, 0.24))
 
 # BGM: 24초 루프 — 으스스한 저택 테마. 디튠 드론 + 뮤직박스 선율(단속적,
 # 아 harmonic minor+트라이톤 1회) + 차가운 바람 + 중간의 불협 스웰 1회.
@@ -328,17 +381,50 @@ write("metal_drop", cat(
 write("switch_click", cat(
     click(0.01, 0.4, seed=42), silence(0.02), click(0.008, 0.3, seed=43)))
 
-write("stone_drag", mix(
-    burst(0.7, 0.28, seed=44, lp=0.04, a=0.55, r=0.25),
-    tone(60, 0.7, 0.16, attack=0.5, release=0.25)))
+# 돌 끌기: 브라운 노이즈(적분 화이트) + 삐걱대는 그레인 저더 + 저역 스윕 +
+# 끝의 안착 퉁. 마찰이 "끊기며 미는" 질감.
+_sd_rnd = random.Random(44)
+_sd_n = int(SR * 1.0)
+_sd_y = 0.0
+_sd_base = []
+for _i in range(_sd_n):
+    _sd_y = (_sd_y + (_sd_rnd.random() * 2 - 1) * 0.12) * 0.997
+    _sd_base.append(_sd_y)
+_sd_pk = max(abs(v) for v in _sd_base) or 1.0
+_sd_base = [v / _sd_pk * 0.30 for v in _sd_base]
+_sd_out = []
+for _i in range(_sd_n):
+    _t = _i / SR
+    _judder = 0.55 + 0.45 * abs(math.sin(
+        2 * math.pi * (11 + 3 * math.sin(2 * math.pi * 1.7 * _t)) * _t))
+    _sd_out.append(_sd_base[_i] * _judder)
+write("stone_drag", fade_edges(mix(
+    _sd_out,
+    tone(58, 1.0, 0.14, attack=0.3, release=0.3, sweep_to=42),
+    cat(silence(0.9), mix(click(0.02, 0.30, seed=444),
+                          tone(75, 0.12, 0.22, attack=0.003, release=0.2)))),
+    0.02))
 
-_tv_n = int(SR * 0.45)
-_tv_raw = noise(0.45, 0.22, seed=45, lp=0.0)
-_tv_gain = [0.15 if (0.25 * _tv_n < i < 0.32 * _tv_n or
-                     0.55 * _tv_n < i < 0.60 * _tv_n) else 1.0
-            for i in range(_tv_n)]
-tv_static_snd = mix([_tv_raw[i] * _tv_gain[i] for i in range(_tv_n)],
-                    tone(7000, 0.45, 0.02, attack=0.1, release=0.5))
+# TV 노이즈: 지글거림(랜덤워크 플러터) + 험 120Hz + 고역 쉬익 + 크래클 팝 +
+# 신호 뚝 끊김 2회 — 낡은 브라운관의 "지지직".
+_tv_n = int(SR * 0.5)
+_tv_raw = noise(0.5, 0.20, seed=45, lp=0.0)
+_tv_rnd = random.Random(452)
+_tv_g = 1.0
+_tv_body = []
+for _i in range(_tv_n):
+    _tv_g = max(0.6, min(1.0, _tv_g + (_tv_rnd.random() - 0.5) * 0.06))
+    if 0.26 * _tv_n < _i < 0.31 * _tv_n or 0.62 * _tv_n < _i < 0.66 * _tv_n:
+        _tv_body.append(_tv_raw[_i] * 0.12)  # 신호 끊김
+    else:
+        _tv_body.append(_tv_raw[_i] * _tv_g)
+tv_static_snd = mix(_tv_body,
+                    tone(120, 0.5, 0.035, attack=0.05, release=0.6),
+                    tone(7300, 0.5, 0.018, attack=0.1, release=0.5))
+for _k in range(5):
+    overlay(tv_static_snd, click(0.006, 0.22 + 0.1 * _tv_rnd.random(),
+                                 seed=900 + _k),
+            0.05 + _tv_rnd.random() * 0.4)
 write("tv_static", fade_edges(tv_static_snd, 0.01))
 
 fire_ignite_snd = burst(0.5, 0.22, seed=46, lp=0.28, a=0.45, r=0.35)
@@ -349,16 +435,26 @@ for _k in range(8):
             0.26 + _fi_rnd.random() * 0.2)
 write("fire_ignite", fire_ignite_snd)
 
-write("organ_wrong", mix(
-    tone(262, 0.5, 0.16, harmonics=ORGAN, attack=0.02, release=0.4),
-    tone(277, 0.5, 0.16, harmonics=ORGAN, attack=0.02, release=0.4),
-    tone(370, 0.5, 0.14, harmonics=ORGAN, attack=0.02, release=0.4)))
+# 오답: 반음 뭉갠 클러스터(도·도#·파#)가 흔들리다 음정이 아래로 주저앉는다
+_ow_harm = ((1, 1.0), (2, 0.55), (3, 0.25), (4, 0.28))
+write("organ_wrong", hall(mix(
+    tone(262, 0.7, 0.15, harmonics=_ow_harm, vib_hz=7, vib_amt=0.03,
+         attack=0.02, release=0.45, sweep_to=262 * 0.94),
+    tone(277, 0.7, 0.15, harmonics=_ow_harm, vib_hz=6.4, vib_amt=0.03,
+         attack=0.02, release=0.45, sweep_to=277 * 0.94),
+    tone(370, 0.7, 0.13, harmonics=_ow_harm, vib_hz=7.7, vib_amt=0.03,
+         attack=0.02, release=0.45, sweep_to=370 * 0.93)),
+    taps=((0.08, 0.24), (0.17, 0.10))))
 
+# 성공 화음: 도·미·솔·높은도 — 목소리를 10ms씩 겹쳐 쌓아 장엄하게
 write("organ_chord", mix(
-    tone(262, 1.2, 0.14, harmonics=ORGAN, attack=0.15, release=0.7),
-    tone(330, 1.2, 0.14, harmonics=ORGAN, attack=0.15, release=0.7),
-    tone(392, 1.2, 0.13, harmonics=ORGAN, attack=0.15, release=0.7),
-    tone(523, 1.2, 0.12, harmonics=ORGAN, attack=0.15, release=0.7)))
+    organ_voice(261.63, 1.6, 0.13, attack=0.12, release=0.9),
+    cat(silence(0.03), organ_voice(329.63, 1.57, 0.13, attack=0.12,
+                                   release=0.9)),
+    cat(silence(0.06), organ_voice(392.00, 1.54, 0.12, attack=0.12,
+                                   release=0.9)),
+    cat(silence(0.09), organ_voice(523.25, 1.51, 0.11, attack=0.12,
+                                   release=0.9))))
 
 # ── 방별 앰비언스 6종 (12초 루프, 아주 작게 ≤0.05) ──────────────────
 
