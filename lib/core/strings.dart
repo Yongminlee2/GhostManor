@@ -263,6 +263,8 @@ const strF2HallIntro = '삐걱— 낡은 복도가 이어진다. 초상화들의
 const strF2HallFramesSet = '딸깍… 액자들이 나란히 자리를 잡은 듯, 벽 어딘가에서 작은 소리가 울렸다.';
 const strF2HallPhotoLook = '콘솔 위 낡은 액자 속, 가족 넷과 어린아이가 활짝 웃고 있다.';
 const strF2HallRugRolled = '카펫이 스르륵 밀려나며 마루판 네 장이 드러난다.';
+const strF2HallRugPattern =
+    '긴 카펫. 가장자리에 다이아 무늬 넉 장이 줄지어 있는데, 색이 채워진 건 둘째와 넷째뿐이다. 끝자락이 들춰질 듯 헐겁다.';
 const strF2HallRugAlreadyRolled = '카펫은 이미 절반쯤 걷혀 있다. 마루판이 훤히 드러나 있다.';
 const strF2HallPlankDull = '통, 통 — 그저 평범한 마루판 소리다.';
 const strF2HallPlankHollow = '통이 아니라 텅 — 이 밑은 비어 있는 소리다.';

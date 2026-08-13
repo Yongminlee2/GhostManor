@@ -144,6 +144,10 @@ Room buildHall() {
     if (c.s.flag('f2_hall_rug_rolled') >= 1) {
       c.say(strF2HallRugAlreadyRolled);
     } else {
+      // 다이아 무늬 관찰 서술 — 단서 오브젝트를 탭하면 내용을 읽어주는
+      // 기존 관례(거실 램프 "셋", 지하실 라벨)와 동일. 납품 아트의 무늬
+      // 배치가 순서 대응으로 읽기 모호해 텍스트가 권위를 가진다.
+      c.say(strF2HallRugPattern);
       c.openCloseup('rug');
     }
   }
