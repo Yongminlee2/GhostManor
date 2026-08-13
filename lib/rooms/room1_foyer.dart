@@ -297,8 +297,16 @@ Room buildFoyer() {
             SceneOverlay(
                 image: 'assets/scenes/foyer_drawer_lit.png',
                 area: const Rect.fromLTWH(0, 0, 1, 1),
-                when: flagSet('foyer_r_drawer_lit'),
+                when: (s) =>
+                    s.flag('foyer_r_drawer_lit') >= 1 &&
+                    s.flag('foyer_r_got_key') == 0,
                 motion: OverlayMotion.grow),
+            // 열쇠를 집은 뒤엔 열쇠가 지워진 버전 — 획득 후에도 그림에 열쇠가
+            // 남아 있던 실기기 지적 반영.
+            SceneOverlay(
+                image: 'assets/scenes/foyer_drawer_empty.png',
+                area: const Rect.fromLTWH(0, 0, 1, 1),
+                when: flagSet('foyer_r_got_key')),
           ],
           hotspots: [
             Hotspot(

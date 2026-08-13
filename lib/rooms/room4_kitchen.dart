@@ -115,6 +115,9 @@ Room buildKitchen() {
       final consumed = _potOrder[stage];
       c.consume(consumed);
       c.sfx(consumed == 'water_bottle' ? 'liquid_pour' : 'pot_stir');
+      // 성공 시에도 클로즈업을 열어 새 단계 그림을 바로 보여준다 — 선택
+      // 여부에 따라 보이는 게 달라지던 비대칭(실기기 평가) 해소.
+      c.openCloseup('pot');
       c.say(_potStageSay(stage + 1));
     } else if (stage < _potOrder.length &&
         item != null &&

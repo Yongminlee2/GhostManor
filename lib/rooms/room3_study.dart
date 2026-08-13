@@ -70,23 +70,24 @@ Room buildStudy() {
   // 실측 비율(184×307px → 벽 1024×1536 기준 폭 0.18·높이 0.20)만큼 맞닿게
   // 배치한다. 개방(taps==3)되면 ±0.06 벌어져 study_b_plate.png에 미리 그려진
   // 열쇠가 틈으로 드러난다.
-  // study_b_plate.png 실측 보정: 받침대 아치 폭 ~0.20에 맞춰 반쪽 폭을 0.13으로
-  // (합계 0.26 = 리마스터 전 지구본 rect와 동일). 높이는 스프라이트 비율
-  // (184×307, 벽 1024×1536 기준 h=1.112w)을 유지. 닫힘 상태가 플레이트에 미리
-  // 그려진 열쇠(y≈0.46~0.53)를 온전히 덮는 것을 실측으로 확인함.
-  const globeCenterX = 0.29;
-  const globeTop = 0.43;
-  const globeHalfW = 0.13;
-  const globeHalfH = 0.145;
-  const globeGapPx = 0.06;
+  // study_b_plate.png 실측 보정 v3 (PIL 합성 반복으로 확정): 반쪽이 플레이트의
+  // 놋쇠 링 안을 꽉 채우고 경첩 시접이 겹치도록 폭 0.175·중앙 겹침 0.035 —
+  // 닫힘 상태에서 플레이트에 그려진 열쇠가 완전히 가려지고(스포일러 차단),
+  // 열림(±0.09)에서 중앙 틈(x≈0.245~0.345)이 열쇠(x≈0.26~0.33)를 온전히 노출.
+  const globeTop = 0.453;
+  const globeHalfW = 0.175;
+  const globeHalfH = 0.195;
+  const globeClosedLeftX = 0.150;
+  const globeClosedRightX = 0.255;
+  const globeOpenShift = 0.09;
   bool globeOpen(GameState s) => s.flag('study_r_globe_taps') == 3;
   Rect globeLeftRect(GameState s) => Rect.fromLTWH(
-      globeCenterX - globeHalfW - (globeOpen(s) ? globeGapPx : 0),
+      globeClosedLeftX - (globeOpen(s) ? globeOpenShift : 0),
       globeTop,
       globeHalfW,
       globeHalfH);
   Rect globeRightRect(GameState s) => Rect.fromLTWH(
-      globeCenterX + (globeOpen(s) ? globeGapPx : 0),
+      globeClosedRightX + (globeOpen(s) ? globeOpenShift : 0),
       globeTop,
       globeHalfW,
       globeHalfH);
@@ -96,7 +97,7 @@ Room buildStudy() {
   // 열렸을 때(taps==3)만 드러나는 중앙 틈 — 여기를 탭해야 열쇠를 꺼낸다.
   // 화살표와 달리 이 탭은 taps를 건드리지 않아, 화살표를 한 번 더 눌러
   // "4번째"를 만들어 버리는 실수와 분리된다.
-  const globeGapArea = Rect.fromLTWH(0.23, 0.43, 0.12, 0.15);
+  const globeGapArea = Rect.fromLTWH(0.24, 0.51, 0.10, 0.12);
 
   // 책 4권 공용: tapBook 진행 + 클릭음, 리셋되면 대사, nook 완성 순간 추가 피드백.
   void tapBookSpot(GameCtx c, int i) {

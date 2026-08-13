@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -34,8 +33,6 @@ class SceneView extends StatefulWidget {
 }
 
 class _SceneViewState extends State<SceneView> {
-  Timer? _timer;
-  bool _breatheIn = false;
   Offset? _lastTapPos;
   int _rippleSeq = 0;
   int _navDir = 1; // 마지막 화살표 방향(+1 오른쪽/-1 왼쪽) — 슬라이드 방향 결정
@@ -47,16 +44,10 @@ class _SceneViewState extends State<SceneView> {
   void initState() {
     super.initState();
     _seenFlySeq = widget.ctx.s.flySeq;
-    _timer = Timer.periodic(const Duration(seconds: 4), _onTick);
   }
 
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  void _onTick(Timer _) => setState(() => _breatheIn = !_breatheIn);
+  // (구 4초 숨쉬기 타이머는 제거됨 — 실기기 평가에서 "가만있는데 위아래로
+  // 움직이는" 연출이 이질감만 준다고 판정. 벽 스케일·유령 bob 전부 정적.)
 
   /// 오버레이 등장 모션(스펙 §3): fade/slideDown/grow 공통 350→450ms 트윈.
   Widget _overlayContent(SceneOverlay o, Rect rectPx) => TweenAnimationBuilder<double>(
@@ -76,17 +67,9 @@ class _SceneViewState extends State<SceneView> {
         child: gameImage(o.image),
       );
 
-  /// 유령 둥실(스펙 §4): 4초 타이머의 _breatheIn을 그대로 재사용해 ±bobPx로
-  /// 흔든다 — 별도 컨트롤러 없이 기존 settle-safe 패턴에 올라탄다.
-  Widget _idleContent(IdleSprite idle, Rect rectPx) => IgnorePointer(
-        child: AnimatedSlide(
-          offset: Offset(
-              0, rectPx.height == 0 ? 0 : (_breatheIn ? idle.bobPx : -idle.bobPx) / rectPx.height),
-          duration: const Duration(milliseconds: 3400),
-          curve: Curves.easeInOut,
-          child: gameImage(idle.image),
-        ),
-      );
+  /// 유령 스프라이트 — 정적 렌더(둥실 bob은 실기기 평가로 제거).
+  Widget _idleContent(IdleSprite idle, Rect rectPx) =>
+      IgnorePointer(child: gameImage(idle.image));
 
   @override
   Widget build(BuildContext context) {
@@ -143,19 +126,7 @@ class _SceneViewState extends State<SceneView> {
           Widget wallBody() {
             if (scene.custom != null) return scene.custom!(context, ctx);
             return Stack(children: [
-              Positioned.fill(
-                child: AnimatedScale(
-                  scale: _breatheIn ? 1.012 : 1.0,
-                  alignment: Alignment.center,
-                  // 타이머 주기(4초)와 정확히 같으면 한 사이클이 끝나는 순간
-                  // 다음 틱이 즉시 재시작시켜 유휴 프레임이 사라진다 — ..repeat()와
-                  // 동급이라 pumpAndSettle이 절대 안 끝난다. 주기보다 짧게 잡아
-                  // 매 사이클 사이에 유휴 구간을 보장한다.
-                  duration: const Duration(seconds: 3),
-                  curve: Curves.easeInOut,
-                  child: gameImage(scene.image!),
-                ),
-              ),
+              Positioned.fill(child: gameImage(scene.image!)),
               for (final o in scene.objects)
                 if (o.visible?.call(s) ?? true) objectItem(o),
               for (final o in scene.overlays)
