@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 /// 게임의 유일한 상태. UI는 이 객체에만 반응한다 (스펙 §4.4).
 class GameState extends ChangeNotifier {
+  static const currentSaveVersion = 2;
   Map<String, int> flags = {};
   List<String> inventory = [];
   String? selectedItem;
@@ -71,6 +72,7 @@ class GameState extends ChangeNotifier {
   }
 
   Map<String, dynamic> toJson() => {
+        'saveVersion': currentSaveVersion,
         'flags': flags,
         'inventory': inventory,
         'selectedItem': selectedItem,

@@ -22,7 +22,13 @@ class SaveService {
       final raw = prefs.getString(k);
       if (raw == null) continue;
       try {
-        return GameState.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+        final json = jsonDecode(raw) as Map<String, dynamic>;
+        // 리마스터 전/초기 리마스터 세이브는 방 상태 플래그의 의미와 오브젝트
+        // 배치가 달라 이어하기 시 퍼즐을 건너뛰거나 열린 문에서 시작할 수 있다.
+        // 버전 없는 구 세이브는 새 게임으로 돌리고 백업 슬롯도 재사용하지 않는다.
+        final version = json['saveVersion'] as int? ?? 0;
+        if (version != GameState.currentSaveVersion) return null;
+        return GameState.fromJson(json);
       } catch (_) {
         // 파손 → 다음 슬롯 시도
       }

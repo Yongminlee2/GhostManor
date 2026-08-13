@@ -29,13 +29,14 @@ void main() {
   });
 
   test(
-      '진입 직후 두 스레드 병렬 활성: recipe_board(T1·벽C)·poker_rack(T2·벽C) 둘 다 fresh 상태에서 탭 가능',
-      () {
-    final recipe = findHotspot(room, 'kitchen_c', 'recipe_board');
-    final rack = findHotspot(room, 'kitchen_c', 'poker_rack');
-    expect(recipe.when?.call(s) ?? true, isTrue);
-    expect(rack.when?.call(s) ?? true, isTrue);
-  });
+    '진입 직후 두 스레드 병렬 활성: recipe_board(T1·벽C)·poker_rack(T2·벽C) 둘 다 fresh 상태에서 탭 가능',
+    () {
+      final recipe = findHotspot(room, 'kitchen_c', 'recipe_board');
+      final rack = findHotspot(room, 'kitchen_c', 'poker_rack');
+      expect(recipe.when?.call(s) ?? true, isTrue);
+      expect(rack.when?.call(s) ?? true, isTrue);
+    },
+  );
 
   test('벽면 핫스팟 총수 ≥15 (하드코어 게이트)', () {
     final total = room.walls.fold<int>(0, (sum, w) => sum + w.hotspots.length);
@@ -55,8 +56,7 @@ void main() {
     tap('kitchen_a', 'pot');
     expect(s.flag('kitchen_r_pot_stage'), 0);
     expect(s.flag('kitchen_r_pot_wrong'), 1);
-    expect(s.closeupId, 'pot',
-        reason: '오답 프레임이 보이려면 오답 탭이 클로즈업을 열어야 한다');
+    expect(s.closeupId, 'pot', reason: '오답 프레임이 보이려면 오답 탭이 클로즈업을 열어야 한다');
     expect(s.dialog, strKitchenRPotWrong);
 
     // 다음 냄비 상호작용(선택 없음 재탭)에서 오답 프레임은 해제된다
@@ -141,6 +141,20 @@ void main() {
     expect(s.flag('kitchen_r_pot_stage'), 0);
   });
 
+  test('냄비 재료를 선택해 넣어도 선택 없이 볼 때와 같은 단계 클로즈업을 즉시 표시', () {
+    s.give('water_bottle');
+    s.select('water_bottle');
+    tap('kitchen_a', 'pot');
+    expect(s.flag('kitchen_r_pot_stage'), 1);
+    expect(s.closeupId, 'pot');
+    expect(s.selectedItem, isNull); // 소비 후 선택 상태도 함께 해제
+
+    s.closeCloseup();
+    tap('kitchen_a', 'pot');
+    expect(s.flag('kitchen_r_pot_stage'), 1);
+    expect(s.closeupId, 'pot');
+  });
+
   test('모든 아이템 id는 레지스트리에 존재', () {
     for (final id in [
       'empty_bottle',
@@ -159,8 +173,11 @@ void main() {
 
   test('힌트 3개: p_kitchen_r_ 접두어 + 단계 3개씩 + solved 조건 배선', () {
     expect(room.hints.length, 3);
-    expect(room.hints.map((h) => h.puzzleId),
-        ['p_kitchen_r_soup', 'p_kitchen_r_ice', 'p_kitchen_r_door']);
+    expect(room.hints.map((h) => h.puzzleId), [
+      'p_kitchen_r_soup',
+      'p_kitchen_r_ice',
+      'p_kitchen_r_door',
+    ]);
     for (final h in room.hints) {
       expect(h.steps.length, 3);
     }
@@ -173,16 +190,19 @@ void main() {
   });
 
   group('usePotIngredient', () {
-    test('정답 순서(water_bottle→mushroom→herb→kettle_singing)대로면 매번 true + stage +1', () {
-      expect(usePotIngredient(s, 'water_bottle'), isTrue);
-      expect(s.flag('kitchen_r_pot_stage'), 1);
-      expect(usePotIngredient(s, 'mushroom'), isTrue);
-      expect(s.flag('kitchen_r_pot_stage'), 2);
-      expect(usePotIngredient(s, 'herb'), isTrue);
-      expect(s.flag('kitchen_r_pot_stage'), 3);
-      expect(usePotIngredient(s, 'kettle_singing'), isTrue);
-      expect(s.flag('kitchen_r_pot_stage'), 4);
-    });
+    test(
+      '정답 순서(water_bottle→mushroom→herb→kettle_singing)대로면 매번 true + stage +1',
+      () {
+        expect(usePotIngredient(s, 'water_bottle'), isTrue);
+        expect(s.flag('kitchen_r_pot_stage'), 1);
+        expect(usePotIngredient(s, 'mushroom'), isTrue);
+        expect(s.flag('kitchen_r_pot_stage'), 2);
+        expect(usePotIngredient(s, 'herb'), isTrue);
+        expect(s.flag('kitchen_r_pot_stage'), 3);
+        expect(usePotIngredient(s, 'kettle_singing'), isTrue);
+        expect(s.flag('kitchen_r_pot_stage'), 4);
+      },
+    );
 
     test('순서가 틀린 재료(넷 중 다른 것)는 stage를 0으로 리셋 + wrong=1', () {
       usePotIngredient(s, 'water_bottle'); // stage 1
@@ -208,7 +228,12 @@ void main() {
     });
 
     test('완성(stage 4) 후에는 no-op', () {
-      for (final item in ['water_bottle', 'mushroom', 'herb', 'kettle_singing']) {
+      for (final item in [
+        'water_bottle',
+        'mushroom',
+        'herb',
+        'kettle_singing',
+      ]) {
         usePotIngredient(s, item);
       }
       expect(s.flag('kitchen_r_pot_stage'), 4);

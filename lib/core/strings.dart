@@ -7,11 +7,9 @@ String strHintLockedIn(int sec) {
 }
 
 // ── 현관 (room1_foyer) ──
-const strFoyerIntro =
-    '어이쿠, 살아있는 사람이잖아?! …아, 아니, 어흠. 나는 이 저택의 집사 유령 "고스포"다. '
+const strFoyerIntro = '어이쿠, 살아있는 사람이잖아?! …아, 아니, 어흠. 나는 이 저택의 집사 유령 "고스포"다. '
     '상속자라면 자격을 증명해야지. 이 현관을 빠져나와 보시게. 무, 무섭지? 응?';
 const strFoyerGhostChat = '"시험 중엔 말 걸지 말아줄래? …사실 나도 정답이 잘 기억 안 나."';
-const strFoyerFrontDoor = '나가는 문은 안 열어줌. 밖은 깜깜하고… 솔직히 나도 밖은 좀 무서워. — 고스포';
 const strFoyerUmbrella = '우산꽂이. 우산은 없고 거미줄만 잔뜩이다.';
 const strFoyerCandleFound = '신발 속에 양초가?! 삼촌의 수납 센스는 알 수가 없다.';
 const strFoyerDoorLocked = '단단히 잠겨 있다. 오래된 열쇠 구멍이 보인다.';
@@ -23,30 +21,39 @@ const strFoyerClockSet = '똑딱… 철컥! 어디선가 잠금이 풀리는 소
 // ── 현관 리마스터 신규 (room1_foyer, foyer_r_ 플래그) ──
 const strFoyerRCoatMatch =
     '먼지를 털어내니 안주머니에서 성냥 한 개비가 나왔다! 고스포: "거봐, 내가 저기 있다고 했잖아. …안 했나? 아무튼 있었다."';
-const strFoyerRShoe1 = '낡은 부츠 한 짝, 진흙이 300년째 말라붙어 있다. 고스포: "삼촌이 정원 일을 좋아하셨지. 유령이 되고 나서도 말이야."';
+const strFoyerRShoe1 =
+    '낡은 부츠 한 짝, 진흙이 300년째 말라붙어 있다. 고스포: "삼촌이 정원 일을 좋아하셨지. 유령이 되고 나서도 말이야."';
 const strFoyerRShoe2 =
     '반짝이는 무도화, 발끝이 다 헤졌다. 고스포: "밤새 왈츠를 추셨다는 소문이 있는데… 나도 자세힌 모른다. 소문이란 게 원래 그렇지."';
-const strFoyerRPortrait1 = '근엄한 표정의 초상화. 고스포: "이분이 이 저택의 초대 주인님이시다. 눈매가 매섭지? 나도 300년째 적응이 안 된다."';
+const strFoyerRPortrait1 =
+    '근엄한 표정의 초상화. 고스포: "이분이 이 저택의 초대 주인님이시다. 눈매가 매섭지? 나도 300년째 적응이 안 된다."';
 const strFoyerRPortrait2 =
     '화사한 드레스 차림의 귀부인 초상화. 고스포: "사모님이시지. 그림 속에서도 나를 흘겨보시는 것 같단 말이야… 기분 탓이겠지?"';
-const strFoyerRMirror = '먼지 낀 거울. 고스포가 무심코 들여다보다 화들짝 놀란다. "으악, 내가 없어! …아, 맞다. 유령이었지. 이거 매번 놀란다니까."';
-const strFoyerRRug = '낡은 양탄자. 밟을 때마다 먼지가 풀썩인다. 고스포: "그 밑에 뭐 있나 궁금하지? 없다, 진짜 없어. 왜 자꾸 들춰보려고 그러나."';
-const strFoyerRLandingDoor =
-    '해골 장식이 달린 육중한 문. 밀어도 두드려도 꿈쩍 않는다. 고스포: "그 문 말인가. …300년째 나도 어디로 이어지는지 모른다네."';
-const strFoyerRCandlestick = '벽에 붙은 장식용 촛대. 초는 꽂혀 있지만 불붙은 흔적은 없다. 고스포: "장식이다, 장식. …뭐, 만져본다고 뭐라 안 한다."';
+const strFoyerRMirror =
+    '먼지 낀 거울. 고스포가 무심코 들여다보다 화들짝 놀란다. "으악, 내가 없어! …아, 맞다. 유령이었지. 이거 매번 놀란다니까."';
+const strFoyerRRug =
+    '낡은 양탄자. 밟을 때마다 먼지가 풀썩인다. 고스포: "그 밑에 뭐 있나 궁금하지? 없다, 진짜 없어. 왜 자꾸 들춰보려고 그러나."';
+const strFoyerRWardrobe =
+    '낡은 현관 옷장. 문을 열어 봐도 먼지와 빈 옷걸이뿐이다. 고스포: "내 예복은 따로 보관한다네. 아주 특별한 곳에."';
+const strFoyerRConsoleTable = '벽에 붙인 좁은 장식 탁자. 작은 조각상에도 먼지가 수북하다.';
+const strFoyerRCandlestick =
+    '벽에 붙은 장식용 촛대. 초는 꽂혀 있지만 불붙은 흔적은 없다. 고스포: "장식이다, 장식. …뭐, 만져본다고 뭐라 안 한다."';
 const strFoyerRLetter1 = '저녁 식사는 셋째 시계의 시각에 — E.G.';
 const strFoyerRDrawerLocked = '서랍이 꿈쩍도 안 한다. 어디선가 시계 초침 소리만 크게 들린다…';
 
 // ── 거실 (room2_living) ──
-const strLivingIntro = '"드, 들어오지 마! 여긴 겁주기 담당 부우 님의 구역이다!" …문 앞의 작은 유령이 이불을 뒤집어쓰고 떨고 있다.';
+const strLivingIntro =
+    '"드, 들어오지 마! 여긴 겁주기 담당 부우 님의 구역이다!" …문 앞의 작은 유령이 이불을 뒤집어쓰고 떨고 있다.';
 const strLivingBooScare = '"부우~! 무, 무섭지?! …안 무서워? 하아, 오늘 드라마 재방송도 놓쳤는데."';
 const strLivingBooBlocks = '부우가 문 앞을 막고 있다. 뭔가 몹시 시무룩해 보인다. TV 이야기를 중얼거리는데…';
-const strLivingBooHappy = '"오오, 3화부터구나!! 넌 좋은 인간이야. 문? 마음대로 해." 부우가 소파에 파묻혀 TV에 빠져 있다.';
+const strLivingBooHappy =
+    '"오오, 3화부터구나!! 넌 좋은 인간이야. 문? 마음대로 해." 부우가 소파에 파묻혀 TV에 빠져 있다.';
 const strLivingCushion = '쿠션 밑에서 리모컨을 찾았다! 유령도 리모컨은 숨기는구나.';
 const strLivingCushionEmpty = '쿠션 밑엔 이제 과자 부스러기뿐이다.';
 const strLivingTvOff = '낡은 TV. 전원이 꺼져 있다. 리모컨이 있어야겠는데.';
 const strLivingTvOn = '지지직… TV가 켜졌다! 기묘한 방송이 나온다. 화면을 자세히 봐 두자.';
-const strLivingMantel = '벽난로 위 선반. 벽돌 하나가 헐거워 보이는데, 지금은 꿈쩍도 안 한다. 벽난로에 불이 붙으면 어떨까?';
+const strLivingMantel =
+    '벽난로 위 선반. 벽돌 하나가 헐거워 보이는데, 지금은 꿈쩍도 안 한다. 벽난로에 불이 붙으면 어떨까?';
 const strLivingFireplaceCold = '차갑게 식은 벽난로. 촛대들과 뭔가 연결되어 있는 것 같다.';
 const strLivingFireplaceLit = '벽난로가 활활 타오른다. 훈훈하다 못해 조금 으스스하게 따뜻하다.';
 const strLivingFireLit = '화르륵! 촛불의 배열에 맞춰 벽난로에 불이 붙었다! 위쪽 벽돌이 덜컹 열렸다.';
@@ -70,9 +77,11 @@ const strLivingRPendulum = '추가 둘.';
 const strLivingRVase = '꽃이 일곱 송이.';
 const strLivingRBooks = '네 권.';
 const strLivingRSafeNoKnob = '손잡이 꽂을 자리만 휑하다.';
-const strLivingRSafeKnobAttached = '끼릭, 손잡이가 딱 맞게 들어간다. 부우: "오, 거기 자리가 있었네? …몰랐다."';
+const strLivingRSafeKnobAttached =
+    '끼릭, 손잡이가 딱 맞게 들어간다. 부우: "오, 거기 자리가 있었네? …몰랐다."';
 const strLivingRSafeWrong = '"우와, 그것도 아니야? 나 드라마 보다가 다 들리는데…" 부우가 킥킥댄다.';
-const strLivingRSafeOpen = '철컹, 철컹, 철컹! 묵직한 소리와 함께 금고 문이 열렸다. 거실 열쇠와 기름병, 달 그림 음표 카드가 들어 있었다!';
+const strLivingRSafeOpen =
+    '철컹, 철컹, 철컹! 묵직한 소리와 함께 금고 문이 열렸다. 거실 열쇠와 기름병, 달 그림 음표 카드가 들어 있었다!';
 const strLivingRSafeEmpty = '금고 안은 이제 비어 있다.';
 
 // ── 서재 (room3_study) ──
@@ -102,7 +111,8 @@ const strStudyRLowerShelf = '아래 칸엔 곰팡내 나는 책들이 가득하�
 const strStudyRShelfTop = '천장 가까이 닿은 책장 꼭대기엔 먼지만 소복하다.';
 
 // ── 주방 (room4_kitchen) ──
-const strKitchenIntro = '커다란 국자를 든 유령이 텅 빈 냄비를 젓고 있다. "300년째 맛을 못 봤어… 유령 수프만 있다면."';
+const strKitchenIntro =
+    '커다란 국자를 든 유령이 텅 빈 냄비를 젓고 있다. "300년째 맛을 못 봤어… 유령 수프만 있다면."';
 const strKitchenGukjaHappy = '"완벽한 간이야…!" 국자가 감격에 젖어 수프를 젓고 있다.';
 const strKitchenBottle = '조리대에서 빈 병을 챙겼다.';
 const strKitchenCounterEmpty = '조리대엔 이제 먼지뿐이다.';
@@ -122,11 +132,13 @@ const strKitchenDoorOpened = '철컥! 뒷문이 열렸다. 지하로 내려가�
 const strKitchenRGukjaAsk =
     '국자가 둥둥 떠서 빈 냄비를 하염없이 젓는다. "300년 만에 처음으로 뭔가 끓여볼 수 있으려나… 기대되는군. 근데 맛없으면 바로 뱉을 거다. 미리 말해두는데, 나 입맛 되게 까다롭다."';
 const strKitchenRPotWrong = '국자가 국물을 맛보더니 전부 뱉는다. "순서! 순서가 생명이야!!"';
-const strKitchenRFed = '국자가 수프를 한 모금 넘긴다(어떻게?). "바로 이 맛이야…!!" 감격한 국자가 뒷문 열쇠를 건넸다!';
+const strKitchenRFed =
+    '국자가 수프를 한 모금 넘긴다(어떻게?). "바로 이 맛이야…!!" 감격한 국자가 뒷문 열쇠를 건넸다!';
 const strKitchenRPotWater = '맑은 물이 냄비 안에서 찰랑인다.';
 const strKitchenRPotMushroom = '버섯이 퐁당! 물이 걸쭉하게 흐려진다.';
 const strKitchenRPotHerb = '마른 약초 향이 확 퍼지며 냄비 속이 짙은 초록으로 물든다.';
-const strKitchenRPotDone = '노래하는 주전자를 기울이자 흥얼거림이 김과 함께 스며든다. 국물이 순식간에 황금빛으로 빛난다!';
+const strKitchenRPotDone =
+    '노래하는 주전자를 기울이자 흥얼거림이 김과 함께 스며든다. 국물이 순식간에 황금빛으로 빛난다!';
 const strKitchenRPokerRack = '벽 걸이에서 낡은 부지깽이를 챙겼다.';
 const strKitchenRPokerRackEmpty = '걸이는 이제 비어 있다.';
 const strKitchenRPokerHeated = '부지깽이 끝을 화덕 속에 푹 찔러 넣었다. 벌겋게 달아올랐다!';
@@ -140,13 +152,18 @@ const strKitchenRIceLoot = '함 속에서 마른 약초와 해 그림 음표 카
 const strKitchenRIceEmpty = '함 속은 이제 비어 있다.';
 const strKitchenRSausages =
     '천장에 매달린 훈제 소시지 한 줄. 국자가 지날 때마다 아쉬운 눈으로 쳐다본다지만, 손(?)이 안 닿아 300년째 그대로다.';
-const strKitchenRJarPickles = '장아찌가 든 항아리. 뚜껑을 여니 시큼한 냄새가 훅 끼친다. 유령도 코가 있으면 도망갈 냄새다.';
-const strKitchenRJarFlour = '밀가루 항아리. 손을 넣었다 빼니 하얗게 변했다. 어디선가 국자의 재채기 소리가 들린 것 같다.';
+const strKitchenRJarPickles =
+    '장아찌가 든 항아리. 뚜껑을 여니 시큼한 냄새가 훅 끼친다. 유령도 코가 있으면 도망갈 냄새다.';
+const strKitchenRJarFlour =
+    '밀가루 항아리. 손을 넣었다 빼니 하얗게 변했다. 어디선가 국자의 재채기 소리가 들린 것 같다.';
 
 // ── 지하실 (room5_cellar) ──
-const strCellarIntro = '"꺄악! 누, 누구야! …사람? 다행이다아. 난 덜덜. 여기 너무 어두워서 300년째 무서워." 어둠 속 어딘가에서 이가 딱딱 부딪히는 소리가 난다.';
-const strCellarDeoldeolDark = '"저기, 저기 빛나는 거 보여? 나는 무서워서 못 만져. 네가 좀…" 덜덜이 구석에서 떨고 있다.';
-const strCellarDeoldeolLight = '"불 켜니까 살 것 같다! …참, 선반 위에 열쇠 있는 거 알아? 저긴 아무도 못 닿아. 온 집이 흔들리지 않는 한!"';
+const strCellarIntro =
+    '"꺄악! 누, 누구야! …사람? 다행이다아. 난 덜덜. 여기 너무 어두워서 300년째 무서워." 어둠 속 어딘가에서 이가 딱딱 부딪히는 소리가 난다.';
+const strCellarDeoldeolDark =
+    '"저기, 저기 빛나는 거 보여? 나는 무서워서 못 만져. 네가 좀…" 덜덜이 구석에서 떨고 있다.';
+const strCellarDeoldeolLight =
+    '"불 켜니까 살 것 같다! …참, 선반 위에 열쇠 있는 거 알아? 저긴 아무도 못 닿아. 온 집이 흔들리지 않는 한!"';
 const strCellarBoxPlain = '평범한 상자다. 불을 켜니 다 똑같아 보인다.';
 const strCellarBoxEmpty = '빈 상자다. 거미가 항의하듯 쳐다본다.';
 const strCellarSwitchDead = '딸깍. 딸깍. 아무 일도 일어나지 않는다. 배전반이 죽어 있다.';
@@ -163,7 +180,8 @@ const strCellarRGlowBox = '야광 표시가 빛나는 상자를 열었다. 낡�
 const strCellarRFusebox = '배전반. 소켓 두 개가 텅 비어 있다.';
 const strCellarRFuseboxOneMore = '소켓 하나가 아직 비어 있다. 퓨즈가 하나 더 필요해 보인다.';
 const strCellarRFuse1In = '퓨즈를 끼웠다. 배전반 한쪽이 웅 하고 깨어난다. 소켓이 하나 더 비어 있다.';
-const strCellarRFuse2In = '두 번째 퓨즈까지 끼우자 배전반 전체가 부르르 떨린다. 안쪽에서 뭔가 달칵거리는 소리가 난다.';
+const strCellarRFuse2In =
+    '두 번째 퓨즈까지 끼우자 배전반 전체가 부르르 떨린다. 안쪽에서 뭔가 달칵거리는 소리가 난다.';
 const strCellarRSwitchWrong = '파지직! 스위치들이 튕겨 나가듯 아래로 툭 떨어진다. 순서가 잘못된 모양이다.';
 const strCellarRWineBottle1 = '라벨을 자세히 본다. 가느다란 촛불 네 개가 그려져 있다.';
 const strCellarRWineBottle2 = '라벨엔 촛불이 딱 하나. 외로워 보인다.';
@@ -177,24 +195,29 @@ const strCellarRWineUnlocked = '달그락! 상자 자물쇠가 스르르 풀리�
 const strCellarRBoxbLocked = '잠긴 작은 상자다. 자물쇠가 꿈쩍도 않는다.';
 const strCellarRBoxbOpen = '상자가 열리며 낡은 퓨즈와 구름 그림 음표 카드가 나왔다!';
 const strCellarRBoxbEmpty = '상자 안은 이제 비어 있다.';
-const strCellarRExitNeedsPower = '쪽문 너머 계단이 칠흑같이 어둡다. 전력부터 확실히 복구해야 안심하고 오를 수 있겠다.';
+const strCellarRExitNeedsPower =
+    '쪽문 너머 계단이 칠흑같이 어둡다. 전력부터 확실히 복구해야 안심하고 오를 수 있겠다.';
 const strCellarRSconce = '벽에 걸린 촛대. 조그만 불꽃이 조용히 흔들린다.';
 const strCellarRCrate = '빈 병들이 쌓인 나무 상자. 와인 창고답게 여기저기 빈 병 천지다.';
-const strCellarRDeoldeolC = '덜덜이 와인 랙 옆에서도 웅크리고 있다. "여, 여기도 뭔가 있는 것 같은데… 무서워서 자세힌 못 보겠어."';
+const strCellarRDeoldeolC =
+    '덜덜이 와인 랙 옆에서도 웅크리고 있다. "여, 여기도 뭔가 있는 것 같은데… 무서워서 자세힌 못 보겠어."';
 
 // ── 다락방 (room6_attic) ──
-const strAtticIntro = '"드디어 여기까지 왔군." 고스포가 트렁크 앞을 지키고 서 있다. "마지막 시험이다. 삼촌의 오르간은… 올바른 노래에만 답하지."';
+const strAtticIntro =
+    '"드디어 여기까지 왔군." 고스포가 트렁크 앞을 지키고 서 있다. "마지막 시험이다. 삼촌의 오르간은… 올바른 노래에만 답하지."';
 const strAtticGhospoHint = '"카드는 보면대에, 순서는… 저 낡은 자수가 알고 있다. 나? 난 음치라서 모른다."';
 const strAtticGhospoProud = '"그 노래… 주인님이 생전에 흥얼거리던 곡이야." 고스포가 눈시울(?)을 훔친다.';
 const strAtticStandEmpty = '오르간 보면대. 음표 카드를 놓는 홈이 네 개 파여 있다.';
 const strAtticCardPlaced = '카드를 보면대에 놓았다.';
-const strAtticCardsAll = '네 장이 모두 모였다! 악보가 완성됐다 — 달, 별, 해, 구름이 각각 도·레·미·파로 빛난다.';
+const strAtticCardsAll =
+    '네 장이 모두 모였다! 악보가 완성됐다 — 달, 별, 해, 구름이 각각 도·레·미·파로 빛난다.';
 const strAtticStandFull = '악보 완성. 이제 연주만 남았다.';
 const strAtticOrganNoCards = '건반을 눌러도 먹먹한 소리뿐이다. 보면대에 악보(음표 카드)가 있어야 할 것 같다.';
 const strAtticOrganWrong = '삐끗! 오르간이 불쾌한 화음을 낸다. 처음부터 다시.';
 const strAtticOrganPlayed = '웅장한 화음이 다락을 가득 채운다…! 트렁크의 자물쇠가 저절로 풀렸다.';
 const strAtticTrunkLocked = '삼촌의 트렁크. 자물쇠에 열쇠 구멍이 없다. 음표 문양만 새겨져 있다.';
-const strAtticWill = '유언장을 찾았다! "축하한다, 조카야. 시험을 통과했으니 저택은 네 것이다. 참, 말 안 했던가? 나도 300년 전부터 유령이란다. 앞으로 잘 부탁한다 — 2층에서 만나자꾸나. ― 삼촌" …잠깐, 뭐라고요?';
+const strAtticWill =
+    '유언장을 찾았다! "축하한다, 조카야. 시험을 통과했으니 저택은 네 것이다. 참, 말 안 했던가? 나도 300년 전부터 유령이란다. 앞으로 잘 부탁한다 — 2층에서 만나자꾸나. ― 삼촌" …잠깐, 뭐라고요?';
 const strAtticWindow =
     '둥근 창으로 달빛이 쏟아진다. 마당의 허수아비가 손을 흔든… 기분 탓이겠지. 창틀을 세어본다… 넷.';
 
@@ -202,14 +225,16 @@ const strAtticWindow =
 const strAtticRChestWrong = '"주인님은 숫자를 셋만 기억하셨지. 나는… 하나도 기억 못 하네."';
 const strAtticRChestOpen = '경첩이 삐걱, 궤짝이 열린다. 빛바랜 천 조각이 들어 있다 — 무언가의 나머지 반쪽 같다.';
 const strAtticRChestEmpty = '궤짝 속은 이제 비어 있다.';
-const strAtticREmbroideryFull = '조각을 자수에 가만히 대어본다. 꼭 맞는다. 찢겼던 그림이 다시 이어진다 — 달, 해, 별, 구름.';
+const strAtticREmbroideryFull =
+    '조각을 자수에 가만히 대어본다. 꼭 맞는다. 찢겼던 그림이 다시 이어진다 — 달, 해, 별, 구름.';
 const strAtticRCandleHolder = '촛대에 꽂힌 초를 세어본다… 셋.';
 const strAtticRBooksPile = '쌓인 책을 세어본다… 둘.';
 const strAtticRWindowMoon =
     '둥근 창 너머로 보름달이 떠 있다. 들판의 허수아비가… 방금 손을 흔들었나? 고스포: "…모른 척하게. 서로 그게 편하다네."';
 const strAtticRStitchFrame =
     '나무 한 그루를 수놓은 자수틀. 한 땀 한 땀 정성이다. 고스포: "마님의 솜씨라네. 저택보다 오래된 솜씨지."';
-const strAtticRRoundTable = '레이스가 덮인 둥근 탁자. 먼지가 도톰하게 쌓였다. 고스포: "티타임이 멈춘 지도 오래됐군."';
+const strAtticRRoundTable =
+    '레이스가 덮인 둥근 탁자. 먼지가 도톰하게 쌓였다. 고스포: "티타임이 멈춘 지도 오래됐군."';
 const strAtticRRug = '해진 깔개. 밟을 때마다 먼지가 폴싹 인다.';
 const strAtticRDoll = '단추 눈이 한쪽 떨어진 낡은 인형. 어쩐지 이쪽을 보는 것 같다.';
 const strAtticRGhospoC =
@@ -311,7 +336,8 @@ const strF2BedVanityEmpty = '화장대 위엔 이제 아무것도 남지 않았�
 const strF2BedCombGive = '화장대 위에 낡은 빗이 놓여 있다. 평범한 나무 빗이다.';
 const strF2BedJewelboxAccept = '보석함이 조용히 물건을 받아들인다. 딸깍.';
 const strF2BedJewelboxWrong = '함이 부르르 떨며 뱉어낸다. 뚜껑의 거울 문양이 차갑게 빛난다.';
-const strF2BedJewelboxOpen = '세 자리가 모두 채워지자 뚜껑이 스르르 열린다. 안에서 은실 타래와 작은 열쇠가 나타났다.';
+const strF2BedJewelboxOpen =
+    '세 자리가 모두 채워지자 뚜껑이 스르르 열린다. 안에서 은실 타래와 작은 열쇠가 나타났다.';
 const strF2BedJewelboxDone = '보석함은 이제 조용하다. 텅 빈 채로 뚜껑이 열려 있다.';
 const strF2BedSmallMirror = '작은 손거울이 걸려 있다. 금이 가 있어 비치는 모습이 일그러진다.';
 const strF2BedFramePhoto1 = '낡은 초상화 하나가 걸려 있다.';
@@ -348,7 +374,8 @@ const strF2ChildTrainDone = '트랙이 조용하다. 기차는 이미 터널 속
 const strF2ChildDrawerPeek = '장난감장 아래서 서랍이 스르륵 밀려 나온다. 안에서 뭔가 반짝인다.';
 const strF2ChildDrawerGive = '서랍 속에서 작은 놋쇠 톱니 하나를 꺼냈다.';
 const strF2ChildDrawerEmpty = '서랍 안은 이제 비어 있다.';
-const strF2ChildOrganWind = '태엽을 감자 오르골이 돌아간다. 도, 미, 그리고 파 — 그 사이 어딘가, 한 음이 비어 있다.';
+const strF2ChildOrganWind =
+    '태엽을 감자 오르골이 돌아간다. 도, 미, 그리고 파 — 그 사이 어딘가, 한 음이 비어 있다.';
 const strF2ChildOrganNeedsGear = '부러진 빗살 자리가 비어 있다. 꼭 맞는 무언가가 필요해 보인다.';
 const strF2ChildOrganFixed = '톱니가 제자리에 꼭 들어맞는다. 오르골이 처음부터 다시, 막힘없이 곡조를 완주한다.';
 const strF2ChildOrganFixedLook = '오르골은 이제 완전하다. 곡조가 막힘없이 흐른다.';
@@ -358,7 +385,8 @@ const strF2ChildSmallFrames = '작은 액자 둘 — 토끼와 소녀의 그림�
 const strF2ChildCandleDesk = '책상 위 촛불이 은은히 타오른다.';
 const strF2ChildBooks = '그림책이 두어 권 쌓여 있다. 표지가 낡아 해졌다.';
 const strF2ChildFloorToys = '바닥에 곰인형이 앉아 있다. 리본이 삐뚤게 매어 있다.';
-const strF2ChildMusicDrawerLocked = '뮤직서랍에 작은 자물쇠가 걸려 있다. 안에서 무언가 짤랑이는 소리가 희미하게 들린다.';
+const strF2ChildMusicDrawerLocked =
+    '뮤직서랍에 작은 자물쇠가 걸려 있다. 안에서 무언가 짤랑이는 소리가 희미하게 들린다.';
 const strF2ChildMusicDrawerOpen = '뮤직서랍이 활짝 열려 있다. 이제 텅 비었다.';
 const strF2ChildDoorLocked = '문이 잠겨 있다. 열쇠가 필요해 보인다.';
 const strF2ChildDoorOpened = '철컥, 문이 열렸다.';
@@ -366,12 +394,14 @@ const strF2ChildDoorOpened = '철컥, 문이 열렸다.';
 // ── 방 10 서고·작업실 (room10_lab, f2_lab_ 플래그) ──
 const strF2LabIntro =
     '서고 겸 작업실. 곰팡내와 오래된 종이 냄새가 방 안 가득하다. 책상 위 축음기와 맞은편 벽의 놋쇠 장치가 나란히 그림자를 드리운다.';
-const strF2LabBookshelfGive = '책장 한켠, 작은 항아리 옆에서 왁스 실린더 하나를 찾았다. 표면에 점이 하나 각인돼 있다.';
+const strF2LabBookshelfGive =
+    '책장 한켠, 작은 항아리 옆에서 왁스 실린더 하나를 찾았다. 표면에 점이 하나 각인돼 있다.';
 const strF2LabBookshelfLook = '빼곡히 꽂힌 낡은 책들. 곰팡내가 훅 끼친다.';
 const strF2LabKeyringGive = '약병 선반 뒤, 그늘에 숨어 있던 열쇠고리를 찾았다.';
 const strF2LabKeyringEmpty = '선반 뒤엔 이제 아무것도 없다.';
 const strF2LabDrawerLocked = '책상 서랍에 자물쇠가 걸려 있다. 맞는 열쇠가 필요해 보인다.';
-const strF2LabDrawerOpen = '철컥, 자물쇠가 풀린다. 서랍 속에서 왁스 실린더 하나를 꺼냈다. 점 두 개가 각인돼 있다.';
+const strF2LabDrawerOpen =
+    '철컥, 자물쇠가 풀린다. 서랍 속에서 왁스 실린더 하나를 꺼냈다. 점 두 개가 각인돼 있다.';
 const strF2LabDrawerEmpty = '서랍 안은 이제 비어 있다.';
 const strF2LabPhonoLook = '놋쇠 나팔이 달린 축음기. 원반 옆 축에 실린더 하나가 꽂혀 있다.';
 const strF2LabSpindleExtract = '꽂혀 있던 왁스 실린더를 조심스레 빼냈다. 점 세 개가 각인돼 있다.';
@@ -381,12 +411,14 @@ const strF2LabCylinder2Play = '지지직… 물방울 떨어지는 소리가 흘
 const strF2LabCylinder3Play = '지지직… 작은 새소리가 지저귄다. "짹—"';
 const strF2LabDeviceAwakeLook = '장치의 렌즈가 푸르게 빛난다. 이제 조용히 잠들어 있다.';
 const strF2LabDialWrong = '장치가 끼릭, 고개를 젓듯 다이얼을 되돌린다.';
-const strF2LabDeviceAwake = '철컹— 장치가 깨어나며 렌즈에 푸른 빛이 차오른다. 옆 벽판이 스르르 밀려나며 무언가 드러난다.';
+const strF2LabDeviceAwake =
+    '철컹— 장치가 깨어나며 렌즈에 푸른 빛이 차오른다. 옆 벽판이 스르르 밀려나며 무언가 드러난다.';
 const strF2LabSafeOpen = '드러난 금고 문이 스르르 열린다. 안에서 검은 쇠열쇠를 찾았다.';
 const strF2LabSafeEmpty = '금고 안은 이제 비어 있다.';
 const strF2LabBoardDusty = '분필 가루가 뽀얗게 앉은 칠판. 뭔가 그려져 있는 것 같은데 먼지 때문에 잘 안 보인다.';
 const strF2LabBoardAlreadyClean = '깨끗이 닦인 칠판. 약병 세 개가 램프로 이어지는 그림이 남아 있다.';
-const strF2LabBoardCleanReveal = '먼지를 걷어내자 분필 그림이 드러난다 — 약병 세 개가 화살표를 따라 램프로 이어진다.';
+const strF2LabBoardCleanReveal =
+    '먼지를 걷어내자 분필 그림이 드러난다 — 약병 세 개가 화살표를 따라 램프로 이어진다.';
 const strF2LabVialPurpleGive = '창가 선반에서 보라색 약병을 집었다.';
 const strF2LabVialGreenGive = '창가 선반에서 초록색 약병을 집었다.';
 const strF2LabVialAmberGive = '창가 선반에서 호박색 약병을 집었다.';
@@ -423,7 +455,8 @@ const strF2SealAltarWallDone = '제단이 완성되어 있다. 홈마다 상징�
 const strF2SealAltarPlace1 = '딸깍. 첫 번째 홈에 상징이 자리를 잡는다.';
 const strF2SealAltarPlace2 = '딸깍. 두 번째 홈도 채워졌다.';
 const strF2SealAltarPlace3 = '딸깍. 세 번째 홈까지 — 이제 하나 남았다.';
-const strF2SealAltarComplete = '네 상징이 동시에 은은히 빛나며 제단에 새겨진다. 위쪽 밧줄 매듭이 희미하게 떨린다.';
+const strF2SealAltarComplete =
+    '네 상징이 동시에 은은히 빛나며 제단에 새겨진다. 위쪽 밧줄 매듭이 희미하게 떨린다.';
 const strF2SealAltarWrong = '제단이 웅— 낮게 울며 상징들을 밀어낸다. 순서가 있다.';
 const strF2SealAltarNeedEmblem = '홈에 맞는 무언가가 필요해 보인다.';
 const strF2SealAltarFullLook = '제단은 이미 완성되어 있다.';
@@ -433,14 +466,17 @@ const strF2SealKnotProgress2 = '가운데 매듭까지 풀렸다. 하나 남았�
 const strF2SealKnotWrong = '매듭이 오히려 더 단단히 조여든다. 위에서부터, 다시.';
 const strF2SealKnotOpen = '마지막 매듭이 풀리며 밧줄이 바닥에 떨어진다. 육중한 문이, 안쪽에서부터 천천히 열린다…';
 const strF2SealKnotAfterOpen = '문틈으로 아침 햇살 같은 빛이 스며든다. 이 저택은, 이제 조용하다.';
-const strF2SealKeyhole = '문 아래 낡은 열쇠 구멍. 어떤 열쇠도 여기엔 맞지 않을 것 같다 — 애초에 열쇠로 잠근 문이 아니었으니까.';
+const strF2SealKeyhole =
+    '문 아래 낡은 열쇠 구멍. 어떤 열쇠도 여기엔 맞지 않을 것 같다 — 애초에 열쇠로 잠근 문이 아니었으니까.';
 const strF2SealCandelabra = '벽에 걸린 다섯 갈래 촛대. 초 두 자루가 나란히 타오른다.';
-const strF2SealFrameEmpty = '텅 빈 액자. 유리가 깨져 안이 훤히 드러나 있다. 원래 무엇이 걸려 있었는지는 알 수 없다.';
+const strF2SealFrameEmpty =
+    '텅 빈 액자. 유리가 깨져 안이 훤히 드러나 있다. 원래 무엇이 걸려 있었는지는 알 수 없다.';
 const strF2SealFloorCandle = '바닥에 놓인 초 하나. 촛농이 두껍게 흘러내려 굳어 있다.';
 
 // 벽 B: 봉인 벽화
 const strF2SealMuralHouseDormant = '벽화 속 저택이 어둡게 웅크리고 있다. 창문 하나하나가 낯익다.';
-const strF2SealMuralFamilyDormant = '벽화 속 다섯 사람이 이쪽을 가만히 보고 있다. 표정은 그려지지 않았는데도, 왠지 마음이 저릿하다.';
+const strF2SealMuralFamilyDormant =
+    '벽화 속 다섯 사람이 이쪽을 가만히 보고 있다. 표정은 그려지지 않았는데도, 왠지 마음이 저릿하다.';
 const strF2SealSconce = '벽에 걸린 촛대 하나가 낮게 타오른다.';
 const strF2SealCornerCandle = '구석에 놓인 초. 이미 오래전에 꺼져, 가느다란 연기 한 줄만 피어오른다.';
 const strF2SealWainscoting = '벽 아래쪽 나무 판벽. 손자국 하나 없이 먼지만 소복하다.';
@@ -449,7 +485,8 @@ const strF2SealWainscoting = '벽 아래쪽 나무 판벽. 손자국 하나 없�
 const strF2SealCandleSnuff = '후— 촛불이 꺼진다. 연기 한 줄이 조용히 피어오른다.';
 const strF2SealCandleAlreadyOut = '이미 꺼진 초. 가는 연기만 피어오른다.';
 const strF2SealCandleCenterOut = '가운데 초는 진작부터 꺼져 있다. 언제부터 저랬는지는 아무도 모른다.';
-const strF2SealMuralAwake = '마지막 촛불이 꺼지는 순간, 벽화 속 다섯 사람이 일제히 빛나기 시작한다 — 마치 그날 밤이 되풀이되는 것처럼.';
+const strF2SealMuralAwake =
+    '마지막 촛불이 꺼지는 순간, 벽화 속 다섯 사람이 일제히 빛나기 시작한다 — 마치 그날 밤이 되풀이되는 것처럼.';
 const strF2SealShelfBooks = '낡은 기록 선반. 곰팡내 나는 장부와 일기가 빼곡하다.';
 const strF2SealShelfRecord = '먼지 쌓인 음반 하나가 삐죽 꽂혀 있다. 라벨은 색이 바래 읽을 수 없다.';
 const strF2SealRug = '해진 깔개. 밟을 때마다 먼지가 폴싹 인다.';
@@ -458,12 +495,15 @@ const strF2SealRug = '해진 깔개. 밟을 때마다 먼지가 폴싹 인다.';
 const strF2SealEdgarLine1 =
     '"허, 허허… 드디어 왔구나." 안경 너머 눈가가 살짝 젖어 있다. "네가 올 줄 알았다. 아니, 사실 몰랐다. 그냥 그러길 바랐어."';
 const strF2SealEdgarLine2 = '"인사가 늦었지. 에드가다. 네 삼촌이자… 뭐, 보다시피 300년 묵은 유령이지."';
-const strF2SealEdgarLine3 = '"미안하다. 헤어지는 게 무서워서 문을 잠갔어. 다들 떠나보내는 것보다, 가둬두는 쪽이 쉬워 보였거든."';
+const strF2SealEdgarLine3 =
+    '"미안하다. 헤어지는 게 무서워서 문을 잠갔어. 다들 떠나보내는 것보다, 가둬두는 쪽이 쉬워 보였거든."';
 const strF2SealEdgarLine4 = '"그런데 네가 그 문을, 하나씩 다 열어버렸구나. …고맙다. 정말로."';
 const strF2SealEdgarLine5 = '"오래 기다리게 했구나. …다들, 문 열렸다. 집에 가자."';
 
 // 유령들의 작별(farewell 클로즈업, MemoryPlayer 재사용)
-const strF2SealFarewellGhospo = '"조카, 정말 고생 많았다. …삼촌 잘 부탁한다는 말은, 이제 안 해도 되겠군." 고스포가 활짝 웃는다.';
-const strF2SealFarewellBoo = '"밖에서도 TV가 나오려나…? 아니, 지금 그게 중요한 게 아니지. 고마워!" 부우가 방방 뛰며 손을 흔든다.';
+const strF2SealFarewellGhospo =
+    '"조카, 정말 고생 많았다. …삼촌 잘 부탁한다는 말은, 이제 안 해도 되겠군." 고스포가 활짝 웃는다.';
+const strF2SealFarewellBoo =
+    '"밖에서도 TV가 나오려나…? 아니, 지금 그게 중요한 게 아니지. 고마워!" 부우가 방방 뛰며 손을 흔든다.';
 const strF2SealFarewellOthers =
     '멀리서 덜덜의 훌쩍이는 소리, 국자의 "요리 배워둘걸!" 하는 외침, 안경 쓴 유령의 헛기침 소리가 뒤섞여 들린다.';

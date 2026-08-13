@@ -20,8 +20,7 @@ void main() async {
 class GhostManorApp extends StatefulWidget {
   final GameState? initialState; // 테스트 주입: 지정 시 타이틀 건너뛰고 바로 방
   final bool audioEnabled;
-  const GhostManorApp(
-      {super.key, this.initialState, this.audioEnabled = true});
+  const GhostManorApp({super.key, this.initialState, this.audioEnabled = true});
 
   @override
   State<GhostManorApp> createState() => _GhostManorAppState();
@@ -42,13 +41,21 @@ class _GhostManorAppState extends State<GhostManorApp> {
       _start(widget.initialState!);
       loaded = true;
     } else {
-      save.load().then((s) {
+      _loadUsableSave().then((s) {
         setState(() {
           hasSave = s != null;
           loaded = true;
         });
       });
     }
+  }
+
+  /// 로드할 수 없는 구버전 세이브가 남아 있으면 제목 화면에서 "이어하기"가
+  /// 보이지 않게 하고, 새 게임 버튼도 확인창 없이 정상 시작하도록 함께 지운다.
+  Future<GameState?> _loadUsableSave() async {
+    final s = await save.load();
+    if (s == null) await save.clear();
+    return s;
   }
 
   void _start(GameState s) {
@@ -58,7 +65,7 @@ class _GhostManorAppState extends State<GhostManorApp> {
   }
 
   Future<void> _toTitle() async {
-    final s = await save.load();
+    final s = await _loadUsableSave();
     setState(() {
       playing = null;
       hasSave = s != null;
@@ -78,7 +85,9 @@ class _GhostManorAppState extends State<GhostManorApp> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF5B3E96), brightness: Brightness.dark),
+          seedColor: const Color(0xFF5B3E96),
+          brightness: Brightness.dark,
+        ),
         scaffoldBackgroundColor: const Color(0xFF1A1226),
       ),
       home: !loaded
@@ -117,11 +126,13 @@ Future<bool> _confirm(BuildContext context, String message) async {
       content: Text(message),
       actions: [
         TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text(strCancel)),
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text(strCancel),
+        ),
         TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text(strOk)),
+          onPressed: () => Navigator.pop(context, true),
+          child: const Text(strOk),
+        ),
       ],
     ),
   );
@@ -132,28 +143,38 @@ class TitleScreen extends StatelessWidget {
   final bool hasSave;
   final VoidCallback onContinue;
   final void Function(BuildContext) onNewGame;
-  const TitleScreen(
-      {super.key,
-      required this.hasSave,
-      required this.onContinue,
-      required this.onNewGame});
+  const TitleScreen({
+    super.key,
+    required this.hasSave,
+    required this.onContinue,
+    required this.onNewGame,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          const Text(strAppTitle,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              strAppTitle,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 48),
-          if (hasSave)
-            FilledButton(onPressed: onContinue, child: const Text(strContinue)),
-          const SizedBox(height: 12),
-          FilledButton.tonal(
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 48),
+            if (hasSave)
+              FilledButton(
+                onPressed: onContinue,
+                child: const Text(strContinue),
+              ),
+            const SizedBox(height: 12),
+            FilledButton.tonal(
               onPressed: () => onNewGame(context),
-              child: const Text(strNewGame)),
-        ]),
+              child: const Text(strNewGame),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -165,13 +186,14 @@ class RoomScreen extends StatefulWidget {
   final AudioService audio;
   final SaveService save;
   final Future<void> Function() onExitToTitle;
-  const RoomScreen(
-      {super.key,
-      required this.state,
-      required this.rooms,
-      required this.audio,
-      required this.save,
-      required this.onExitToTitle});
+  const RoomScreen({
+    super.key,
+    required this.state,
+    required this.rooms,
+    required this.audio,
+    required this.save,
+    required this.onExitToTitle,
+  });
 
   @override
   State<RoomScreen> createState() => _RoomScreenState();
@@ -233,8 +255,10 @@ class _RoomScreenState extends State<RoomScreen> {
     final s = widget.state;
     if (s.flag('entered_${room.id}') == 0) {
       s.setFlag('entered_${room.id}', 1);
-      s.setFlag('entered_at_${room.id}',
-          DateTime.now().millisecondsSinceEpoch ~/ 1000);
+      s.setFlag(
+        'entered_at_${room.id}',
+        DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      );
       room.onEnter?.call(ctx);
     }
     _onStateChanged();
@@ -291,30 +315,35 @@ class _RoomScreenState extends State<RoomScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text(strSettings),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          StatefulBuilder(
-            builder: (context, setDlg) => SwitchListTile(
-              title: const Text(strMute),
-              value: widget.audio.muted,
-              onChanged: (v) {
-                widget.audio.setMuted(v);
-                s.setFlag('muted', v ? 1 : 0);
-                setDlg(() {});
-              },
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            StatefulBuilder(
+              builder: (context, setDlg) => SwitchListTile(
+                title: const Text(strMute),
+                value: widget.audio.muted,
+                onChanged: (v) {
+                  widget.audio.setMuted(v);
+                  s.setFlag('muted', v ? 1 : 0);
+                  setDlg(() {});
+                },
+              ),
             ),
-          ),
-          TextButton(
-            onPressed: () async {
-              final ok = await _confirm(context, strResetConfirm);
-              if (!ok) return;
-              await widget.save.clear();
-              if (context.mounted) Navigator.pop(context);
-              await widget.onExitToTitle();
-            },
-            child: const Text(strResetProgress,
-                style: TextStyle(color: Colors.redAccent)),
-          ),
-        ]),
+            TextButton(
+              onPressed: () async {
+                final ok = await _confirm(context, strResetConfirm);
+                if (!ok) return;
+                await widget.save.clear();
+                if (context.mounted) Navigator.pop(context);
+                await widget.onExitToTitle();
+              },
+              child: const Text(
+                strResetProgress,
+                style: TextStyle(color: Colors.redAccent),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -324,43 +353,63 @@ class _RoomScreenState extends State<RoomScreen> {
     if (_ended) {
       return Scaffold(
         body: Center(
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            const Text(strChapterEnd,
-                textAlign: TextAlign.center, style: TextStyle(fontSize: 22)),
-            const SizedBox(height: 32),
-            FilledButton(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                strChapterEnd,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 22),
+              ),
+              const SizedBox(height: 32),
+              FilledButton(
                 onPressed: widget.onExitToTitle,
-                child: const Text(strBackToTitle)),
-          ]),
+                child: const Text(strBackToTitle),
+              ),
+            ],
+          ),
         ),
       );
     }
     return Scaffold(
       body: SafeArea(
-        child: Column(children: [
-          Row(children: [
-            const SizedBox(width: 16),
-            Expanded(
-                child: Text(room.name,
+        child: Column(
+          children: [
+            Row(
+              children: [
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    room.name,
                     style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold))),
-            IconButton(
-                key: const Key('btn_hint'),
-                icon: const Icon(Icons.lightbulb_outline),
-                onPressed: () => showHintSheet(context, room, hints)),
-            IconButton(
-                key: const Key('btn_settings'),
-                icon: const Icon(Icons.settings),
-                onPressed: _openSettings),
-          ]),
-          Expanded(
-            child: Center(
-              child: AspectRatio(
-                  aspectRatio: 2 / 3, child: SceneView(room: room, ctx: ctx)),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  key: const Key('btn_hint'),
+                  icon: const Icon(Icons.lightbulb_outline),
+                  onPressed: () => showHintSheet(context, room, hints),
+                ),
+                IconButton(
+                  key: const Key('btn_settings'),
+                  icon: const Icon(Icons.settings),
+                  onPressed: _openSettings,
+                ),
+              ],
             ),
-          ),
-          InventoryBar(ctx: ctx),
-        ]),
+            Expanded(
+              child: Center(
+                child: AspectRatio(
+                  aspectRatio: 2 / 3,
+                  child: SceneView(room: room, ctx: ctx),
+                ),
+              ),
+            ),
+            InventoryBar(ctx: ctx),
+          ],
+        ),
       ),
     );
   }

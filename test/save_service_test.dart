@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ghostmanor/core/game_state.dart';
 import 'package:ghostmanor/core/save_service.dart';
@@ -10,7 +12,9 @@ void main() {
 
   test('저장→로드 라운드트립', () async {
     final svc = SaveService();
-    final s = GameState()..setFlag('got_key', 1)..give('match');
+    final s = GameState()
+      ..setFlag('got_key', 1)
+      ..give('match');
     await svc.save(s);
     final r = await svc.load();
     expect(r!.flag('got_key'), 1);
@@ -19,6 +23,28 @@ void main() {
 
   test('세이브 없으면 null', () async {
     expect(await SaveService().load(), isNull);
+  });
+
+  test('버전 없는 리마스터 전 세이브는 퍼즐 조기 통과를 막기 위해 무시', () async {
+    SharedPreferences.setMockInitialValues({
+      SaveService.key: jsonEncode({
+        'flags': {'foyer_r_done': 1},
+        'inventory': <String>[],
+        'selectedItem': null,
+        'roomIndex': 1,
+        'sceneIndex': 0,
+      }),
+    });
+    expect(await SaveService().load(), isNull);
+  });
+
+  test('저장 JSON에는 현재 세이브 버전이 기록됨', () async {
+    final svc = SaveService();
+    await svc.save(GameState());
+    final prefs = await SharedPreferences.getInstance();
+    final json =
+        jsonDecode(prefs.getString(SaveService.key)!) as Map<String, dynamic>;
+    expect(json['saveVersion'], GameState.currentSaveVersion);
   });
 
   test('본 세이브 파손 시 백업 슬롯으로 복구 (스펙 §4.5)', () async {
