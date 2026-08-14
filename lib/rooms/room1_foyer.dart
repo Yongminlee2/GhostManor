@@ -9,14 +9,22 @@ import '../core/strings.dart';
 // ── 퍼즐 로직 (위젯과 분리 — 정답 시퀀스 테스트가 직접 호출, 스펙 §8) ──
 // 리마스터: 전 플래그 foyer_r_ 접두어 (구세이브의 foyer_* 와 충돌 차단).
 
-/// 시침 탭: 첫 탭은 1시, 이후 12시까지 순환. 3시 도달 시 서랍 해금.
+/// 시침 탭: 첫 탭은 1시, 이후 12시까지 순환. 돌리기만 해서는 아무 일도
+/// 일어나지 않는다 — 축을 눌러 고정해야 판정된다(연타 우연 해금 차단).
 void tapClockHand(GameState s) {
   final cur = s.flag('foyer_r_clock_hour');
-  final next = cur >= 12 ? 1 : cur + 1;
-  s.setFlag('foyer_r_clock_hour', next);
-  // 정답 시각은 편지의 "셋째 시계"가 가리키는 3시. 12시 기준으로
-  // 세 번 조작한 상태를 곧바로 3시로 보이게 한다.
-  if (next == 3) s.setFlag('foyer_r_drawer_unlocked', 1);
+  s.setFlag('foyer_r_clock_hour', cur >= 12 ? 1 : cur + 1);
+}
+
+/// 중앙 축 탭: 현재 시각을 고정 시도. 정답(편지의 셋째 시계 = 3시)이면
+/// 서랍 해금 후 true, 오답이면 시침이 12시로 되돌아가고 false.
+bool confirmClockTime(GameState s) {
+  if (s.flag('foyer_r_clock_hour') == 3) {
+    s.setFlag('foyer_r_drawer_unlocked', 1);
+    return true;
+  }
+  s.setFlag('foyer_r_clock_hour', 0);
+  return false;
 }
 
 /// 외투 먼지 문지르기 완료 → 성냥 지급 (RubbableScene.onCleaned가 감싸 호출).
@@ -42,26 +50,41 @@ class ClockCloseup extends StatelessWidget {
       animation: s,
       builder: (context, _) {
         final hour = s.flag('foyer_r_clock_hour');
-        return GestureDetector(
-          key: const Key('clock_tap'),
-          behavior: HitTestBehavior.opaque,
-          onTap: () {
-            final before = s.flag('foyer_r_drawer_unlocked');
-            tapClockHand(s);
-            ctx.sfx('clock_tick');
-            if (before == 0 && s.flag('foyer_r_drawer_unlocked') == 1) {
-              ctx.sfx('unlock');
-              ctx.say(strFoyerClockSet);
-            }
-          },
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              gameImage('assets/scenes/foyer_clock.png'),
-              CustomPaint(painter: _HandPainter(hour)),
-            ],
-          ),
-        );
+        return LayoutBuilder(builder: (context, box) {
+          final size = box.biggest;
+          return GestureDetector(
+            key: const Key('clock_tap'),
+            behavior: HitTestBehavior.opaque,
+            onTapUp: (d) {
+              if (s.flag('foyer_r_drawer_unlocked') >= 1) {
+                ctx.say(strFoyerClockDone);
+                return;
+              }
+              final fromCenter =
+                  (d.localPosition - size.center(Offset.zero)).distance;
+              if (fromCenter <= size.shortestSide * 0.13) {
+                // 중앙 축: 현재 시각 고정 시도 — 오답이면 바늘이 되돌아간다.
+                if (confirmClockTime(s)) {
+                  ctx.sfx('unlock');
+                  ctx.say(strFoyerClockSet);
+                } else {
+                  ctx.sfx('locked');
+                  ctx.say(strFoyerClockWrong);
+                }
+              } else {
+                tapClockHand(s);
+                ctx.sfx('clock_tick');
+              }
+            },
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                gameImage('assets/scenes/foyer_clock.png'),
+                CustomPaint(painter: _HandPainter(hour)),
+              ],
+            ),
+          );
+        });
       },
     );
   }
@@ -199,6 +222,13 @@ Room buildFoyer() {
       Scene(
         id: 'foyer_b',
         image: 'assets/scenes/foyer_b.png',
+        overlays: [
+          // 서랍이 해금되면(시계 3시 고정) 벽시계에도 3시 시침이 남는다.
+          SceneOverlay(
+              image: 'assets/scenes/foyer_b_clock3.png',
+              area: const Rect.fromLTWH(0.4912, 0.1139, 0.0889, 0.0267),
+              when: flagSet('foyer_r_drawer_unlocked')),
+        ],
         hotspots: [
           Hotspot(
             id: 'coat',
@@ -208,7 +238,13 @@ Room buildFoyer() {
           Hotspot(
             id: 'clock',
             area: const Rect.fromLTWH(0.40, 0.08, 0.20, 0.16),
-            onTap: (c) => c.openCloseup('clock'),
+            onTap: (c) {
+              c.openCloseup('clock');
+              if (c.s.flag('foyer_r_clock_hint') == 0) {
+                c.s.setFlag('foyer_r_clock_hint', 1);
+                c.say(strFoyerClockIntro);
+              }
+            },
           ),
           // 리터치 4차에서 우측 신발장이 거울·스툴로 바뀌고 중앙에 대형
           // 벽장이 생겼다 — 구두 선반 클로즈업(foyer_shoes)은 이제 이 벽장
@@ -308,6 +344,7 @@ Room buildFoyer() {
                   c.sfx('sparkle');
                   c.say(strFoyerRCoatMatch);
                 },
+                progressFlag: 'foyer_r_coat_rub_pct',
                 gestureKey: const Key('coat_rub'),
               ),
       ),
@@ -404,6 +441,7 @@ Room buildFoyer() {
             finishFrameRub(c.s);
             c.sfx('sparkle');
           },
+          progressFlag: 'foyer_r_dust_rub_pct',
           gestureKey: const Key('frame_rub'),
         ),
       ),
@@ -430,7 +468,7 @@ Room buildFoyer() {
         steps: [
           '시계가 여럿 그려진 그림과 누군가의 편지 — 함께 읽어야 해요.',
           '편지의 "셋째"가 그림의 몇 번째 시계인지 세어 보세요.',
-          '정답: 그림 속 셋째 시계는 3시 — 벽시계를 3시로 맞추세요.',
+          '정답: 그림 속 셋째 시계는 3시 — 시침을 3시에 두고 가운데 축을 눌러 고정하세요.',
         ],
         solved: (s) => s.flag('foyer_r_drawer_unlocked') >= 1,
       ),

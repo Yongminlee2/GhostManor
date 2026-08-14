@@ -213,7 +213,13 @@ Room buildChild() {
     cleared: flagSet('f2_child_done'),
     walls: [
       // 벽면 A: 침대+별 모빌(T1 지식 단서, 게이트 아님) + 낙서 액자들(리액션) + 문.
-      Scene(id: 'child_a', image: 'assets/scenes/f2_child_a.png', hotspots: [
+      Scene(id: 'child_a', image: 'assets/scenes/f2_child_a.png', overlays: [
+        // 문이 열리면 어두운 복도가 드러난 열림 그림으로 바뀐다.
+        SceneOverlay(
+            image: 'assets/scenes/f2_child_a_door_open.png',
+            area: const Rect.fromLTWH(0.8262, 0.3783, 0.1738, 0.5521),
+            when: flagSet('f2_child_door_open')),
+      ], hotspots: [
         Hotspot(id: 'door', area: doorArea, onTap: tapDoor),
         Hotspot(id: 'mobile', area: mobileArea, onTap: (c) => c.say(strF2ChildMobile)),
         Hotspot(id: 'bed', area: bedArea, onTap: (c) => c.say(strF2ChildBed)),

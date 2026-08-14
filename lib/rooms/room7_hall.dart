@@ -223,6 +223,11 @@ Room buildHall() {
               image: 'assets/scenes/f2_hall_a_tilt${i + 1}.png',
               area: portraitAreas[i],
               when: (s) => s.flag('f2_hall_portrait$i') >= 1),
+        // 안방 문이 열리면 자물쇠 풀린 채 활짝 열린 그림으로 바뀐다.
+        SceneOverlay(
+            image: 'assets/scenes/f2_hall_a_door_open.png',
+            area: const Rect.fromLTWH(0.0234, 0.1966, 0.3506, 0.5234),
+            when: flagSet('f2_hall_door_open')),
       ], hotspots: [
         Hotspot(id: 'door', area: doorArea, onTap: tapDoor),
         for (var i = 0; i < 4; i++)
@@ -239,6 +244,12 @@ Room buildHall() {
             image: 'assets/scenes/f2_hall_b_alive.png',
             area: const Rect.fromLTWH(0, 0, 1, 1),
             when: flagSet('f2_hall_b_alive')),
+        // 샹들리에에서 떨어진 열쇠 — 줍기 전까지 계단참 바닥에 보인다.
+        SceneOverlay(
+            image: 'assets/scenes/f2_hall_b_key_floor.png',
+            area: floorKeyArea,
+            when: (s) =>
+                s.flag('f2_hall_key_dropped') >= 1 && !s.has('key_f2bed')),
       ], hotspots: [
         Hotspot(id: 'clock', area: clockArea, onTap: (c) => c.openCloseup('clock')),
         Hotspot(id: 'chandelier', area: chandelierArea, onTap: tapChandelier),
@@ -291,7 +302,13 @@ Room buildHall() {
                 ],
                 onDone: () => c.s.closeCloseup(),
               )),
-      'clock': Scene(id: 'clock', image: 'assets/scenes/f2_hall_clock.png', hotspots: [
+      'clock': Scene(id: 'clock', image: 'assets/scenes/f2_hall_clock.png', overlays: [
+        // 태엽을 감아 시계가 살아나면 문자판이 빛나는 버전으로 바뀐다.
+        SceneOverlay(
+            image: 'assets/scenes/f2_hall_clock_alive.png',
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: flagSet('f2_hall_clock_wound')),
+      ], hotspots: [
         Hotspot(id: 'winder_hole', area: const Rect.fromLTWH(0, 0, 1, 1), onTap: tapWinderHole),
       ]),
       'rug': Scene(
@@ -306,6 +323,7 @@ Room buildHall() {
                   c.sfx('wood_slide');
                   c.say(strF2HallRugRolled);
                 },
+                progressFlag: 'f2_hall_rug_rub_pct',
                 gestureKey: const Key('rug_rub'),
               )),
     },

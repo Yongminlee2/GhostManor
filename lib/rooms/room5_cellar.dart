@@ -382,6 +382,13 @@ Room buildCellar() {
             area: const Rect.fromLTWH(0, 0, 1, 1),
             when: (s) => s.flag('cellar_r_fuse_count') == 2,
           ),
+          // 자물쇠를 딴 쪽문은 활짝 열려 통로가 드러난다. 풀프레임인
+          // fuse 상태 뒤에 선언해 문 부분만 위에 얹힌다(어둠막엔 덮인다).
+          SceneOverlay(
+            image: 'assets/scenes/cellar_b_plate_door_open.png',
+            area: const Rect.fromLTWH(0.2998, 0.2461, 0.4990, 0.5566),
+            when: flagSet('cellar_r_door_open'),
+          ),
           SceneOverlay(
             image: 'assets/scenes/cellar_b_dark.png',
             area: const Rect.fromLTWH(0, 0, 1, 1),

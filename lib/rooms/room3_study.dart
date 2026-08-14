@@ -336,6 +336,13 @@ Room buildStudy() {
       Scene(
         id: 'study_c',
         image: 'assets/scenes/study_c.png',
+        overlays: [
+          // 렌즈를 끼우면 접안부에 유리 반사가 생긴다.
+          SceneOverlay(
+              image: 'assets/scenes/study_c_lens.png',
+              area: const Rect.fromLTWH(0.3896, 0.3900, 0.0684, 0.0475),
+              when: flagSet('study_r_telescope_lens')),
+        ],
         hotspots: [
           // 창(큰 풍미 rect)을 먼저 — 뒤 선언인 망원경·지구의가 겹침에서 이긴다.
           Hotspot(
@@ -388,6 +395,7 @@ Room buildStudy() {
             c.s.setFlag('study_r_paper_rubbed', 1);
             c.sfx('sparkle');
           },
+          progressFlag: 'study_r_paper_rub_pct',
           gestureKey: const Key('paper_rub'),
         ),
       ),

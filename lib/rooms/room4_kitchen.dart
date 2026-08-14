@@ -456,6 +456,7 @@ Room buildKitchen() {
             c.s.setFlag('kitchen_r_recipe_rubbed', 1);
             c.sfx('sparkle');
           },
+          progressFlag: 'kitchen_r_recipe_rub_pct',
           gestureKey: const Key('recipe_rub'),
         ),
       ),

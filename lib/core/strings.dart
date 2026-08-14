@@ -17,6 +17,9 @@ const strFoyerDrawerDark = '서랍 속이 너무 어두워서 아무것도 안 �
 const strFoyerKeyFound = '낡은 열쇠를 얻었다! 고스포가 아쉬운 표정을 짓는다.';
 const strFoyerDoorOpened = '철컥! 문이 열렸다. 저택 안쪽으로 들어가자.';
 const strFoyerClockSet = '똑딱… 철컥! 어디선가 잠금이 풀리는 소리가 났다.';
+const strFoyerClockIntro = '테두리를 눌러 시침을 돌리고, 가운데 축을 누르면 그 시각으로 고정한다.';
+const strFoyerClockWrong = '축을 눌러 고정하려 하자 바늘이 파르르 떨더니 제자리로 되돌아갔다. 아무 시각이나 받아들이지 않는 모양이다.';
+const strFoyerClockDone = '시계는 이미 3시에 멈춰 있다. 더 건드릴 필요는 없다.';
 
 // ── 현관 리마스터 신규 (room1_foyer, foyer_r_ 플래그) ──
 const strFoyerRCoatMatch =

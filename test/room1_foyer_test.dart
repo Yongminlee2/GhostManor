@@ -59,15 +59,25 @@ void main() {
     expect(s.dialog, strFoyerRDrawerLocked);
   });
 
-  test('부정: 편지 없이도 시계만 3시면 서랍 열림 (편지는 지식 단서일 뿐, 기계적 게이트 아님)', () {
+  test('부정: 편지 없이도 시계만 3시+축 고정이면 서랍 열림 (편지는 지식 단서일 뿐)', () {
     expect(s.has('letter1'), isFalse);
     tapClockHand(s);
     tapClockHand(s);
     tapClockHand(s);
     expect(s.flag('foyer_r_clock_hour'), 3);
+    // 돌리기만 해서는 잠긴 채 — 축 고정으로만 판정된다.
+    expect(s.flag('foyer_r_drawer_unlocked'), 0);
+    expect(confirmClockTime(s), isTrue);
     expect(s.flag('foyer_r_drawer_unlocked'), 1);
     tap('foyer_a', 'drawer');
     expect(s.closeupId, 'drawer'); // 편지 없이도 열림
+  });
+
+  test('부정: 3시가 아닌 시각에 축을 누르면 시침이 12시로 되돌아간다', () {
+    tapClockHand(s); // 1시
+    expect(confirmClockTime(s), isFalse);
+    expect(s.flag('foyer_r_clock_hour'), 0); // 리셋
+    expect(s.flag('foyer_r_drawer_unlocked'), 0);
   });
 
   test('시계는 12시간 순환', () {
@@ -100,14 +110,32 @@ void main() {
     }
   });
 
-  testWidgets('시계 위젯: 탭 3번이면 서랍 해금', (t) async {
+  testWidgets('시계 위젯: 테두리 탭 3번(3시) 후 중앙 축 탭이면 서랍 해금', (t) async {
     await t.pumpWidget(MaterialApp(
         home: SizedBox(width: 400, height: 400, child: ClockCloseup(ctx: c))));
+    final center = t.getCenter(find.byKey(const Key('clock_tap')));
+    // 테두리(중앙에서 벗어난 지점) 탭 = 시침 회전
     for (var i = 0; i < 3; i++) {
-      await t.tap(find.byKey(const Key('clock_tap')));
+      await t.tapAt(center + const Offset(0, -140));
       await t.pump();
     }
+    expect(s.flag('foyer_r_clock_hour'), 3);
+    expect(s.flag('foyer_r_drawer_unlocked'), 0); // 돌리기만으론 잠김
+    await t.tapAt(center); // 중앙 축 = 고정
+    await t.pump();
     expect(s.flag('foyer_r_drawer_unlocked'), 1);
+  });
+
+  testWidgets('시계 위젯: 오답 시각에서 축을 누르면 시침 리셋', (t) async {
+    await t.pumpWidget(MaterialApp(
+        home: SizedBox(width: 400, height: 400, child: ClockCloseup(ctx: c))));
+    final center = t.getCenter(find.byKey(const Key('clock_tap')));
+    await t.tapAt(center + const Offset(0, -140)); // 1시
+    await t.pump();
+    await t.tapAt(center); // 축 — 오답
+    await t.pump();
+    expect(s.flag('foyer_r_clock_hour'), 0);
+    expect(s.flag('foyer_r_drawer_unlocked'), 0);
   });
 
   testWidgets('외투 위젯(RubbableScene): 문지르면 성냥 획득', (t) async {

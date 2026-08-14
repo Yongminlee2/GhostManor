@@ -299,7 +299,13 @@ Room buildLab() {
     walls: [
       // 벽면 A: 책상+축음기(T1) + 서랍(T1, T2의 열쇠고리로 개방) + 책장
       // (T1 실린더1) + 문.
-      Scene(id: 'lab_a', image: 'assets/scenes/f2_lab_a.png', hotspots: [
+      Scene(id: 'lab_a', image: 'assets/scenes/f2_lab_a.png', overlays: [
+        // 머리핀으로 딴 서랍 자물쇠는 풀린 채로 남는다.
+        SceneOverlay(
+            image: 'assets/scenes/f2_lab_a_unlocked.png',
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: flagSet('f2_lab_drawer_open')),
+      ], hotspots: [
         Hotspot(id: 'door', area: doorArea, onTap: tapDoor),
         Hotspot(id: 'portrait', area: portraitArea, onTap: (c) => c.say(strF2LabPortrait)),
         Hotspot(id: 'sconce', area: sconceArea, onTap: (c) => c.say(strF2LabSconce)),
@@ -339,6 +345,24 @@ Room buildLab() {
       // 벽면 C: 창+약병 선반(T2 핵심) + 열쇠고리(T1 교차) + 램프(T2) + 편지
       // (T2 기억 앵커) — 완성 시 c_lamp 오버레이가 벽 전체를 보랏빛으로 덮는다.
       Scene(id: 'lab_c', image: 'assets/scenes/f2_lab_c.png', overlays: [
+        // 가져간 약병·열쇠꾸러미는 선반에서 사라진다(빈 선반 합성 패치).
+        // 램프 점등 풀프레임이 아래(뒤 선언)라 켜진 뒤엔 그쪽이 덮는다.
+        SceneOverlay(
+            image: 'assets/scenes/f2_lab_c_no_purple.png',
+            area: const Rect.fromLTWH(0.2412, 0.4434, 0.1279, 0.1510),
+            when: flagSet('f2_lab_vial_purple_taken')),
+        SceneOverlay(
+            image: 'assets/scenes/f2_lab_c_no_green.png',
+            area: const Rect.fromLTWH(0.3730, 0.4434, 0.1182, 0.1543),
+            when: flagSet('f2_lab_vial_green_taken')),
+        SceneOverlay(
+            image: 'assets/scenes/f2_lab_c_no_amber.png',
+            area: const Rect.fromLTWH(0.5010, 0.4434, 0.1416, 0.1510),
+            when: flagSet('f2_lab_vial_amber_taken')),
+        SceneOverlay(
+            image: 'assets/scenes/f2_lab_c_no_keyring.png',
+            area: const Rect.fromLTWH(0.6523, 0.6289, 0.1621, 0.0677),
+            when: flagSet('f2_lab_keyring_taken')),
         SceneOverlay(
             image: 'assets/scenes/f2_lab_c_lamp.png',
             area: const Rect.fromLTWH(0, 0, 1, 1),
@@ -397,6 +421,7 @@ Room buildLab() {
                   c.sfx('cloth_rub');
                   c.say(strF2LabBoardCleanReveal);
                 },
+                progressFlag: 'f2_lab_board_rub_pct',
                 gestureKey: const Key('board_rub'),
               )),
       'letter': Scene(

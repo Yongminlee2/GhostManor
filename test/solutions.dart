@@ -81,6 +81,8 @@ int solveFoyer(GameState s, GameCtx c, Room room) {
   pure(() => tapClockHand(s)); // 2시
   pure(() => tapClockHand(s)); // 3시
   expect(s.flag('foyer_r_clock_hour'), 3);
+  expect(s.flag('foyer_r_drawer_unlocked'), 0); // 돌리기만으론 잠김
+  pure(() => confirmClockTime(s)); // 중앙 축으로 3시 고정
   expect(s.flag('foyer_r_drawer_unlocked'), 1);
 
   // 교차: 서랍은 어두워 T1의 불 켠 초가 필요 → 열쇠

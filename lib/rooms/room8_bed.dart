@@ -208,7 +208,17 @@ Room buildBed() {
     cleared: flagSet('f2_bed_done'),
     walls: [
       // 벽면 A: 캐노피 침대·창·협탁(T1 머리핀) + 문.
-      Scene(id: 'bed_a', image: 'assets/scenes/f2_bed_a.png', hotspots: [
+      Scene(id: 'bed_a', image: 'assets/scenes/f2_bed_a.png', overlays: [
+        // 머리핀을 가져가면 협탁 위에서 사라진다(잔존 소품 제거 합성).
+        SceneOverlay(
+            image: 'assets/scenes/f2_bed_a_no_hairpin.png',
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: flagSet('f2_bed_hairpin_got')),
+        SceneOverlay(
+            image: 'assets/scenes/f2_bed_a_door_open.png',
+            area: const Rect.fromLTWH(0.8037, 0.2454, 0.1963, 0.4082),
+            when: flagSet('f2_bed_door_open')),
+      ], hotspots: [
         Hotspot(id: 'door', area: doorArea, onTap: tapDoor),
         Hotspot(id: 'sconce', area: sconceArea, onTap: (c) => c.say(strF2BedSconce)),
         Hotspot(id: 'curtain', area: curtainArea, onTap: (c) => c.say(strF2BedCurtain)),
@@ -231,7 +241,13 @@ Room buildBed() {
             }),
       ]),
       // 벽면 B: 화장대·거울(T1 브로치+거울 클로즈업) + 보석함(T1 3슬롯).
-      Scene(id: 'bed_b', image: 'assets/scenes/f2_bed_b.png', hotspots: [
+      Scene(id: 'bed_b', image: 'assets/scenes/f2_bed_b.png', overlays: [
+        // 브로치를 가져가면 화장대 위에서 사라진다.
+        SceneOverlay(
+            image: 'assets/scenes/f2_bed_b_no_brooch.png',
+            area: const Rect.fromLTWH(0, 0, 1, 1),
+            when: flagSet('f2_bed_brooch_got')),
+      ], hotspots: [
         Hotspot(id: 'chair', area: chairArea, onTap: (c) => c.say(strF2BedChair)),
         Hotspot(
             id: 'candelabra', area: candelabraArea, onTap: (c) => c.say(strF2BedCandelabra)),
@@ -341,6 +357,18 @@ Room buildBed() {
           id: 'frame',
           image: 'assets/scenes/f2_bed_frame.png',
           overlays: [
+            // 실을 놓을 때마다 구름이 좌에서 우로 은사로 채워진다(완성본
+            // 밴드 크롭). 세 번째 실은 stitch_done의 full 전환이 담당한다.
+            for (var i = 0; i < 2; i++)
+              SceneOverlay(
+                  image: 'assets/scenes/f2_bed_frame_st$i.png',
+                  area: [
+                    const Rect.fromLTWH(0.3359, 0.6016, 0.1143, 0.2031),
+                    const Rect.fromLTWH(0.4502, 0.6016, 0.1143, 0.2031),
+                  ][i],
+                  when: (s) =>
+                      s.flag('f2_bed_stitch_stage') > i &&
+                      s.flag('f2_bed_stitch_done') == 0),
             SceneOverlay(
                 image: 'assets/scenes/f2_bed_frame_full.png',
                 area: const Rect.fromLTWH(0, 0, 1, 1),
