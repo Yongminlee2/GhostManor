@@ -143,6 +143,21 @@ Room buildAttic() {
         id: 'attic_a',
         image: 'assets/scenes/attic_a.png',
         overlays: [
+          // 카드 진행 표시: 놓은 장수만큼 보면대 슬롯이 좌→우로 채워진다
+          // (완성본 크롭). 4장째엔 아래 풀프레임 fade가 대신 덮는다.
+          for (var i = 0; i < 4; i++)
+            SceneOverlay(
+              image: 'assets/scenes/attic_a_card_slot$i.png',
+              area: [
+                const Rect.fromLTWH(0.2891, 0.4635, 0.1133, 0.1589),
+                const Rect.fromLTWH(0.4023, 0.4635, 0.1133, 0.1589),
+                const Rect.fromLTWH(0.5156, 0.4635, 0.1133, 0.1589),
+                const Rect.fromLTWH(0.6289, 0.4635, 0.1133, 0.1589),
+              ][i],
+              when: (s) =>
+                  s.flag('attic_r_cards_placed') > i &&
+                  s.flag('attic_r_cards_placed') < 4,
+            ),
           SceneOverlay(
             image: 'assets/scenes/attic_a_cards.png',
             area: const Rect.fromLTWH(0, 0, 1, 1),

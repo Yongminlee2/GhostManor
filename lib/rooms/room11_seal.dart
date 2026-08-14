@@ -258,6 +258,20 @@ Room buildSeal() {
     walls: [
       // 벽면 A: 제단(T2) + 매듭 3개(제단 완성 후) + 에드가(매듭 이후) + 장식.
       Scene(id: 'seal_a', image: 'assets/scenes/f2_seal_a.png', overlays: [
+        // 상징 단계별 표시: 놓은 개수만큼 제단 팔각판에 새겨진다(완성본 크롭).
+        // 4개째엔 full 전환이 덮으므로 1~3 진행 구간에만 살아 있다.
+        for (var i = 0; i < 4; i++)
+          SceneOverlay(
+              image: 'assets/scenes/f2_seal_a_sym$i.png',
+              area: [
+                const Rect.fromLTWH(0.1992, 0.6803, 0.1230, 0.1042),
+                const Rect.fromLTWH(0.3604, 0.6836, 0.1279, 0.1042),
+                const Rect.fromLTWH(0.5215, 0.6868, 0.1182, 0.1009),
+                const Rect.fromLTWH(0.6826, 0.6836, 0.1084, 0.1009),
+              ][i],
+              when: (s) =>
+                  s.flag('f2_seal_altar_seq') > i &&
+                  s.flag('f2_seal_altar_full') == 0),
         SceneOverlay(
             image: 'assets/scenes/f2_seal_a_full.png',
             area: const Rect.fromLTWH(0, 0, 1, 1),
@@ -326,6 +340,20 @@ Room buildSeal() {
       ]),
       // 벽면 C: 촛불 고리 5개(T1 핵심, 가운데는 이미 꺼짐) + 기록 선반(리액션).
       Scene(id: 'seal_c', image: 'assets/scenes/f2_seal_c.png', overlays: [
+        // 개별 소등: 끈 초마다 즉시 꺼진 그림(완성본 크롭+페더)이 얹힌다 —
+        // 3개까지 무반응이던 실기기 지적 해소. 4개째엔 전체 dark가 덮는다.
+        for (var i = 0; i < 4; i++)
+          SceneOverlay(
+              image: 'assets/scenes/f2_seal_c_out$i.png',
+              area: [
+                const Rect.fromLTWH(0.18, 0.12, 0.24, 0.17),
+                const Rect.fromLTWH(0.58, 0.12, 0.24, 0.17),
+                const Rect.fromLTWH(0.18, 0.37, 0.24, 0.17),
+                const Rect.fromLTWH(0.58, 0.37, 0.24, 0.17),
+              ][i],
+              when: (s) =>
+                  s.flag('f2_seal_candle$i') >= 1 &&
+                  s.flag('f2_seal_c_dark') == 0),
         SceneOverlay(
             image: 'assets/scenes/f2_seal_c_dark.png',
             area: const Rect.fromLTWH(0, 0, 1, 1),
