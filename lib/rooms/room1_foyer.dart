@@ -210,14 +210,12 @@ Room buildFoyer() {
             area: const Rect.fromLTWH(0.40, 0.08, 0.20, 0.16),
             onTap: (c) => c.openCloseup('clock'),
           ),
-          Hotspot(
-            id: 'wardrobe',
-            area: const Rect.fromLTWH(0.29, 0.23, 0.40, 0.52),
-            onTap: (c) => c.say(strFoyerRWardrobe),
-          ),
+          // 리터치 4차에서 우측 신발장이 거울·스툴로 바뀌고 중앙에 대형
+          // 벽장이 생겼다 — 구두 선반 클로즈업(foyer_shoes)은 이제 이 벽장
+          // 안쪽이라는 설정으로 rect를 벽장에 얹는다.
           Hotspot(
             id: 'shoe_cabinet',
-            area: const Rect.fromLTWH(0.66, 0.56, 0.30, 0.26),
+            area: const Rect.fromLTWH(0.29, 0.23, 0.40, 0.52),
             onTap: (c) {
               c.sfx('wood_slide');
               c.openCloseup('shoes');
