@@ -38,6 +38,9 @@ class _GhostManorAppState extends State<GhostManorApp> {
   @override
   void initState() {
     super.initState();
+    // 저택 테마는 타이틀부터 흐른다 — 게임 진입 시 같은 곡이면 끊기지 않고
+    // 이어진다(AudioService의 같은-곡 가드).
+    audio.playBgm('bgm_manor');
     if (widget.initialState != null) {
       _start(widget.initialState!);
       loaded = true;

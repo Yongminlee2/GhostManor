@@ -6,8 +6,28 @@ class AudioService {
   bool muted = false;
   AudioPlayer? _bgm;
   AudioPlayer? _ambient;
+  String? _bgmFile; // 재생 중인 곡 — 같은 곡 재요청이면 재시작하지 않는다
+  String? _ambientFile;
+  bool _contextSet = false;
 
   AudioService({this.enabled = true});
+
+  /// 기본 AudioContext는 재생마다 오디오 포커스를 독점해, 효과음이 날 때마다
+  /// BGM·앰비언트가 끊긴다(실기기: 게임 중 배경음 무음). 포커스를 잡지 않게
+  /// 한 번만 전역 설정 — 앱 내 플레이어끼리 자유롭게 섞인다.
+  Future<void> _ensureContext() async {
+    if (_contextSet) return;
+    _contextSet = true;
+    try {
+      await AudioPlayer.global.setAudioContext(AudioContext(
+        android: const AudioContextAndroid(
+          contentType: AndroidContentType.music,
+          usageType: AndroidUsageType.game,
+          audioFocus: AndroidAudioFocus.none,
+        ),
+      ));
+    } catch (_) {}
+  }
 
   /// 슬롯 → 실제 파일명. 실음원은 원본 포맷 그대로 싣고(ogg/flac),
   /// 여기 없는 슬롯은 합성 `<슬롯>.wav`. 출처는 docs/CREDITS.md.
@@ -46,6 +66,7 @@ class AudioService {
     if (!enabled || muted) return;
     AudioPlayer? p;
     try {
+      await _ensureContext();
       p = AudioPlayer();
       p.onPlayerComplete.listen((_) => p?.dispose());
       await p.play(AssetSource('audio/${fileFor(name)}'));
@@ -58,20 +79,29 @@ class AudioService {
 
   Future<void> playBgm(String name) async {
     if (!enabled) return;
+    final file = fileFor(name);
+    if (_bgmFile == file) return; // 같은 곡이면 이어서 재생 유지
+    _bgmFile = file;
     try {
+      await _ensureContext();
       _bgm ??= AudioPlayer()..setReleaseMode(ReleaseMode.loop);
       await _bgm!.setVolume(0.4); // 실음원 BGM은 효과음 밑에 깔리게
-      await _bgm!.play(AssetSource('audio/${fileFor(name)}'));
+      await _bgm!.play(AssetSource('audio/$file'));
       if (muted) await _bgm!.pause();
     } catch (_) {}
   }
 
   Future<void> playAmbient(String name) async {
     if (!enabled) return;
+    final file = fileFor(name);
+    // 방이 바뀌어도 같은 루프 파일이면 재시작하지 않는다(챕터 내 재사용 多).
+    if (_ambientFile == file) return;
+    _ambientFile = file;
     try {
+      await _ensureContext();
       _ambient ??= AudioPlayer()..setReleaseMode(ReleaseMode.loop);
       await _ambient!.setVolume(0.6);
-      await _ambient!.play(AssetSource('audio/${fileFor(name)}'));
+      await _ambient!.play(AssetSource('audio/$file'));
       if (muted) await _ambient!.pause();
     } catch (_) {}
   }

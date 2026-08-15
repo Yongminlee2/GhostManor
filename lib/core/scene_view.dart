@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -318,34 +319,11 @@ class _SceneViewState extends State<SceneView> {
                     left: 12,
                     right: 12,
                     bottom: 12,
-                    child: TweenAnimationBuilder<double>(
-                      tween: Tween(begin: 0.0, end: 1.0),
-                      duration: const Duration(milliseconds: 250),
-                      builder: (context, t, child) => Opacity(
-                        opacity: t,
-                        child: Transform.translate(
-                          offset: Offset(0, (1 - t) * 12),
-                          child: child,
-                        ),
-                      ),
-                      child: GestureDetector(
-                        onTap: () => s.say(null),
-                        child: Container(
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: const Color(0xE6241B36),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: const Color(0xFF7C5CC4)),
-                          ),
-                          child: Text(
-                            s.dialog!,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                            ),
-                          ),
-                        ),
-                      ),
+                    // 새 대사마다 key가 바뀌어 표시 타이머가 처음부터 다시 돈다.
+                    child: _DialogBubble(
+                      key: ValueKey(s.dialog),
+                      text: s.dialog!,
+                      onDismiss: () => s.say(null),
                     ),
                   ),
               ],
@@ -392,6 +370,62 @@ class _SceneViewState extends State<SceneView> {
               size: 40,
             ),
             onPressed: onTap,
+          ),
+        ),
+      );
+}
+
+/// 하단 말풍선 — 대사가 떠 있는 동안 뒤의 씬 하단을 가리므로, 읽을 시간
+/// (글 길이 비례)이 지나면 스스로 사라진다. 탭하면 즉시 닫힌다.
+class _DialogBubble extends StatefulWidget {
+  final String text;
+  final VoidCallback onDismiss;
+  const _DialogBubble({super.key, required this.text, required this.onDismiss});
+
+  @override
+  State<_DialogBubble> createState() => _DialogBubbleState();
+}
+
+class _DialogBubbleState extends State<_DialogBubble> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    final ms = (2500 + widget.text.length * 45).clamp(2500, 7000);
+    _timer = Timer(Duration(milliseconds: ms), widget.onDismiss);
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0.0, end: 1.0),
+        duration: const Duration(milliseconds: 250),
+        builder: (context, t, child) => Opacity(
+          opacity: t,
+          child: Transform.translate(
+            offset: Offset(0, (1 - t) * 12),
+            child: child,
+          ),
+        ),
+        child: GestureDetector(
+          onTap: widget.onDismiss,
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: const Color(0xE6241B36),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFF7C5CC4)),
+            ),
+            child: Text(
+              widget.text,
+              style: const TextStyle(color: Colors.white, fontSize: 15),
+            ),
           ),
         ),
       );
