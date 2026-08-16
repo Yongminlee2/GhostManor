@@ -332,6 +332,32 @@ class RoomScreen extends StatefulWidget {
 class _RoomScreenState extends State<RoomScreen> {
   late final GameCtx ctx = GameCtx(widget.state, widget.audio);
   late final HintService hints = HintService(widget.state);
+  DateTime? _lastBackAt; // 두 번 눌러 종료 판정
+
+  /// 안드로이드 뒤로가기: 클로즈업이 열려 있으면 닫기만 하고, 벽 화면에선
+  /// 2초 안에 두 번 눌러야 앱이 꺼진다 — 실수 종료 방지(진행은 자동 저장).
+  void _onBackPressed() {
+    final s = widget.state;
+    if (s.closeupId != null) {
+      s.closeCloseup();
+      return;
+    }
+    final now = DateTime.now();
+    if (_lastBackAt != null &&
+        now.difference(_lastBackAt!) < const Duration(seconds: 2)) {
+      SystemNavigator.pop();
+      return;
+    }
+    _lastBackAt = now;
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(SnackBar(
+        content: Text(strBackExitHint),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: const Color(0xE6241B36),
+      ));
+  }
 
   Room get room => widget.rooms[widget.state.roomIndex % widget.rooms.length];
 
@@ -551,7 +577,12 @@ class _RoomScreenState extends State<RoomScreen> {
         ),
       );
     }
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _onBackPressed();
+      },
+      child: Scaffold(
       body: SafeArea(
         child: Column(
           children: [
@@ -627,6 +658,7 @@ class _RoomScreenState extends State<RoomScreen> {
             InventoryBar(ctx: ctx),
           ],
         ),
+      ),
       ),
     );
   }
