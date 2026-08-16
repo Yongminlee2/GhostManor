@@ -308,6 +308,12 @@ Room buildLab() {
             image: 'assets/scenes/f2_lab_a_unlocked.png',
             area: const Rect.fromLTWH(0, 0, 1, 1),
             when: flagSet('f2_lab_drawer_open')),
+        // 봉인의 방 열쇠로 연 문은 활짝 열린 그림으로 바뀐다(문 영역 크롭 —
+        // 풀프레임인 unlocked 뒤 선언이라 서랍 상태와 공존).
+        SceneOverlay(
+            image: 'assets/scenes/f2_lab_a_door_open.png',
+            area: const Rect.fromLTWH(0.8428, 0.2109, 0.1572, 0.3952),
+            when: flagSet('f2_lab_door_open')),
       ], hotspots: [
         Hotspot(id: 'door', area: doorArea, onTap: tapDoor),
         Hotspot(id: 'portrait', area: portraitArea, onTap: (c) => c.say(strF2LabPortrait)),

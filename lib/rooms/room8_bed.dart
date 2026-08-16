@@ -241,19 +241,17 @@ Room buildBed() {
             }),
       ]),
       // 벽면 B: 화장대·거울(T1 브로치+거울 클로즈업) + 보석함(T1 3슬롯).
+      // 원본(6차 리터치)에 브로치·빗이 함께 그려져 있고, 가져간 것만
+      // 그 자리를 비운 부분 패치로 사라진다 — 서로 독립이라 순서 무관.
       Scene(id: 'bed_b', image: 'assets/scenes/f2_bed_b.png', overlays: [
-        // 브로치를 가져가면 화장대 위에서 사라진다.
         SceneOverlay(
             image: 'assets/scenes/f2_bed_b_no_brooch.png',
-            area: const Rect.fromLTWH(0, 0, 1, 1),
+            area: const Rect.fromLTWH(0.4023, 0.5221, 0.0938, 0.0553),
             when: flagSet('f2_bed_brooch_got')),
-        // 원본 벽에는 빗이 그려져 있지 않아 comb 핫스팟이 빈 표면이었다 —
-        // 획득 전까지 빗 소품을 얹는다. 풀프레임인 no_brooch 뒤 선언이라
-        // 브로치를 먼저 가져가도 빗은 남는다.
         SceneOverlay(
-            image: 'assets/scenes/f2_bed_comb_prop.png',
-            area: const Rect.fromLTWH(0.545, 0.492, 0.10, 0.062),
-            when: (s) => s.flag('f2_bed_comb_got') == 0),
+            image: 'assets/scenes/f2_bed_b_no_comb.png',
+            area: const Rect.fromLTWH(0.5264, 0.5000, 0.1348, 0.0651),
+            when: flagSet('f2_bed_comb_got')),
       ], hotspots: [
         Hotspot(id: 'chair', area: chairArea, onTap: (c) => c.say(strF2BedChair)),
         Hotspot(
