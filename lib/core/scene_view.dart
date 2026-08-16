@@ -154,6 +154,9 @@ class _SceneViewState extends State<SceneView> {
                           _lastTapPos = d.localPosition;
                           _rippleSeq++;
                         });
+                        // 떠 있던 대사는 이 탭으로 함께 닫힌다 — 말풍선이
+                        // 터치를 먹지 않으므로 아래 핫스팟도 그대로 동작.
+                        if (s.dialog != null) s.say(null);
                         final p = Offset(
                           d.localPosition.dx / w,
                           d.localPosition.dy / h,
@@ -375,8 +378,10 @@ class _SceneViewState extends State<SceneView> {
       );
 }
 
-/// 하단 말풍선 — 대사가 떠 있는 동안 뒤의 씬 하단을 가리므로, 읽을 시간
-/// (글 길이 비례)이 지나면 스스로 사라진다. 탭하면 즉시 닫힌다.
+/// 하단 말풍선 — 터치를 절대 가로채지 않는다(IgnorePointer). 화면 아무 데나
+/// 탭하면 대사가 닫히면서 그 탭이 아래 핫스팟에도 그대로 전달된다. 커스텀
+/// 씬처럼 탭이 다른 용도로 쓰이는 화면을 위해, 읽을 시간(글 길이 비례,
+/// 최장 20초)이 지나면 스스로도 사라진다 — 단서 대사가 잘리지 않게 넉넉히.
 class _DialogBubble extends StatefulWidget {
   final String text;
   final VoidCallback onDismiss;
@@ -392,7 +397,8 @@ class _DialogBubbleState extends State<_DialogBubble> {
   @override
   void initState() {
     super.initState();
-    final ms = (2500 + widget.text.length * 45).clamp(2500, 7000);
+    // 한글 묵독 ~초당 9자를 기준으로 여유를 둔다(글자당 110ms + 기본 2초).
+    final ms = (2000 + widget.text.length * 110).clamp(3000, 20000);
     _timer = Timer(Duration(milliseconds: ms), widget.onDismiss);
   }
 
@@ -413,8 +419,7 @@ class _DialogBubbleState extends State<_DialogBubble> {
             child: child,
           ),
         ),
-        child: GestureDetector(
-          onTap: widget.onDismiss,
+        child: IgnorePointer(
           child: Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(

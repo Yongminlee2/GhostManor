@@ -36,8 +36,8 @@ bool usePotIngredient(GameState s, String? item) {
   }
   final wrongIngredient =
       stage < _potOrder.length && item != null && _potOrder.contains(item);
-  // Correct ingredients are consumed permanently. Resetting the stage here
-  // made any later wrong tap an unrecoverable save softlock.
+  // 정답 재료는 영구 소비된다. 여기서 단계를 초기화하면 이후의 오답 탭 한
+  // 번이 되돌릴 수 없는 진행 불능 세이브를 만든다 — 단계는 보존한다.
   s.setFlag('kitchen_r_pot_wrong', wrongIngredient ? 1 : 0);
   return false;
 }

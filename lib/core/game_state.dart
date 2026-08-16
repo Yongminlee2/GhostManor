@@ -91,9 +91,8 @@ class GameState extends ChangeNotifier {
     return s;
   }
 
-  /// Repairs chapter-1 saves created by the former pot-reset behavior.
-  /// Only ingredients whose source was already looted and which the persisted
-  /// stage still requires are restored.
+  /// 구버전 냄비 로직(오답 시 단계 초기화)이 만든 챕터 1 세이브를 보정한다.
+  /// 이미 획득처를 턴 재료 중 저장된 단계에서 아직 필요한 것만 되돌려준다.
   void _repairKitchenPotSoftlock() {
     final stage = flag('kitchen_r_pot_stage');
     if (stage >= 4 || flag('entered_kitchen') == 0) return;

@@ -367,6 +367,33 @@ Room buildLab() {
             image: 'assets/scenes/f2_lab_c_lamp.png',
             area: const Rect.fromLTWH(0, 0, 1, 1),
             when: flagSet('f2_lab_c_lamp')),
+        // 점등 그림은 벽 전체를 덮는 풀프레임이라 위 제거 패치를 되돌린다 —
+        // 약병은 램프에 붓는 재료라 점등 시점엔 반드시 소비된 뒤다. 같은
+        // 자리를 점등 색조로 다시 비워 얹는다.
+        SceneOverlay(
+            image: 'assets/scenes/f2_lab_c_lamp_no_purple.png',
+            area: const Rect.fromLTWH(0.2412, 0.4434, 0.1279, 0.1510),
+            when: (s) =>
+                s.flag('f2_lab_c_lamp') >= 1 &&
+                s.flag('f2_lab_vial_purple_taken') >= 1),
+        SceneOverlay(
+            image: 'assets/scenes/f2_lab_c_lamp_no_green.png',
+            area: const Rect.fromLTWH(0.3730, 0.4434, 0.1182, 0.1543),
+            when: (s) =>
+                s.flag('f2_lab_c_lamp') >= 1 &&
+                s.flag('f2_lab_vial_green_taken') >= 1),
+        SceneOverlay(
+            image: 'assets/scenes/f2_lab_c_lamp_no_amber.png',
+            area: const Rect.fromLTWH(0.5010, 0.4434, 0.1416, 0.1510),
+            when: (s) =>
+                s.flag('f2_lab_c_lamp') >= 1 &&
+                s.flag('f2_lab_vial_amber_taken') >= 1),
+        SceneOverlay(
+            image: 'assets/scenes/f2_lab_c_lamp_no_keyring.png',
+            area: const Rect.fromLTWH(0.6523, 0.6289, 0.1621, 0.0677),
+            when: (s) =>
+                s.flag('f2_lab_c_lamp') >= 1 &&
+                s.flag('f2_lab_keyring_taken') >= 1),
       ], hotspots: [
         Hotspot(id: 'window', area: windowArea, onTap: (c) => c.say(strF2LabWindow)),
         Hotspot(id: 'curtain_left', area: curtainLeftArea, onTap: (c) => c.say(strF2LabCurtain)),
