@@ -58,7 +58,8 @@ Room buildChild() {
   const bedArea = Rect.fromLTWH(0.27, 0.55, 0.48, 0.14);
   const blanketArea = Rect.fromLTWH(0.20, 0.69, 0.58, 0.24);
   const wallPicsLeftArea = Rect.fromLTWH(0.02, 0.27, 0.20, 0.36);
-  const wallPicsRightArea = Rect.fromLTWH(0.70, 0.27, 0.14, 0.32);
+  // 실측 보정: 토끼·곰·꽃 액자 묶음이 rect보다 오른쪽까지 퍼져 있었다.
+  const wallPicsRightArea = Rect.fromLTWH(0.71, 0.26, 0.21, 0.31);
   const nightstandArea = Rect.fromLTWH(0.70, 0.62, 0.29, 0.36);
 
   // 벽면 B(기차 트랙+장난감장) — f2_child_b_plate.png 실측: 트랙이 하단 중앙
@@ -89,7 +90,10 @@ Room buildChild() {
   const rockingHorseArea = Rect.fromLTWH(0.02, 0.30, 0.26, 0.19);
   const ballArea = Rect.fromLTWH(0.16, 0.84, 0.12, 0.14);
   const shelfToysArea = Rect.fromLTWH(0.34, 0.13, 0.36, 0.12);
-  const windowArea = Rect.fromLTWH(0.86, 0.30, 0.14, 0.20);
+  // 실측 보정: 창은 커튼 위쪽 — 이전 rect는 창 아래 장난감 수레를 덮어
+  // "창밖" 대사가 수레 탭에서 나왔다. 수레는 전용 핫스팟으로 분리.
+  const windowArea = Rect.fromLTWH(0.84, 0.04, 0.16, 0.26);
+  const wagonArea = Rect.fromLTWH(0.84, 0.33, 0.16, 0.19);
 
   // 벽면 C(책상+오르골+뮤직서랍) — f2_child_c.png 실측: 오르골(태엽 인형)이
   // 책상 중앙, 잠긴 뮤직서랍이 책상 아래 좌측, 촛불이 책상 좌단, 그림책은
@@ -101,8 +105,10 @@ Room buildChild() {
   const candleDeskArea = Rect.fromLTWH(0.09, 0.48, 0.15, 0.15);
   const musicBoxArea = Rect.fromLTWH(0.28, 0.50, 0.25, 0.23);
   const booksArea = Rect.fromLTWH(0.58, 0.62, 0.29, 0.17);
-  const musicDrawerArea = Rect.fromLTWH(0.10, 0.80, 0.39, 0.14);
-  const floorToysArea = Rect.fromLTWH(0.0, 0.88, 0.16, 0.12);
+  // 실측 보정: 자물쇠 달린 책상 중앙 서랍은 y0.70 부근 — 이전 rect는
+  // 서랍 아래 바닥의 곰인형을 덮고 있었다(곰은 floor_toys 전담).
+  const musicDrawerArea = Rect.fromLTWH(0.17, 0.70, 0.30, 0.10);
+  const floorToysArea = Rect.fromLTWH(0.0, 0.80, 0.28, 0.19);
 
   void tapChildSwitchAt(GameCtx c, int i) {
     tapChildSwitch(c.s, i);
@@ -259,6 +265,7 @@ Room buildChild() {
         Hotspot(id: 'ball', area: ballArea, onTap: (c) => c.say(strF2ChildBall)),
         Hotspot(id: 'shelf_toys', area: shelfToysArea, onTap: (c) => c.say(strF2ChildShelf)),
         Hotspot(id: 'window', area: windowArea, onTap: (c) => c.say(strF2ChildWindow)),
+        Hotspot(id: 'wagon', area: wagonArea, onTap: (c) => c.say(strF2ChildWagon)),
         for (var i = 0; i < 3; i++)
           Hotspot(
               id: 'switch${i + 1}',

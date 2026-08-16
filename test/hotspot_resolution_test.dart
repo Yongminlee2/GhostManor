@@ -27,13 +27,10 @@ void main() {
     'living_b': {'door': 'boo'},
     // (bed_a curtain→window 예외는 Task 9 재배선에서 rect 분리로 해소됨 —
     // 커튼=상단 드레이프 띠, 창=유리로 겹침 자체를 제거.)
-    // lab_a: 문(door)은 좌측 벽 전체를 덮는 가장 넓은 배경 rect로 먼저
-    // 선언되고, 그 위에 겹치는 벽등(sconce)·촛불선반이 나중에 선언돼 우선권을
-    // 가진다(room10_lab.dart 코드 주석에 명시된 의도적 z순서: "문을 가장
-    // 넓게 먼저 선언하고 그 안에 겹치는 초상·벽등·촛불선반을 나중에 선언해
-    // z순서로 우선권을 준다"). door·candle_shelf의 중심점이 각각 sconce·desk
-    // 안에 들어가는 것은 이 설계의 자연스러운 결과다.
-    'lab_a': {'door': 'sconce', 'candle_shelf': 'desk'},
+    // lab_a: 촛불선반은 데스크를 덮는 넓은 배경 rect로 먼저 선언되고, 그
+    // 위의 desk가 나중에 선언돼 우선권을 가진다. (door는 실측 보정으로
+    // 우측 아치문 rect가 되면서 sconce와의 겹침 예외가 해소됐다.)
+    'lab_a': {'candle_shelf': 'desk'},
     // lab_b: 좌우 책장 기둥(left_shelf/right_shelf)이 벽 전체 높이를 덮는
     // 배경 rect라, 그 중간에 박힌 촛대(left_sconce/right_sconce, 나중 선언)가
     // 우선권을 가진다 — lab_a의 door/sconce와 동일한 "넓은 배경 + 나중에

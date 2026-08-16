@@ -247,6 +247,13 @@ Room buildBed() {
             image: 'assets/scenes/f2_bed_b_no_brooch.png',
             area: const Rect.fromLTWH(0, 0, 1, 1),
             when: flagSet('f2_bed_brooch_got')),
+        // 원본 벽에는 빗이 그려져 있지 않아 comb 핫스팟이 빈 표면이었다 —
+        // 획득 전까지 빗 소품을 얹는다. 풀프레임인 no_brooch 뒤 선언이라
+        // 브로치를 먼저 가져가도 빗은 남는다.
+        SceneOverlay(
+            image: 'assets/scenes/f2_bed_comb_prop.png',
+            area: const Rect.fromLTWH(0.545, 0.492, 0.10, 0.062),
+            when: (s) => s.flag('f2_bed_comb_got') == 0),
       ], hotspots: [
         Hotspot(id: 'chair', area: chairArea, onTap: (c) => c.say(strF2BedChair)),
         Hotspot(

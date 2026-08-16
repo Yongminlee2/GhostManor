@@ -87,12 +87,14 @@ Room buildLab() {
   // 문 언급 없음 — hall/bed/child의 "빈 벽 자리를 문으로" 관례를 좌측 빈
   // 벽에 적용, 재배선은 Task 9 몫). 문을 가장 넓게 먼저 선언하고 그 안에
   // 겹치는 초상·벽등·촛불선반을 나중에 선언해 z순서로 우선권을 준다.
-  const doorArea = Rect.fromLTWH(0.0, 0.0, 0.15, 0.75);
+  // 실측 보정: 문은 우측 아치(축음기 뒤) — 이전 rect는 좌측 기둥·벽지를
+  // 덮고 있어 문 탭이 그림과 어긋났다. 축음기 rect도 문과 안 겹치게 좁힘.
+  const doorArea = Rect.fromLTWH(0.85, 0.26, 0.15, 0.52);
   const portraitArea = Rect.fromLTWH(0.04, 0.16, 0.11, 0.09);
   const sconceArea = Rect.fromLTWH(0.02, 0.26, 0.17, 0.14);
   const candleShelfArea = Rect.fromLTWH(0.0, 0.49, 0.11, 0.10);
   const bookshelfArea = Rect.fromLTWH(0.17, 0.04, 0.47, 0.48);
-  const phonoArea = Rect.fromLTWH(0.63, 0.32, 0.31, 0.30);
+  const phonoArea = Rect.fromLTWH(0.63, 0.32, 0.23, 0.30);
   const deskArea = Rect.fromLTWH(0.02, 0.51, 0.59, 0.12);
   const drawerArea = Rect.fromLTWH(0.26, 0.63, 0.48, 0.10);
   const stoolArea = Rect.fromLTWH(0.80, 0.80, 0.19, 0.13);
@@ -119,7 +121,8 @@ Room buildLab() {
   const vialPurpleArea = Rect.fromLTWH(0.24, 0.48, 0.14, 0.10);
   const vialGreenArea = Rect.fromLTWH(0.39, 0.49, 0.14, 0.09);
   const vialAmberArea = Rect.fromLTWH(0.53, 0.49, 0.14, 0.09);
-  const keyringArea = Rect.fromLTWH(0.67, 0.61, 0.17, 0.07);
+  // 실측 보정: 열쇠꾸러미 왼쪽 절반이 램프 rect에 먹혀 탭이 어려웠다.
+  const keyringArea = Rect.fromLTWH(0.655, 0.628, 0.155, 0.065);
   const lampArea = Rect.fromLTWH(0.73, 0.49, 0.19, 0.43);
   const letterArea = Rect.fromLTWH(0.32, 0.69, 0.39, 0.11);
 

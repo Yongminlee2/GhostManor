@@ -19,6 +19,7 @@ const strFoyerDoorOpened = '철컥! 문이 열렸다. 저택 안쪽으로 들어
 const strFoyerClockSet = '똑딱… 철컥! 어디선가 잠금이 풀리는 소리가 났다.';
 const strFoyerClockIntro = '테두리를 눌러 시침을 돌리고, 가운데 축을 누르면 그 시각으로 고정한다.';
 const strBackExitHint = '한 번 더 누르면 저택을 나갑니다. 진행은 자동 저장돼 있어요.';
+const strF2ChildWagon = '나무 수레에 곰 인형이 실려 있다. 누군가 태워 주던 손길이 멈춘 그대로다.';
 const strFoyerClockWrong = '축을 눌러 고정하려 하자 바늘이 파르르 떨더니 제자리로 되돌아갔다. 아무 시각이나 받아들이지 않는 모양이다.';
 const strFoyerClockDone = '시계는 이미 3시에 멈춰 있다. 더 건드릴 필요는 없다.';
 
