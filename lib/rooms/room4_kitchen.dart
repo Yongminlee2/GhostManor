@@ -166,7 +166,12 @@ Room buildKitchen() {
     walls: [
       // 벽면 A: 화덕·조리대·국자 벽 (기존 아트 재사용, 무수정 — 냄비 상태는
       // 클로즈업에서만 그려진다)
-      Scene(id: 'kitchen_a', image: 'assets/scenes/kitchen_a.png', hotspots: [
+      Scene(id: 'kitchen_a', image: 'assets/scenes/kitchen_a.png', overlays: [
+        SceneOverlay(
+            image: 'assets/scenes/kitchen_a_bottle_gone.png',
+            area: const Rect.fromLTWH(0.0146, 0.4688, 0.1855, 0.1758),
+            when: flagSet('kitchen_r_got_bottle')),
+      ], hotspots: [
         Hotspot(
             id: 'counter',
             area: counterArea,
@@ -237,6 +242,10 @@ Room buildKitchen() {
             when: flagSet('kitchen_r_hollow_found'),
             motion: OverlayMotion.slideDown),
         SceneOverlay(
+            image: 'assets/scenes/kitchen_b_cup2_empty.png',
+            area: cupboard2Area,
+            when: flagSet('kitchen_r_got_kettle')),
+        SceneOverlay(
             image: 'assets/scenes/kitchen_b_door_open.png',
             area: const Rect.fromLTWH(0.6641, 0.4948, 0.2168, 0.2956),
             when: flagSet('kitchen_r_door_open'),
@@ -298,6 +307,10 @@ Room buildKitchen() {
       // 벽면 C: 저장실 (신규) — 빙실 함(T2), 레시피판(T1 지식·게이트 아님),
       // 부지깽이 걸이(T2 시작점), 소시지·항아리 리액션 3개.
       Scene(id: 'kitchen_c', image: 'assets/scenes/kitchen_c.png', overlays: [
+        SceneOverlay(
+            image: 'assets/scenes/kitchen_c_poker_gone.png',
+            area: const Rect.fromLTWH(0.7422, 0.1953, 0.127, 0.3581),
+            when: flagSet('kitchen_r_got_poker')),
         SceneOverlay(
             image: 'assets/scenes/kitchen_c_ice1.png',
             area: iceCropArea,

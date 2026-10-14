@@ -3,6 +3,7 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'core/audio_service.dart';
+import 'core/debug_play.dart';
 import 'core/debug_shot.dart';
 import 'core/game_state.dart';
 import 'core/hint_service.dart';
@@ -36,12 +37,23 @@ class _GhostManorAppState extends State<GhostManorApp> {
   late final audio = AudioService(enabled: widget.audioEnabled);
   late final rooms = buildAllRooms();
   GameState? playing; // null이면 타이틀
+  final _captureKey = GlobalKey(); // 디버그 재생이 화면을 찍는 경계
+  int _playSeq = 0;
   bool hasSave = false;
   bool loaded = false;
 
   @override
   void initState() {
     super.initState();
+    if (debugShot == 'play') {
+      loaded = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) => runDebugPlay(
+          captureKey: _captureKey,
+          show: (s) => setState(() {
+                _playSeq++;
+                playing = s;
+              })));
+    }
     final shot = widget.initialState ?? debugShotState();
     if (shot != null) {
       _start(shot);
@@ -78,13 +90,26 @@ class _GhostManorAppState extends State<GhostManorApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return RepaintBoundary(key: _captureKey, child: MaterialApp(
       title: strAppTitle,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
             seedColor: const Color(0xFF5B3E96), brightness: Brightness.dark),
         scaffoldBackgroundColor: const Color(0xFF1A1226),
+        // 방 클리어·설정·확인 창을 게임 색으로(기본 회색 창이 동떨어져 보였다)
+        dialogTheme: DialogThemeData(
+          backgroundColor: const Color(0xF2241B36),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: Color(0xFFB89A5E), width: 1.2),
+          ),
+          titleTextStyle: const TextStyle(
+              fontSize: 20, fontWeight: FontWeight.w700, color: Color(0xFFF3E9FF)),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(foregroundColor: const Color(0xFFE2C98F)),
+        ),
       ),
       home: !loaded
           ? const Scaffold(body: SizedBox())
@@ -105,13 +130,14 @@ class _GhostManorAppState extends State<GhostManorApp> {
                   },
                 )
               : RoomScreen(
+                  key: ValueKey(_playSeq),
                   state: playing!,
                   rooms: rooms,
                   audio: audio,
                   save: save,
                   onExitToTitle: _toTitle,
                 ),
-    );
+    ));
   }
 }
 
@@ -264,6 +290,7 @@ class _RoomScreenState extends State<RoomScreen> {
   /// 바로 다음 방으로 넘긴다 (최종 리뷰 Finding 2b). goRoom 뒤엔 새 방이
   /// cleared가 아니라서 재호출돼도 더 진행하지 않는다 — 루프 없음.
   void _selfHealStrandedClear() {
+    if (debugPlaying) return;
     final s = widget.state;
     if (room.cleared(s) &&
         s.flag('cleared_shown_${room.id}') >= 1 &&
@@ -304,6 +331,7 @@ class _RoomScreenState extends State<RoomScreen> {
   }
 
   void _onStateChanged() {
+    if (debugPlaying) return;
     final s = widget.state;
     if (room.cleared(s) && s.flag('cleared_shown_${room.id}') == 0) {
       s.setFlag('cleared_shown_${room.id}', 1);

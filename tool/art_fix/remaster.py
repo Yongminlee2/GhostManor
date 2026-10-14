@@ -4,7 +4,7 @@
   python3 tool/art_fix/remaster.py            # 전부
   python3 tool/art_fix/remaster.py patches    # 한 묶음만
 
-필요: numpy, pillow, opencv-python-headless
+필요: numpy, pillow, opencv-contrib-python-headless
 무엇을 왜 고쳤는지는 docs/DEVLOG.md 「아이폰판 아트 정합」.
 """
 import io
@@ -501,6 +501,340 @@ def icon():
     print('  ', os.path.relpath(p, ROOT))
 
 
+# ── 묶음 3: 진행하며 본 것 (2026-10-14 2차) ──────────────────
+
+def smooth_erase(img, mask, radius=9, dilate=7):
+    """매끈한 바닥·어두운 안쪽(서랍 바닥, 금고·우편함 속)은 둘레 색으로 부드럽게 메운다."""
+    m = cv2.dilate((mask > 0).astype(np.uint8), np.ones((dilate, dilate), np.uint8))
+    rgb8 = (np.clip(img[..., :3], 0, 1) * 255).astype(np.uint8)
+    f = cv2.inpaint(rgb8, m * 255, radius, cv2.INPAINT_NS).astype(np.float32) / 255
+    f = cv2.GaussianBlur(f, (0, 0), 1.2)
+    a = cv2.GaussianBlur(m.astype(np.float32), (0, 0), 2.0)[..., None]
+    out = img.copy()
+    out[..., :3] = f * a + img[..., :3] * (1 - a)
+    return out
+
+
+def mix_erase(img, mask, sigma=10, offset=None, shade=0.0):
+    """밝기·색의 큰 흐름은 부드러운 메우기에서, 잔결은 본뜨기에서 가져와 합친다
+    (부드러운 메우기만 쓰면 삼각형 번짐, 본뜨기만 쓰면 엉뚱한 조각이 붙는다)."""
+    a = smooth_erase(img, mask)
+    if offset is None:
+        b = erase(img, mask)
+    else:  # 잔결을 가져올 자리를 손으로 정함 (dy, dx)
+        b = img.copy()
+        b[..., :3] = np.roll(np.roll(img[..., :3], -offset[0], 0), -offset[1], 1)
+    lo = cv2.GaussianBlur(a[..., :3], (0, 0), sigma)
+    hi = b[..., :3] - cv2.GaussianBlur(b[..., :3], (0, 0), sigma)
+    m = cv2.GaussianBlur(cv2.dilate((mask > 0).astype(np.uint8), np.ones((9, 9), np.uint8)).astype(np.float32), (0, 0), 2.5)[..., None]
+    out = img.copy()
+    fill = np.clip(lo + hi, 0, 1) * (1 - shade * cv2.GaussianBlur(m[..., 0], (0, 0), 10)[..., None])
+    out[..., :3] = fill * m + img[..., :3] * (1 - m)
+    return out
+
+
+def erase(img, mask, radius=7, grain=0.0, search=260, step=4):
+    """mask(0/1) 자리를 근처의 비슷한 곳을 옮겨 붙여 메운다(본뜨기). 구멍 둘레가 가장 잘 맞고
+    밝기도 비슷한 이웃 자리를 찾아 그 결(나뭇결·벽지)을 그대로 가져온다.
+    radius·grain 은 예전 호출과 맞추려고 남겨 둔 것(쓰지 않음).
+    작은 조각 그림은 가장자리를 거울처럼 넓혀서 찾는다(옮겨 올 자리가 조각 밖에도 생긴다)."""
+    ys0, xs0 = np.where(mask > 0)
+    P = int(max(np.ptp(ys0), np.ptp(xs0))) + 30
+    oh, ow = mask.shape
+    if min(oh, ow) < 600:
+        padded = cv2.copyMakeBorder(img, P, P, P, P, cv2.BORDER_REFLECT_101)
+        pm = cv2.copyMakeBorder(mask.astype(np.uint8), P, P, P, P, cv2.BORDER_CONSTANT, value=0)
+        res = _erase(padded, pm, search, step)
+        return res[P:P + oh, P:P + ow]
+    return _erase(img, mask, search, step)
+
+
+def _erase(img, mask, search, step):
+    m = cv2.dilate((mask > 0).astype(np.uint8), np.ones((5, 5), np.uint8))
+    H, W = m.shape
+    big = cv2.dilate(m, np.ones((9, 9), np.uint8)).astype(bool)
+    ring = (cv2.dilate(m, np.ones((21, 21), np.uint8)) & (1 - m)).astype(bool)
+    my, mx = np.where(m > 0)
+    ry, rx = np.where(ring)
+    rgb = img[..., :3]
+    ring_px = rgb[ry, rx]
+    ring_mean = ring_px.mean(0)
+    best = None
+    for dy in range(-search, search + 1, step):
+        sy = my + dy
+        if sy.min() < 0 or sy.max() >= H:
+            continue
+        for dx in range(-search, search + 1, step):
+            if dx == 0 and dy == 0:
+                continue
+            sx = mx + dx
+            if sx.min() < 0 or sx.max() >= W:
+                continue
+            if big[sy, sx].any():
+                continue
+            rsy, rsx = ry + dy, rx + dx
+            ok = (rsy >= 0) & (rsy < H) & (rsx >= 0) & (rsx < W)
+            if ok.mean() < 0.7:
+                continue
+            d = ((rgb[rsy[ok], rsx[ok]] - ring_px[ok]) ** 2).sum(1).mean()
+            d += 4 * ((rgb[sy, sx].mean(0) - ring_mean) ** 2).sum()
+            if best is None or d < best[0]:
+                best = (d, dy, dx)
+    out = img.copy()
+    if best is None:
+        print('      (메울 자리를 못 찾음)')
+        return out
+    _, dy, dx = best
+    src = np.zeros_like(rgb)
+    src[my, mx] = rgb[my + dy, mx + dx]
+    a = cv2.GaussianBlur(m.astype(np.float32), (0, 0), 2.0)
+    a = np.minimum(a, (cv2.dilate(m, np.ones((7, 7), np.uint8)) > 0).astype(np.float32))
+    full = rgb.copy()
+    full[my, mx] = src[my, mx]
+    # 가장자리 몇 픽셀은 원본 쪽을 섞어 이음매를 녹인다
+    sh = np.roll(np.roll(rgb, -dy, 0), -dx, 1)
+    blend = np.where(m[..., None] > 0, full, sh)
+    out[..., :3] = blend * a[..., None] + rgb * (1 - a[..., None])
+    return out
+
+
+def poly_mask(shape, pts):
+    m = np.zeros(shape[:2], np.uint8)
+    cv2.fillPoly(m, [np.array(pts, np.int32)], 1)
+    return m
+
+
+def gone_patch(base, x, y, w, h, mask_pts, name, feather=10, smooth=False, **kw):
+    """장면의 (x,y,w,h) 를 잘라 물건(mask_pts, 장면 좌표 다각형)을 지운 덧그림 — 주운 뒤에 보인다."""
+    reg = base[y:y + h, x:x + w].copy()
+    m = poly_mask(reg.shape, [(px - x, py - y) for px, py in mask_pts])
+    reg = mix_erase(reg, m) if smooth else erase(reg, m, **kw)
+    reg[..., 3] = np.clip(smooth_mask(m, 6, 4) * 1.0, 0, 1) * feather_rect(h, w, feather)
+    save('scenes/' + name, reg)
+    log_rect(name, x, y, w, h, *base.shape[1::-1])
+
+
+def pickups():
+    """주운 물건이 장면에 그대로 남아 있던 것들. 물건을 지운 그림을 따로 만들어 '주운 뒤' 에 덮는다.
+    (금고·와인 상자·궤짝은 여는 순간 물건을 받으므로 열린 그림 자체를 비운다.)"""
+    # 주방 조리대 빈 병
+    ka = orig('scenes/kitchen_a.png')
+    bm = poly_mask(ka.shape, [(40, 745), (168, 745), (178, 965), (36, 965)])
+    ka2 = mix_erase(ka, bm, offset=(-215, 0))
+    x, y, w, h = 15, 720, 190, 270
+    reg = ka2[y:y + h, x:x + w].copy()
+    reg[..., 3] = smooth_mask(bm[y:y + h, x:x + w], 6, 4) * feather_rect(h, w, 10)
+    save('scenes/kitchen_a_bottle_gone.png', reg)
+    log_rect('kitchen_a_bottle_gone.png', x, y, w, h)
+    # 주방 벽걸이 부지깽이 (위 고리·막대·아래 갈고리 — 그림에서 잰 모양)
+    kc = orig('scenes/kitchen_c.png')
+    X0, Y0, BW, BH = 760, 300, 130, 550
+    rod = np.zeros((BH, BW), np.uint8)
+    cv2.circle(rod, (820 - X0, 356 - Y0), 27, 1, -1)
+    cv2.rectangle(rod, (806 - X0, 370 - Y0), (836 - X0, 790 - Y0), 1, -1)
+    cv2.rectangle(rod, (788 - X0, 765 - Y0), (845 - X0, 828 - Y0), 1, -1)
+    reg = kc[Y0:Y0 + BH, X0:X0 + BW].copy()
+    reg = mix_erase(reg, rod, sigma=6, offset=(0, -48))
+    reg[..., 3] = smooth_mask(rod, 4, 3) * feather_rect(BH, BW, 6)
+    save('scenes/kitchen_c_poker_gone.png', reg)
+    log_rect('kitchen_c_poker_gone.png', X0, Y0, BW, BH)
+    # 서재 비밀칸 — 렌즈·음표 카드를 꺼낸 뒤
+    nk = orig('scenes/study_a_nook_open2.png')
+    nm = poly_mask(nk.shape, [(12, 8), (92, 8), (150, 72), (148, 160), (60, 160), (12, 95)])
+    nk = erase(nk, nm, 9)
+    nk[..., :3] *= (1 - 0.35 * cv2.GaussianBlur(nm.astype(np.float32), (0, 0), 8))[..., None]
+    save('scenes/study_a_nook_empty.png', nk)
+    # 서랍 — 열쇠를 꺼낸 뒤
+    dl = orig('scenes/foyer_drawer_lit.png')
+    save('scenes/foyer_drawer_lit_empty.png', mix_erase(dl, poly_mask(dl.shape, [(420, 465), (560, 465), (620, 640), (440, 650), (400, 560)]), offset=(0, -235)))
+    # 지하실 선반 — 열쇠가 떨어진 뒤
+    sh = orig('scenes/cellar_shelf_close.png')
+    save('scenes/cellar_shelf_close_empty.png', mix_erase(sh, poly_mask(sh.shape, [(492, 418), (695, 418), (695, 540), (492, 548)]), offset=(55, -175)))
+    # 우편함 — 편지를 꺼낸 뒤
+    mb = orig('scenes/foyer_mailbox.png')
+    save('scenes/foyer_mailbox_empty.png', mailbox_empty(mb))
+    # 찬장 — 노래하는 주전자를 꺼낸 뒤
+    cu = orig('scenes/kitchen_b_cup2_open.png')
+    cu2 = smooth_erase(cu, poly_mask(cu.shape, [(28, 60), (95, 60), (95, 185), (28, 185)]))
+    cu2[60:186, 28:96, :3] *= 0.55
+    cu2[..., 3] = cu[..., 3]
+    save('scenes/kitchen_b_cup2_empty.png', cu2)
+
+
+def mailbox_empty(mb):
+    """우편함 클로즈업에서 비죽 나온 편지를 지워 빈 투입구로."""
+    m = poly_mask(mb.shape, [(376, 370), (754, 370), (754, 560), (376, 600)])
+    out = smooth_erase(mb, m)
+    # 투입구 안쪽은 어둡게
+    out[..., :3] *= (1 - 0.45 * cv2.GaussianBlur(m.astype(np.float32), (0, 0), 6))[..., None]
+    return out
+
+
+def containers_empty():
+    """여는 순간 물건을 받는 금고·와인 상자·궤짝: 열린 그림에서 물건을 지운다(받은 뒤에도 그려져 있었다).
+    patches() 다음에 돈다 — 그 결과를 다시 읽어 지운다."""
+    def load(name):
+        return np.asarray(Image.open(os.path.join(OUT, 'scenes', name)).convert('RGBA'), np.float32) / 255
+    for name, pts, smooth in [
+        ('living_c_safe_open.png', [(100, 112), (222, 112), (222, 286), (100, 286)], True),
+        ('cellar_c_boxb_open.png', [(90, 85), (255, 92), (255, 182), (90, 180)], 'dark'),
+        ('attic_c_chest_open.png', [(95, 170), (182, 168), (182, 214), (95, 214)], False),
+    ]:
+        im = load(name)
+        a = im[..., 3].copy()
+        m = poly_mask(im.shape, pts)
+        if smooth == 'dark':  # 상자 속은 그늘 — 부드럽게 메우고 어둡게
+            im = smooth_erase(im, m, dilate=11)
+            im[..., :3] *= (1 - 0.4 * cv2.GaussianBlur(m.astype(np.float32), (0, 0), 12))[..., None]
+        else:
+            im = mix_erase(im, m) if smooth else erase(im, m, 9)
+        im[..., 3] = a
+        save('scenes/' + name, im)
+
+
+def knob_icon():
+    """'다이얼 손잡이' 아이템 아이콘이 없어 글자 칸으로 나왔다 — 금고에 끼운 손잡이 그림을 오려 쓴다."""
+    k = orig('scenes/living_c_safe_knob.png')
+    cx, cy, r = 30 + 147, 440 + 170, 44  # 장면 좌표(금고 덧그림 자리 30,440 + 그 안 손잡이)
+    crop = k[cy - r - 6:cy + r + 6, cx - r - 6:cx + r + 6].copy()
+    h, w = crop.shape[:2]
+    m = np.zeros((h, w), np.float32)
+    cv2.circle(m, (w // 2, h // 2), r, 1, -1)
+    crop[..., 3] = cv2.GaussianBlur(m, (0, 0), 1.0)
+    crop[..., :3] = np.clip(crop[..., :3] * 1.35, 0, 1)  # 인벤토리 칸에서 보이게
+    big = cv2.resize(crop, (360, 360), interpolation=cv2.INTER_CUBIC)
+    out = np.zeros((512, 512, 4), np.float32)
+    sh = cv2.GaussianBlur(big[..., 3], (0, 0), 8) * 0.6
+    out[86 + 10:86 + 10 + 360, 76 + 10:76 + 10 + 360, 3] = sh
+    a = big[..., 3:4]
+    reg = out[76:436, 76:436]
+    reg[..., :3] = big[..., :3] * a + reg[..., :3] * (1 - a)
+    reg[..., 3] = np.maximum(big[..., 3], reg[..., 3])
+    img = Image.fromarray((np.clip(out, 0, 1) * 255 + 0.5).astype(np.uint8))
+    img.save(os.path.join(OUT, 'items', 'knob.png'), optimize=True)
+    print('   items/knob.png')
+
+
+def coat_dust():
+    """외투 클로즈업의 먼지 덮개 — 원본은 깍두기처럼 뭉개진 얼룩이었다. 깨끗한 그림 위에 뿌연 먼지 막을 씌워
+    무엇이 있는지 어렴풋이 보이게 만든다(문지르면 이 막이 걷힌다)."""
+    clean = orig('scenes/foyer_coat_clean.png')
+    h, w = clean.shape[:2]
+    rng = np.random.default_rng(11)
+    dust = np.zeros((h, w), np.float32)
+    for sc, amp in [(4, 0.5), (16, 0.3), (64, 0.2)]:
+        n = rng.random((h // sc + 2, w // sc + 2)).astype(np.float32)
+        dust += cv2.resize(n, (w, h), interpolation=cv2.INTER_CUBIC)[:h, :w] * amp
+    dust = np.clip(dust, 0, 1)
+    specks = (rng.random((h, w)) > 0.996).astype(np.float32)
+    specks = cv2.GaussianBlur(specks, (0, 0), 1.2) * 3
+    base = cv2.GaussianBlur(clean[..., :3], (0, 0), 3)
+    gray = base.mean(2, keepdims=True)
+    base = gray + (base - gray) * 0.35
+    film = np.array([0.42, 0.39, 0.36], np.float32) * (0.75 + 0.5 * dust[..., None])
+    k = 0.38 + 0.2 * dust[..., None]
+    rgb = base * (1 - k) + film * k + specks[..., None] * 0.25
+    save('scenes/foyer_coat_dust.png', np.dstack([np.clip(rgb, 0, 1), np.ones((h, w), np.float32)]))
+
+
+def attic_frame():
+    """다락방 벽 액자는 나무 자수였는데 클로즈업은 '달→해→??' 자수였다. 벽 액자 천의 나무를 지우고
+    클로즈업과 같은 자수 줄을 작게 수놓는다(찢긴 것 / 완성 두 장)."""
+    for wall in ['attic_b', 'attic_c']:
+        base = orig(f'scenes/{wall}.png')
+        x0, y0, x1, y1 = 344, 362, 556, 688  # 액자 안 천(그림에서 잼)
+        canvas = base[y0:y1, x0:x1].copy()
+        hh, ww = y1 - y0, x1 - x0
+        inner = canvas[20:-20, 20:-20, :3].reshape(-1, 3)
+        linen = np.percentile(inner, 75, axis=0)  # 천 바탕색(수놓은 실 말고)
+        yy, xx = np.mgrid[0:hh, 0:ww]
+        weave = 1 - 0.07 * ((yy % 4 == 0) | (xx % 4 == 0))
+        rng = np.random.default_rng(5)
+        grain = 1 + 0.035 * cv2.GaussianBlur(rng.standard_normal((hh, ww)).astype(np.float32), (0, 0), 0.8)
+        cloth = linen[None, None, :] * (weave * grain)[..., None]
+        edge = feather_rect(hh, ww, 5)[..., None]
+        canvas[..., :3] = cloth * edge + canvas[..., :3] * (1 - edge)
+        for src, tag in [('attic_embroidery2.png', ''), ('attic_embroidery_full.png', '_full')]:
+            e = orig('scenes/' + src)
+            row = e[365:660, 120:1000]  # 자수 줄(클로즈업에서 잼)
+            tw = (x1 - x0) - 16
+            th = int(tw * row.shape[0] / row.shape[1])
+            row = cv2.resize(row, (tw, th), interpolation=cv2.INTER_AREA)
+            c2 = canvas.copy()
+            oy = ((y1 - y0) - th) // 2
+            c2[oy:oy + th, 8:8 + tw, :3] = row[..., :3]
+            # 바깥 가장자리 살짝 그늘(액자 안쪽 그림자) — 원래 천처럼
+            c2[..., :3] *= (0.82 + 0.18 * feather_rect(y1 - y0, x1 - x0, 18))[..., None]
+            c2[..., 3] = 1
+            name = f'{wall}_stitch{tag}.png'
+            save('scenes/' + name, c2)
+            log_rect(name, x0, y0, x1 - x0, y1 - y0)
+
+
+def _icon_save(name, rgba):
+    img = Image.fromarray((np.clip(rgba, 0, 1) * 255 + 0.5).astype(np.uint8))
+    img.save(os.path.join(OUT, 'items', name), optimize=True)
+    print('   items/' + name)
+
+
+def icons():
+    """어두운 인벤토리 칸에서 거의 안 보이던 아이콘(반투명·어두움)을 또렷하게. 달군 부지깽이는
+    부지깽이와 다른 뒤집개 모양이라 부지깽이 그림의 끝을 달궈 새로 만든다. 녹슨 열쇠는
+    지하실 선반·바닥의 같은 열쇠로 바꾼다."""
+    def boost(name, a_k=1.0, gain=1.0):
+        im = orig('items/' + name)
+        im[..., 3] = np.clip(im[..., 3] * a_k, 0, 1)
+        im[..., :3] = np.clip(im[..., :3] * gain, 0, 1)
+        _icon_save(name, im)
+    boost('herb.png', 2.2, 1.35)
+    boost('note4.png', 1.4, 1.7)
+    boost('lens.png', 1.8, 1.15)
+    boost('poker.png', 1.0, 1.9)
+    # 달군 부지깽이: 갈고리 쪽(오른쪽 위) 끝이 벌겋게
+    pk = orig('items/poker.png')
+    h, w = pk.shape[:2]
+    pk[..., :3] = np.clip(pk[..., :3] * 1.9, 0, 1)
+    ys, xs = np.where(pk[..., 3] > 0.3)
+    tip = np.array([xs[np.argmin(ys)], ys.min()], np.float32)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    d = np.sqrt((xx - tip[0]) ** 2 + (yy - tip[1]) ** 2)
+    heat = np.clip(1 - d / (0.42 * h), 0, 1) ** 1.3
+    hot = np.dstack([np.ones_like(heat), 0.35 + 0.55 * heat, 0.08 + 0.35 * heat ** 3])
+    rgb = pk[..., :3] * (1 - heat[..., None]) + hot * heat[..., None]
+    a = pk[..., 3]
+    glow = cv2.GaussianBlur(a * heat, (0, 0), 14) * 1.6
+    out = np.zeros((h, w, 4), np.float32)
+    gcol = np.array([1.0, 0.45, 0.1], np.float32)
+    na = np.maximum(a, np.clip(glow, 0, 0.8))
+    mix = (a / np.maximum(na, 1e-4))[..., None]
+    out[..., :3] = rgb * mix + gcol * (1 - mix)
+    out[..., 3] = na
+    _icon_save('poker_hot.png', out)
+    # 녹슨 열쇠: 지하실 선반 클로즈업의 그 열쇠
+    src = orig('scenes/cellar_shelf_close.png')[405:555, 480:695]
+    rgb = src[..., :3]
+    key = ((rgb[..., 0] - rgb[..., 2] > 0.05) & (rgb[..., 0] > 0.28)).astype(np.uint8)
+    key = cv2.morphologyEx(key, cv2.MORPH_CLOSE, np.ones((5, 5), np.uint8))
+    n, lab, st, _ = cv2.connectedComponentsWithStats(key)
+    key = (lab == 1 + int(np.argmax(st[1:, 4]))).astype(np.uint8)
+    x, y, kw, kh = cv2.boundingRect(key)
+    a = cv2.GaussianBlur(key.astype(np.float32), (0, 0), 0.6)[y:y + kh, x:x + kw]
+    col = np.clip(rgb[y:y + kh, x:x + kw] * 1.45, 0, 1)
+    S = 440 / max(kw, kh)
+    a = cv2.resize(a, (int(kw * S), int(kh * S)), interpolation=cv2.INTER_CUBIC)
+    col = cv2.resize(col, (int(kw * S), int(kh * S)), interpolation=cv2.INTER_CUBIC)
+    out = np.zeros((512, 512, 4), np.float32)
+    oy, ox = (512 - a.shape[0]) // 2, (512 - a.shape[1]) // 2
+    sh = np.zeros((512, 512), np.float32)
+    sh[oy + 10:oy + 10 + a.shape[0], ox + 8:ox + 8 + a.shape[1]] = a
+    sh = cv2.GaussianBlur(sh, (0, 0), 7) * 0.55
+    out[..., 3] = sh
+    reg = out[oy:oy + a.shape[0], ox:ox + a.shape[1]]
+    reg[..., :3] = col
+    reg[..., 3] = np.maximum(a, reg[..., 3])
+    _icon_save('key_cellar.png', out)
+
+
 GROUPS = {
     'patches': patches,
     'doors': doors,
@@ -514,6 +848,12 @@ GROUPS = {
     'glows': glows,
     'ghosts': ghosts,
     'icon': icon,
+    'pickups': pickups,
+    'containers_empty': containers_empty,
+    'knob_icon': knob_icon,
+    'coat_dust': coat_dust,
+    'attic_frame': attic_frame,
+    'icons': icons,
 }
 
 if __name__ == '__main__':

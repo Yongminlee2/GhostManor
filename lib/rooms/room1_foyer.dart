@@ -234,6 +234,13 @@ Room buildFoyer() {
       'mailbox': Scene(
           id: 'mailbox',
           image: 'assets/scenes/foyer_mailbox.png',
+          overlays: [
+            // 편지를 꺼낸 뒤엔 빈 투입구(아이폰판)
+            SceneOverlay(
+                image: 'assets/scenes/foyer_mailbox_empty.png',
+                area: const Rect.fromLTWH(0, 0, 1, 1),
+                when: flagSet('foyer_r_got_letter')),
+          ],
           hotspots: [
             Hotspot(
                 id: 'letter_in_box',
@@ -299,6 +306,11 @@ Room buildFoyer() {
                 area: const Rect.fromLTWH(0, 0, 1, 1),
                 when: flagSet('foyer_r_drawer_lit'),
                 motion: OverlayMotion.grow),
+            // 열쇠를 꺼낸 뒤엔 빈 서랍(아이폰판)
+            SceneOverlay(
+                image: 'assets/scenes/foyer_drawer_lit_empty.png',
+                area: const Rect.fromLTWH(0, 0, 1, 1),
+                when: flagSet('foyer_r_got_key')),
           ],
           hotspots: [
             Hotspot(

@@ -79,6 +79,27 @@ class OrganKeys extends StatelessWidget {
       return Stack(children: [
         Positioned.fill(
             child: gameImage('assets/scenes/attic_organ_close.png')),
+        // 건반 판마다 그 음을 내는 음표 카드 그림(아이폰판: 원래 빈 양피지라 어느 건반이
+        // 무슨 카드인지 알 수 없었다). 건반 i = 카드 note i(달·별·해·구름 = 도·레·미·파).
+        Positioned(
+          left: box.maxWidth * 0.035,
+          right: box.maxWidth * 0.035,
+          bottom: box.maxHeight * 0.06,
+          height: box.maxHeight * 0.3,
+          child: IgnorePointer(
+            child: Row(children: [
+              for (var i = 1; i <= 4; i++)
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: box.maxWidth * 0.03),
+                    child: Opacity(
+                        opacity: 0.85,
+                        child: Image.asset('assets/items/note$i.png', fit: BoxFit.contain)),
+                  ),
+                ),
+            ]),
+          ),
+        ),
         Positioned(
           left: 0,
           right: 0,
@@ -189,6 +210,15 @@ Room buildAttic() {
             area: const Rect.fromLTWH(0, 0, 1, 1),
             when: (s) => s.flag('attic_r_organ_played') == 1,
             motion: OverlayMotion.fade),
+        // 벽 액자 천 — 클로즈업과 같은 자수(아이폰판: 원래 나무 자수라 클로즈업과 달랐다)
+        SceneOverlay(
+            image: 'assets/scenes/attic_b_stitch.png',
+            area: const Rect.fromLTWH(0.3359, 0.2357, 0.207, 0.2122),
+            when: (s) => s.flag('attic_r_embroidery_full') == 0),
+        SceneOverlay(
+            image: 'assets/scenes/attic_b_stitch_full.png',
+            area: const Rect.fromLTWH(0.3359, 0.2357, 0.207, 0.2122),
+            when: flagSet('attic_r_embroidery_full')),
       ], hotspots: [
         Hotspot(
             id: 'embroidery',
@@ -231,6 +261,14 @@ Room buildAttic() {
       // 벽면 C: 잡동사니 다락 (신규) — T2 궤짝·쪽지 + 소품 개수 단서(촛대·책
       // 더미) + 조사 전용 잡동사니(정답 정보 없음, 고스포 톤 유지).
       Scene(id: 'attic_c', image: 'assets/scenes/attic_c.png', overlays: [
+        SceneOverlay(
+            image: 'assets/scenes/attic_c_stitch.png',
+            area: const Rect.fromLTWH(0.3359, 0.2357, 0.207, 0.2122),
+            when: (s) => s.flag('attic_r_embroidery_full') == 0),
+        SceneOverlay(
+            image: 'assets/scenes/attic_c_stitch_full.png',
+            area: const Rect.fromLTWH(0.3359, 0.2357, 0.207, 0.2122),
+            when: flagSet('attic_r_embroidery_full')),
         SceneOverlay(
             image: 'assets/scenes/attic_c_chest_open.png',
             area: const Rect.fromLTWH(0.1465, 0.651, 0.3223, 0.1953),

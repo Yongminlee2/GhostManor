@@ -159,6 +159,11 @@ Room buildStudy() {
             area: nookArea,
             when: flagSet('study_r_nook_open'),
             motion: OverlayMotion.slideDown),
+        // 렌즈·음표 카드를 꺼낸 뒤엔 빈 칸(아이폰판)
+        SceneOverlay(
+            image: 'assets/scenes/study_a_nook_empty.png',
+            area: nookArea,
+            when: flagSet('study_r_got_lens')),
       ], hotspots: [
         Hotspot(
             id: 'book_red',

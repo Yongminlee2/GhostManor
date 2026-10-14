@@ -17,12 +17,16 @@ Hotspot findHotspot(Room room, String sceneId, String hotspotId) {
   return scene.hotspots.firstWhere((h) => h.id == hotspotId);
 }
 
+/// 탭마다 불린다(기본 null). tool/art_check/play_record_test.dart 가 단계별 화면을 남기는 데 쓴다.
+void Function(Room room, String sceneId, Hotspot h)? tapSpotHook;
+
 /// room1_foyer_test.dart의 tap 헬퍼를 일반화 — 활성 검사 expect 포함.
 void tapSpot(Room room, GameState s, GameCtx c, String sceneId, String hotspotId) {
   final h = findHotspot(room, sceneId, hotspotId);
   expect(h.when?.call(s) ?? true, isTrue,
       reason: '$hotspotId가 비활성 상태에서 탭됨');
   h.onTap(c);
+  tapSpotHook?.call(room, sceneId, h);
 }
 
 /// 현관 정답 시퀀스 (리마스터판, room1_foyer_test.dart의 "정답 시퀀스로 클리어

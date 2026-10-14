@@ -56,6 +56,7 @@
   python3 tool/art_check/shots.py <기기 UDID> <출력 폴더> title 'living/1' 'attic/2/chest'
   ```
   값 모양은 `lib/core/debug_shot.dart` 주석. 정식 빌드엔 없다(Dart `kDebugMode`, Swift `#if DEBUG`).
+- 진행 재생(정답 88탭을 한 장씩): `flutter test tool/art_check/play_record_test.dart` → `python3 tool/art_check/play.py <UDID> <폴더>` → `python3 tool/art_check/play_sheet.py <폴더> build/play.json`.
 - 그림 대조: `flutter test tool/art_check/scene_dump_test.dart` → `python3 tool/art_check/render.py build/scene_dump.json <폴더>`.
 - 남은 일: 실기기 완주, App Store Connect 등록·스크린샷·심사.
 

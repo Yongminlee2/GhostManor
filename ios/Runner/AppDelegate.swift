@@ -18,6 +18,7 @@ import UIKit
     if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "DebugShot") {
       let channel = FlutterMethodChannel(name: "ghostmanor/debug", binaryMessenger: registrar.messenger())
       channel.setMethodCallHandler { call, result in
+        if call.method == "home" { return result(NSHomeDirectory()) }
         guard call.method == "shot" else { return result(nil) }
         let args = ProcessInfo.processInfo.arguments
         if let i = args.firstIndex(of: "-SHOT"), i + 1 < args.count { return result(args[i + 1]) }

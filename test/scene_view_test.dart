@@ -79,6 +79,21 @@ void main() {
     expect(s.flag('tapped'), 1); // big은 더 안 받음
   });
 
+  testWidgets('새 탭·벽 이동은 지난 대사를 걷는다(새 대사는 그대로 보인다)', (t) async {
+    await pump(t, SceneView(room: _testRoom(), ctx: c));
+    final origin = t.getTopLeft(find.byType(SceneView));
+    s.say('지난 대사');
+    await t.pump();
+    await t.tapAt(origin + const Offset(10, 10)); // 빈 곳
+    await t.pump();
+    expect(s.dialog, isNull);
+    s.say('지난 대사');
+    await t.pump();
+    await t.tap(find.byKey(const Key('arrow_right')));
+    await t.pump();
+    expect(s.dialog, isNull);
+  });
+
   testWidgets('빈 곳 탭은 무반응', (t) async {
     await pump(t, SceneView(room: _testRoom(), ctx: c));
     final origin = t.getTopLeft(find.byType(SceneView));

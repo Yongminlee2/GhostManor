@@ -159,7 +159,10 @@ class _ShelfShakeState extends State<ShelfShake> {
       key: const Key('shelf_tap'),
       behavior: HitTestBehavior.opaque,
       onTap: () => _fire(() => tapShelf(widget.ctx.s)),
-      child: gameImage('assets/scenes/cellar_shelf_close.png'),
+      // 열쇠가 떨어진 뒤엔 열쇠 없는 선반(아이폰판)
+      child: gameImage(widget.ctx.s.flag('cellar_r_key_dropped') >= 1
+          ? 'assets/scenes/cellar_shelf_close_empty.png'
+          : 'assets/scenes/cellar_shelf_close.png'),
     );
   }
 }
@@ -264,7 +267,8 @@ Room buildCellar() {
             when: dark),
         SceneOverlay(
             image: 'assets/scenes/cellar_a_glow.png',
-            area: const Rect.fromLTWH(0.11, 0.50, 0.24, 0.24),
+            // 야광 네모가 탭할 상자(glow_box 핫스팟)를 감싸도록(아이폰판: 원래 상자 위 허공에 떠 있었다)
+            area: const Rect.fromLTWH(0.07, 0.58, 0.24, 0.24),
             when: dark),
         SceneOverlay(
             image: 'assets/scenes/cellar_a_key_floor.png',

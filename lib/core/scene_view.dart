@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui' show ImageFilter;
 
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
+import 'debug_shot.dart';
 import 'models.dart';
 import '../rooms/items.dart';
 
@@ -170,6 +172,15 @@ class _SceneViewState extends State<SceneView> {
                 if (o.when(s)) overlayItem(o),
               for (final idle in scene.idles)
                 if (idle.when?.call(s) ?? true) idleItem(idle),
+              if (kDebugMode && debugMark != null)
+                Positioned.fromRect(
+                  rect: px(debugMark!),
+                  child: IgnorePointer(
+                    child: DecoratedBox(
+                        decoration: BoxDecoration(
+                            border: Border.all(color: const Color(0xFFFF3030), width: 2))),
+                  ),
+                ),
               Positioned.fill(
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
@@ -180,6 +191,9 @@ class _SceneViewState extends State<SceneView> {
                     });
                     final p = Offset(
                         d.localPosition.dx / sw, d.localPosition.dy / sh);
+                    // 지난 행동의 대사는 새 탭에서 걷는다 — 다른 곳을 봐도 남아 있어 엉뚱한 대사가
+                    // 붙어 보였다(아이폰판). 이번 탭이 새 대사를 내면 그게 보인다.
+                    s.dialog = null;
                     for (final hs in scene.hotspots.reversed) {
                       if ((hs.when?.call(s) ?? true) && hs.area.contains(p)) {
                         hs.onTap(ctx);
@@ -324,6 +338,7 @@ class _SceneViewState extends State<SceneView> {
                     left: true,
                     onTap: () {
                       _navDir = -1;
+                      s.dialog = null;
                       s.goScene(s.sceneIndex - 1);
                     }),
               if (s.sceneIndex < room.walls.length - 1)
@@ -331,6 +346,7 @@ class _SceneViewState extends State<SceneView> {
                     left: false,
                     onTap: () {
                       _navDir = 1;
+                      s.dialog = null;
                       s.goScene(s.sceneIndex + 1);
                     }),
             ],

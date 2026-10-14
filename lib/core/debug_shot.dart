@@ -17,6 +17,12 @@ import 'game_state.dart';
 ///        (방/벽면/클로즈업 또는 -/플래그/인벤토리)
 String debugShot = '';
 
+/// 디버그 재생(SHOT=play) 중엔 방 클리어 창·자가 치유 전진을 멈춘다 — 기록된 상태를 그대로 보여야 한다.
+bool debugPlaying = false;
+
+/// 재생 중 마지막으로 탭한 핫스팟(비율 좌표). SceneView 가 빨간 테두리로 그린다.
+Rect? debugMark;
+
 /// main() 에서 runApp 전에 한 번 부른다. 정식 빌드에선 아무것도 안 한다.
 Future<void> loadDebugShot() async {
   if (!kDebugMode) return;
@@ -37,7 +43,7 @@ Future<void> loadDebugShot() async {
 }
 
 GameState? debugShotState() {
-  if (debugShot.isEmpty || debugShot == 'title') return null;
+  if (debugShot.isEmpty || debugShot == 'title' || debugShot == 'play') return null;
   final rooms = buildAllRooms();
   final s = GameState();
   // 모든 방 첫 진입 대사를 건너뛴다 — 스크린샷에 대사 창이 끼지 않게.
