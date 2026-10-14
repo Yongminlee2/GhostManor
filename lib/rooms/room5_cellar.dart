@@ -184,6 +184,8 @@ Room buildCellar() {
     strCellarRWineBottle4,
     strCellarRWineBottle5,
   ];
+  const barrelHomeArea = Rect.fromLTWH(0.2822, 0.3379, 0.5244, 0.4349);
+  const barrelMovedArea = Rect.fromLTWH(0.86, 0.3379, 0.5244, 0.4349);
   const wine1Area = Rect.fromLTWH(0.25, 0.32, 0.09, 0.21);
   const wine2Area = Rect.fromLTWH(0.35, 0.32, 0.09, 0.21);
   const wine3Area = Rect.fromLTWH(0.45, 0.32, 0.09, 0.21);
@@ -266,7 +268,7 @@ Room buildCellar() {
             when: dark),
         SceneOverlay(
             image: 'assets/scenes/cellar_a_key_floor.png',
-            area: const Rect.fromLTWH(0.40, 0.80, 0.12, 0.065),
+            area: const Rect.fromLTWH(0.4004, 0.8066, 0.1201, 0.0456),
             when: (s) =>
                 s.flag('cellar_r_key_dropped') == 1 &&
                 s.flag('cellar_r_got_key') == 0),
@@ -329,20 +331,22 @@ Room buildCellar() {
           objects: [
             SceneObject(
                 image: 'assets/scenes/cellar_barrel_sprite.png',
+                // 아이폰판: 통을 cellar_b.png 에서 그대로 오려 냈다(remaster.py barrel) —
+                // 닫힘 자리는 그 오린 자리, 밀면 오른쪽 벽으로 비켜 스위치는 가리지 않는다.
                 area: (s) => s.flag('cellar_r_barrel_moved') >= 1
-                    ? const Rect.fromLTWH(0.80, 0.40, 0.50, 0.40)
-                    : const Rect.fromLTWH(0.30, 0.40, 0.50, 0.40)),
+                    ? barrelMovedArea
+                    : barrelHomeArea),
           ],
           overlays: [
             // 배전반 소켓 상태는 어둠막보다 먼저 선언 — 불이 꺼지면 다른
             // 정상 디테일처럼 어둠에 덮인다(글로우류만 어둠 위에 그려짐).
             SceneOverlay(
                 image: 'assets/scenes/cellar_b_fuse1.png',
-                area: const Rect.fromLTWH(0, 0, 1, 1),
+                area: const Rect.fromLTWH(0.127, 0.2995, 0.1953, 0.1432),
                 when: (s) => s.flag('cellar_r_fuse_count') == 1),
             SceneOverlay(
                 image: 'assets/scenes/cellar_b_fuse2.png',
-                area: const Rect.fromLTWH(0, 0, 1, 1),
+                area: const Rect.fromLTWH(0.127, 0.2995, 0.1953, 0.1432),
                 when: (s) => s.flag('cellar_r_fuse_count') == 2),
             SceneOverlay(
                 image: 'assets/scenes/cellar_b_dark.png',
@@ -372,7 +376,7 @@ Room buildCellar() {
                 }),
             Hotspot(
                 id: 'small_door',
-                area: const Rect.fromLTWH(0.56, 0.30, 0.20, 0.30),
+                area: const Rect.fromLTWH(0.37, 0.29, 0.39, 0.47),
                 when: flagSet('cellar_r_barrel_moved'),
                 onTap: (c) {
                   final s = c.s;
@@ -398,13 +402,13 @@ Room buildCellar() {
       // 낙서3(랙 옆, 어둠 전용), 소품 리액션 3개.
       Scene(id: 'cellar_c', image: 'assets/scenes/cellar_c.png', overlays: [
         SceneOverlay(
+            image: 'assets/scenes/cellar_c_boxb_open.png',
+            area: const Rect.fromLTWH(0.332, 0.5404, 0.3516, 0.1628),
+            when: flagSet('cellar_r_wine_open')),
+        SceneOverlay(
             image: 'assets/scenes/cellar_c_dark.png',
             area: const Rect.fromLTWH(0, 0, 1, 1),
             when: dark),
-        SceneOverlay(
-            image: 'assets/scenes/cellar_c_boxb_open.png',
-            area: const Rect.fromLTWH(0, 0, 1, 1),
-            when: flagSet('cellar_r_wine_open')),
         SceneOverlay(
             image: 'assets/scenes/cellar_c_glow3.png',
             area: const Rect.fromLTWH(0.22, 0.03, 0.56, 0.19),

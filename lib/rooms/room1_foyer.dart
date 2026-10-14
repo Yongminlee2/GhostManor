@@ -117,7 +117,7 @@ Room buildFoyer() {
       Scene(id: 'foyer_a', image: 'assets/scenes/foyer_a.png', overlays: [
         SceneOverlay(
             image: 'assets/scenes/foyer_a_door_open.png',
-            area: const Rect.fromLTWH(0.36, 0.28, 0.28, 0.44),
+            area: const Rect.fromLTWH(0.3828, 0.2552, 0.2402, 0.4792),
             when: flagSet('foyer_r_inner_door_open'),
             motion: OverlayMotion.grow),
       ], idles: [

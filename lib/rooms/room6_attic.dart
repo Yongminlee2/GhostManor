@@ -233,7 +233,7 @@ Room buildAttic() {
       Scene(id: 'attic_c', image: 'assets/scenes/attic_c.png', overlays: [
         SceneOverlay(
             image: 'assets/scenes/attic_c_chest_open.png',
-            area: chestArea,
+            area: const Rect.fromLTWH(0.1465, 0.651, 0.3223, 0.1953),
             when: flagSet('attic_r_chest_open'),
             motion: OverlayMotion.grow),
       ], hotspots: [

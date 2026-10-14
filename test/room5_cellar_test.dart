@@ -370,8 +370,8 @@ void main() {
 
     const barrelKey = ValueKey('assets/scenes/cellar_barrel_sprite.png');
     final origin = t.getTopLeft(find.byType(SceneView));
-    final start = origin + const Offset(0.30 * 400, 0.40 * 600); // (120, 240)
-    final end = origin + const Offset(0.80 * 400, 0.40 * 600); // (320, 240)
+    final start = origin + const Offset(0.2822 * 400, 0.3379 * 600);
+    final end = origin + const Offset(0.86 * 400, 0.3379 * 600);
 
     expect(t.getTopLeft(find.byKey(barrelKey)), offsetMoreOrLessEquals(start, epsilon: 2.0));
 

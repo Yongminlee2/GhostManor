@@ -90,27 +90,27 @@ Room buildLiving() {
       Scene(id: 'living_a', image: 'assets/scenes/living_a.png', overlays: [
         SceneOverlay(
             image: 'assets/scenes/living_a_candle1_on.png',
-            area: candle1Area,
+            area: const Rect.fromLTWH(0.04, 0.4837, 0.1387, 0.1966),
             when: flagSet('living_r_candle1'),
             motion: OverlayMotion.grow),
         SceneOverlay(
             image: 'assets/scenes/living_a_candle2_on.png',
-            area: candle2Area,
+            area: const Rect.fromLTWH(0.2607, 0.4837, 0.1387, 0.1966),
             when: flagSet('living_r_candle2'),
             motion: OverlayMotion.grow),
         SceneOverlay(
             image: 'assets/scenes/living_a_candle3_on.png',
-            area: candle3Area,
+            area: const Rect.fromLTWH(0.6006, 0.4837, 0.1387, 0.1966),
             when: flagSet('living_r_candle3'),
             motion: OverlayMotion.grow),
         SceneOverlay(
             image: 'assets/scenes/living_a_candle4_on.png',
-            area: candle4Area,
+            area: const Rect.fromLTWH(0.8203, 0.4837, 0.1387, 0.1966),
             when: flagSet('living_r_candle4'),
             motion: OverlayMotion.grow),
         SceneOverlay(
             image: 'assets/scenes/living_a_fire.png',
-            area: fireplaceArea,
+            area: const Rect.fromLTWH(0.332, 0.4557, 0.3418, 0.2474),
             when: flagSet('living_r_fireplace_lit'),
             motion: OverlayMotion.grow),
         SceneOverlay(
@@ -168,11 +168,11 @@ Room buildLiving() {
       Scene(id: 'living_b', image: 'assets/scenes/living_b.png', overlays: [
         SceneOverlay(
             image: 'assets/scenes/living_b_tv_on.png',
-            area: tvArea,
+            area: const Rect.fromLTWH(0.0742, 0.2357, 0.2559, 0.1406),
             when: flagSet('living_r_tv_on')),
         SceneOverlay(
             image: 'assets/scenes/living_b_door_open.png',
-            area: doorArea,
+            area: const Rect.fromLTWH(0.5957, 0.2591, 0.2949, 0.4466),
             when: flagSet('living_r_door_open'),
             motion: OverlayMotion.grow),
       ], idles: [
@@ -262,13 +262,13 @@ Room buildLiving() {
       Scene(id: 'living_c', image: 'assets/scenes/living_c.png', overlays: [
         SceneOverlay(
             image: 'assets/scenes/living_c_safe_knob.png',
-            area: const Rect.fromLTWH(0, 0, 1, 1),
+            area: const Rect.fromLTWH(0.0293, 0.2865, 0.293, 0.2344),
             when: (s) =>
                 s.flag('living_r_safe_knob') >= 1 &&
                 s.flag('living_r_safe_open') == 0),
         SceneOverlay(
             image: 'assets/scenes/living_c_safe_open.png',
-            area: const Rect.fromLTWH(0, 0, 1, 1),
+            area: const Rect.fromLTWH(0.0293, 0.2865, 0.293, 0.2344),
             when: flagSet('living_r_safe_open')),
       ], hotspots: [
         Hotspot(

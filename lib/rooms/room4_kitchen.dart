@@ -238,7 +238,7 @@ Room buildKitchen() {
             motion: OverlayMotion.slideDown),
         SceneOverlay(
             image: 'assets/scenes/kitchen_b_door_open.png',
-            area: backdoorArea,
+            area: const Rect.fromLTWH(0.6641, 0.4948, 0.2168, 0.2956),
             when: flagSet('kitchen_r_door_open'),
             motion: OverlayMotion.grow),
       ], hotspots: [

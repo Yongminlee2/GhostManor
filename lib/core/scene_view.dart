@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 import 'models.dart';
@@ -113,8 +114,15 @@ class _SceneViewState extends State<SceneView> {
 
         return LayoutBuilder(builder: (context, box) {
           final w = box.maxWidth, h = box.maxHeight;
+          // 클로즈업 그림은 전부 정사각형이다. 2:3 칸에 채우면 세로로 1.5배
+          // 늘어나므로 가운데 정사각형 무대에 그리고, 위아래 남는 곳은 지금
+          // 서 있는 벽면을 흐리게 깐다. 핫스팟·오버레이·커스텀 기믹의 비율
+          // 좌표는 전부 이 무대 기준이다.
+          final isCloseup = s.closeupId != null;
+          final sw = isCloseup ? min(w, h) : w, sh = isCloseup ? min(w, h) : h;
+          final stage = Offset((w - sw) / 2, (h - sh) / 2);
           Rect px(Rect r) =>
-              Rect.fromLTWH(r.left * w, r.top * h, r.width * w, r.height * h);
+              Rect.fromLTWH(r.left * sw, r.top * sh, r.width * sw, r.height * sh);
 
           Widget overlayItem(SceneOverlay o) {
             final r = px(o.area);
@@ -140,7 +148,7 @@ class _SceneViewState extends State<SceneView> {
                 child: IgnorePointer(child: gameImage(o.image)),
               );
 
-          Widget wallBody() {
+          Widget sceneBody() {
             if (scene.custom != null) return scene.custom!(context, ctx);
             return Stack(children: [
               Positioned.fill(
@@ -167,11 +175,11 @@ class _SceneViewState extends State<SceneView> {
                   behavior: HitTestBehavior.opaque,
                   onTapUp: (d) {
                     setState(() {
-                      _lastTapPos = d.localPosition;
+                      _lastTapPos = stage + d.localPosition;
                       _rippleSeq++;
                     });
                     final p = Offset(
-                        d.localPosition.dx / w, d.localPosition.dy / h);
+                        d.localPosition.dx / sw, d.localPosition.dy / sh);
                     for (final hs in scene.hotspots.reversed) {
                       if ((hs.when?.call(s) ?? true) && hs.area.contains(p)) {
                         hs.onTap(ctx);
@@ -179,6 +187,36 @@ class _SceneViewState extends State<SceneView> {
                       }
                     }
                   },
+                ),
+              ),
+            ]);
+          }
+
+          Widget wallBody() {
+            if (!isCloseup) return sceneBody();
+            final behind = room.walls[s.sceneIndex % room.walls.length].image;
+            return Stack(children: [
+              if (behind != null)
+                Positioned.fill(
+                  child: ImageFiltered(
+                    imageFilter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+                    child: gameImage(behind),
+                  ),
+                ),
+              const Positioned.fill(
+                child: DecoratedBox(
+                    decoration: BoxDecoration(color: Color(0xB3100A18))),
+              ),
+              Positioned.fromRect(
+                rect: stage & Size(sw, sh),
+                child: DecoratedBox(
+                  position: DecorationPosition.foreground,
+                  decoration: BoxDecoration(
+                    border: Border.symmetric(
+                        horizontal: BorderSide(
+                            color: const Color(0xFF7C5CC4).withValues(alpha: 0.35))),
+                  ),
+                  child: sceneBody(),
                 ),
               ),
             ]);
