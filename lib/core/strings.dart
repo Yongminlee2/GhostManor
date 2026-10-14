@@ -217,6 +217,7 @@ const strAtticRGhospoC =
 
 // ── 앱 셸 ──
 const strAppTitle = '기묘한 유령 저택';
+const strTitleTagline = '삼촌이 남긴 저택, 유령들의 상속 자격 시험';
 const strContinue = '이어하기';
 const strNewGame = '처음부터';
 const strNewGameConfirm = '저장된 진행이 삭제됩니다. 처음부터 시작할까요?';

@@ -1,6 +1,9 @@
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'core/audio_service.dart';
+import 'core/debug_shot.dart';
 import 'core/game_state.dart';
 import 'core/hint_service.dart';
 import 'core/hint_sheet.dart';
@@ -14,6 +17,7 @@ import 'rooms/rooms.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  await loadDebugShot();
   runApp(const GhostManorApp());
 }
 
@@ -38,8 +42,9 @@ class _GhostManorAppState extends State<GhostManorApp> {
   @override
   void initState() {
     super.initState();
-    if (widget.initialState != null) {
-      _start(widget.initialState!);
+    final shot = widget.initialState ?? debugShotState();
+    if (shot != null) {
+      _start(shot);
       loaded = true;
     } else {
       save.load().then((s) {
@@ -128,6 +133,58 @@ Future<bool> _confirm(BuildContext context, String message) async {
   return r ?? false;
 }
 
+/// 타이틀·엔딩 공용 배경: 게임 장면 한 장을 화면에 꽉 채우고 아래로 갈수록 어둡게.
+class _ArtBackdrop extends StatelessWidget {
+  final String image;
+  final Widget child;
+  const _ArtBackdrop({required this.image, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(fit: StackFit.expand, children: [
+      Image.asset(image, fit: BoxFit.cover, errorBuilder: (_, _, _) => const SizedBox()),
+      const DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0x99100A18), Color(0x33100A18), Color(0xCC100A18), Color(0xF2100A18)],
+            stops: [0.0, 0.35, 0.68, 1.0],
+          ),
+        ),
+      ),
+      child,
+    ]);
+  }
+}
+
+const _titleStyle = TextStyle(
+  fontSize: 38,
+  fontWeight: FontWeight.w800,
+  letterSpacing: 2,
+  color: Color(0xFFF3E9FF),
+  shadows: [
+    Shadow(color: Color(0xFF9B7BE0), blurRadius: 18),
+    Shadow(color: Color(0xFF000000), blurRadius: 6, offset: Offset(0, 2)),
+  ],
+);
+
+Widget _menuButton(String label, VoidCallback onPressed, {bool primary = true}) => SizedBox(
+      width: 220,
+      height: 50,
+      child: FilledButton(
+        style: FilledButton.styleFrom(
+          backgroundColor: primary ? const Color(0xFF5B3E96) : const Color(0xCC241B36),
+          foregroundColor: const Color(0xFFF3E9FF),
+          side: const BorderSide(color: Color(0xFFB89A5E), width: 1.2),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+        ),
+        onPressed: onPressed,
+        child: Text(label),
+      ),
+    );
+
 class TitleScreen extends StatelessWidget {
   final bool hasSave;
   final VoidCallback onContinue;
@@ -141,19 +198,25 @@ class TitleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          const Text(strAppTitle,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 48),
-          if (hasSave)
-            FilledButton(onPressed: onContinue, child: const Text(strContinue)),
-          const SizedBox(height: 12),
-          FilledButton.tonal(
-              onPressed: () => onNewGame(context),
-              child: const Text(strNewGame)),
-        ]),
+      body: _ArtBackdrop(
+        image: 'assets/scenes/foyer_a.png',
+        child: SafeArea(
+          child: Column(children: [
+            const Spacer(flex: 2),
+            const Text(strAppTitle, textAlign: TextAlign.center, style: _titleStyle),
+            const SizedBox(height: 10),
+            const Text(strTitleTagline,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, color: Color(0xFFCDBDE8), letterSpacing: 0.5)),
+            const Spacer(flex: 5),
+            if (hasSave) ...[
+              _menuButton(strContinue, onContinue),
+              const SizedBox(height: 14),
+            ],
+            _menuButton(strNewGame, () => onNewGame(context), primary: !hasSave),
+            const Spacer(flex: 1),
+          ]),
+        ),
       ),
     );
   }
@@ -323,15 +386,23 @@ class _RoomScreenState extends State<RoomScreen> {
   Widget build(BuildContext context) {
     if (_ended) {
       return Scaffold(
-        body: Center(
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            const Text(strChapterEnd,
-                textAlign: TextAlign.center, style: TextStyle(fontSize: 22)),
-            const SizedBox(height: 32),
-            FilledButton(
-                onPressed: widget.onExitToTitle,
-                child: const Text(strBackToTitle)),
-          ]),
+        body: _ArtBackdrop(
+          image: 'assets/scenes/attic_c.png',
+          child: SafeArea(
+            child: Column(children: [
+              const Spacer(flex: 4),
+              const Text(strChapterEnd,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 21,
+                      height: 1.6,
+                      color: Color(0xFFF3E9FF),
+                      shadows: [Shadow(color: Color(0xFF000000), blurRadius: 8)])),
+              const SizedBox(height: 36),
+              _menuButton(strBackToTitle, widget.onExitToTitle),
+              const Spacer(flex: 1),
+            ]),
+          ),
         ),
       );
     }
@@ -354,10 +425,25 @@ class _RoomScreenState extends State<RoomScreen> {
                 onPressed: _openSettings),
           ]),
           Expanded(
-            child: Center(
-              child: AspectRatio(
-                  aspectRatio: 2 / 3, child: SceneView(room: room, ctx: ctx)),
-            ),
+            child: Stack(fit: StackFit.expand, children: [
+              // 키 큰 아이폰에선 2:3 장면 위아래가 빈다 — 지금 벽면을 흐리게 깔아 잇는다.
+              AnimatedBuilder(
+                animation: widget.state,
+                builder: (context, _) {
+                  final img = room.walls[widget.state.sceneIndex % room.walls.length].image;
+                  if (img == null) return const SizedBox();
+                  return ImageFiltered(
+                    imageFilter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                    child: Opacity(
+                        opacity: 0.45, child: Image.asset(img, fit: BoxFit.cover)),
+                  );
+                },
+              ),
+              Center(
+                child: AspectRatio(
+                    aspectRatio: 2 / 3, child: SceneView(room: room, ctx: ctx)),
+              ),
+            ]),
           ),
           InventoryBar(ctx: ctx),
         ]),
