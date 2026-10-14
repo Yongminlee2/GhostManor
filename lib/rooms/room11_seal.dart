@@ -283,7 +283,8 @@ Room buildSeal() {
       ], idles: [
         IdleSprite(
             image: 'assets/scenes/edgar_ghost.png',
-            area: edgarArea,
+            // 그림 비율 그대로(아이폰판: 그림보다 좁은 칸이라 홀쭉하게 보였다)
+            area: const Rect.fromLTWH(0.3841, 0.26, 0.2318, 0.44),
             when: (s) => s.flag('f2_seal_a_open') >= 1 && s.flag('f2_seal_done') == 0,
             bobPx: 6),
       ], hotspots: [

@@ -222,9 +222,17 @@ Room buildHall() {
       // 벽면 A: 복도 — 안방 문 + 초상화 4점(T1) + 벽등 2(리액션).
       Scene(id: 'hall_a', image: 'assets/scenes/f2_hall_a.png', overlays: [
         for (var i = 0; i < 4; i++)
+          // 기울어진 초상화는 그 초상화를 실제 크기로 기울여 귀퉁이를 벽지로 메운 그림이라
+          // 핫스팟 칸이 아니라 그림 자리에 그린다(아이폰판: 원래 작은 다른 그림이 곧은
+          // 초상화 위에 겹쳐 액자가 두 겹으로 보였다 — remaster.py hall_tilt).
           SceneOverlay(
               image: 'assets/scenes/f2_hall_a_tilt${i + 1}.png',
-              area: portraitAreas[i],
+              area: [
+                const Rect.fromLTWH(0.3242, 0.3086, 0.1963, 0.2292),
+                const Rect.fromLTWH(0.4805, 0.3118, 0.1875, 0.2259),
+                const Rect.fromLTWH(0.6289, 0.3281, 0.1826, 0.2096),
+                const Rect.fromLTWH(0.7754, 0.3444, 0.1953, 0.1966),
+              ][i],
               when: (s) => s.flag('f2_hall_portrait$i') >= 1),
         // 안방 문이 열리면 자물쇠 풀린 채 활짝 열린 그림으로 바뀐다.
         SceneOverlay(

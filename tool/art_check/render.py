@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw
 
 dump, out = sys.argv[1], sys.argv[2]
 os.makedirs(out, exist_ok=True)
-W, H = 512, 768  # 화면 칸 2:3
+W, H = 512, 768  # 벽면 칸 2:3 (클로즈업은 아래에서 정사각형)
 
 def load(p):
     return Image.open(p).convert('RGBA') if p and os.path.exists(p) else None
@@ -23,6 +23,7 @@ for sc in json.load(open(dump)):
     if sc['custom'] or not sc['image']:
         continue
     bg = load(sc['image'])
+    W, H = (768, 768) if sc['kind'] == 'closeup' else (512, 768)  # 클로즈업은 정사각형 무대
     base = bg.resize((W, H))
     full = base.copy()
     d = ImageDraw.Draw(full)
@@ -36,7 +37,8 @@ for sc in json.load(open(dump)):
         # 늘어남: 칸의 가로세로 비 / 그림의 가로세로 비 (실제 화면은 2:3 칸)
         stretch = (box[2] / box[3]) / (im.width / im.height)
         opaque = im.getchannel('A').getextrema()[0] == 255
-        report.append(f"{sc['id']}: {kind} {os.path.basename(o['image'])} 늘어남 {stretch:.2f}{' 불투명' if opaque else ''}")
+        flag = '  <-- 찌그러짐' if abs(stretch - 1) > 0.06 else ''
+        report.append(f"{sc['id']}: {kind} {os.path.basename(o['image'])} 늘어남 {stretch:.2f}{' 불투명' if opaque else ''}{flag}")
         d.rectangle([box[0], box[1], box[0] + box[2], box[1] + box[3]], outline=(0, 255, 255), width=1)
     hs = base.copy()
     d2 = ImageDraw.Draw(hs)
@@ -44,6 +46,10 @@ for sc in json.load(open(dump)):
         x, y, aw, ah = h['area']
         d2.rectangle([x * W, y * H, (x + aw) * W, (y + ah) * H], outline=(255, 60, 60), width=2)
         d2.text((x * W + 3, y * H + 2), h['id'], fill=(255, 255, 0))
+    # 배경 자체 비율도 본다(벽면 2:3, 클로즈업 1:1)
+    bs = (W / H) / (bg.width / bg.height)
+    if abs(bs - 1) > 0.06:
+        report.append(f"{sc['id']}: 배경 {os.path.basename(sc['image'])} {bg.size} 늘어남 {bs:.2f}  <-- 찌그러짐")
     sheet = Image.new('RGBA', (W * 3 + 20, H + 24), (30, 30, 30, 255))
     ImageDraw.Draw(sheet).text((4, 4), f"{sc['room']} / {sc['id']} ({sc['kind']}) {os.path.basename(sc['image'])} {bg.size}", fill=(255, 255, 255))
     for i, im in enumerate([base, full, hs]):

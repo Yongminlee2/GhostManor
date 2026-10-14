@@ -212,7 +212,8 @@ Room buildLiving() {
           ),
           IdleSprite(
             image: 'assets/scenes/living_b_boo_sofa.png',
-            area: booSofaArea,
+            // 그림 비율 그대로(아이폰판: 정사각형 그림이 세로 칸에 들어가 옆으로 눌렸었다)
+            area: const Rect.fromLTWH(0.3322, 0.59, 0.1956, 0.19),
             when: flagSet('living_r_tv_on'),
             bobPx: 5,
           ),

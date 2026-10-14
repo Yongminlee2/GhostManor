@@ -399,7 +399,8 @@ Room buildCellar() {
           ),
           SceneOverlay(
             image: 'assets/scenes/cellar_b_glow2.png',
-            area: const Rect.fromLTWH(0.26, 0.18, 0.16, 0.24),
+            // 그림 비율 그대로(아이폰판: 좁은 칸이라 △○□ 가 옆으로 눌렸었다)
+            area: const Rect.fromLTWH(0.22, 0.18, 0.24, 0.24),
             when: dark,
           ),
         ],
@@ -479,7 +480,8 @@ Room buildCellar() {
           ),
           SceneOverlay(
             image: 'assets/scenes/cellar_c_glow3.png',
-            area: const Rect.fromLTWH(0.22, 0.03, 0.56, 0.19),
+            // 그림 비율 그대로(아이폰판: 높은 칸이라 촛불 암호가 위아래로 늘어났었다)
+            area: const Rect.fromLTWH(0.22, 0.063, 0.56, 0.1243),
             when: dark,
           ),
         ],

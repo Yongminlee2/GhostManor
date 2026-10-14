@@ -445,6 +445,14 @@ def glows():
         save('scenes/' + name, out)
 
 
+def crop_content(img, pad=8):
+    """투명 여백을 잘라 내용만 남긴다 — 칸 비율을 그림 비율에 맞추려고(여백째면 계산이 어긋난다)."""
+    ys, xs = np.where(img[..., 3] > 0.03)
+    y0, y1 = max(ys.min() - pad, 0), min(ys.max() + 1 + pad, img.shape[0])
+    x0, x1 = max(xs.min() - pad, 0), min(xs.max() + 1 + pad, img.shape[1])
+    return img[y0:y1, x0:x1]
+
+
 def ghostly(img, tint, alpha_k=0.9, glow=(0.75, 0.72, 0.95), sat_k=0.6, gain=0.85):
     """유령 스프라이트를 장면 빛에 맞춘다: 채도·밝기를 낮추고, 살짝 비치게, 바깥에 옅은 빛."""
     rgb = img[..., :3]
@@ -471,8 +479,9 @@ def ghosts():
     rgb = np.where(lum < 0.35, rgb * 0.55, rgb)
     b = np.dstack([rgb, b[..., 3]])
     save('scenes/ghost_butler.png', ghostly(b, (0.92, 0.95, 1.0), 0.92, (0.7, 0.75, 0.9), 1.0, 0.95))
-    for name in ['living_b_boo_door.png', 'living_b_boo_sofa.png']:
-        save('scenes/' + name, ghostly(orig('scenes/' + name), (0.86, 0.84, 0.98), 0.86))
+    save('scenes/living_b_boo_door.png', ghostly(orig('scenes/living_b_boo_door.png'), (0.86, 0.84, 0.98), 0.86))
+    # 소파 부우는 정사각형 그림이 세로 칸에 들어가 옆으로 눌려 보였다 — 여백을 자르고 칸을 그림 비율로
+    save('scenes/living_b_boo_sofa.png', crop_content(ghostly(orig('scenes/living_b_boo_sofa.png'), (0.86, 0.84, 0.98), 0.86)))
 
 
 def icon():
@@ -866,7 +875,43 @@ def altar_glow():
 def edgar():
     """에드가(삼촌 유령) 스프라이트 — 번들거리는 보라 만화풍이라 장면에서 떠 보였다. 부우·집사처럼 장면 톤으로."""
     e = orig_ch2('scenes/edgar_ghost.png')
-    save('scenes/edgar_ghost.png', ghostly(e, (0.9, 0.9, 1.0), 0.9, (0.78, 0.74, 0.98), 0.55, 0.92))
+    # 칸보다 넓은 그림이라 홀쭉하게 보였다 — 여백을 자르고 칸을 그림 비율로
+    save('scenes/edgar_ghost.png', crop_content(ghostly(e, (0.9, 0.9, 1.0), 0.9, (0.78, 0.74, 0.98), 0.55, 0.92)))
+
+
+def hall_tilt():
+    """계단홀 기울어진 초상화 — 원래 덧그림은 곧은 초상화보다 작은 다른 그림이라, 기울이면 곧은 초상화
+    위에 작게 겹쳐 액자가 두 겹으로 보였다(칸 비율도 달라 찌그러짐). 배경의 그 초상화를 실제 크기 그대로
+    가운데 축으로 기울이고, 드러나는 귀퉁이는 벽지로 메운다."""
+    base = orig_ch2('scenes/f2_hall_a.png')
+    frames = [(358, 500, 507, 800, 6.0), (518, 505, 658, 800, -5.0),
+              (670, 530, 805, 800, 6.0), (820, 555, 968, 805, -5.0)]
+    m = 26
+    for i, (x0, y0, x1, y1, ang) in enumerate(frames, 1):
+        X0, Y0, X1, Y1 = x0 - m, y0 - m, x1 + m, y1 + m
+        reg = base[Y0:Y1, X0:X1].copy()
+        h, w = reg.shape[:2]
+        fm = np.zeros((h, w), np.uint8)
+        fm[m:m + (y1 - y0), m:m + (x1 - x0)] = 1
+        # 액자를 뺀 벽(본뜨기+부드러운 메우기) — 장면 전체에서 찾게 큰 그림으로
+        wall_full = mix_erase(base, np.pad(fm, ((Y0, base.shape[0] - Y1), (X0, base.shape[1] - X1))))
+        wall = wall_full[Y0:Y1, X0:X1].copy()
+        # 액자만 오려 기울이기(가운데 축)
+        frame = reg.copy()
+        frame[..., 3] = cv2.GaussianBlur(fm.astype(np.float32), (0, 0), 0.8)
+        M = cv2.getRotationMatrix2D((m + (x1 - x0) / 2, m + (y1 - y0) / 2), ang, 1.0)
+        rot = cv2.warpAffine(frame, M, (w, h), flags=cv2.INTER_CUBIC, borderValue=(0, 0, 0, 0))
+        ra = np.clip(rot[..., 3:4], 0, 1)
+        # 벽에 떨어지는 옅은 그림자
+        sh = cv2.GaussianBlur(np.roll(np.roll(ra[..., 0], 6, 0), 4, 1), (0, 0), 5) * 0.45
+        out = wall.copy()
+        out[..., :3] = out[..., :3] * (1 - sh[..., None])
+        out[..., :3] = rot[..., :3] * ra + out[..., :3] * (1 - ra)
+        cover = cv2.GaussianBlur(cv2.dilate(fm, np.ones((5, 5), np.uint8)).astype(np.float32), (0, 0), 1.5)
+        out[..., 3] = np.clip(np.maximum(np.maximum(cover, ra[..., 0]), sh * 1.5), 0, 1)
+        name = f'f2_hall_a_tilt{i}.png'
+        save('scenes/' + name, out)
+        log_rect(name, X0, Y0, X1 - X0, Y1 - Y0)
 
 
 CH2 = 'origin/feat/chapter2'
@@ -899,6 +944,7 @@ GROUPS = {
     'icons': icons,
     'altar_glow': altar_glow,
     'edgar': edgar,
+    'hall_tilt': hall_tilt,
 }
 
 if __name__ == '__main__':
