@@ -76,32 +76,35 @@ Room buildStudy() {
   // 놋쇠 링 안을 꽉 채우고 경첩 시접이 겹치도록 폭 0.175·중앙 겹침 0.035 —
   // 닫힘 상태에서 플레이트에 그려진 열쇠가 완전히 가려지고(스포일러 차단),
   // 열림(±0.09)에서 중앙 틈(x≈0.245~0.345)이 열쇠(x≈0.26~0.33)를 온전히 노출.
-  const globeTop = 0.453;
-  const globeHalfW = 0.175;
-  const globeHalfH = 0.195;
-  const globeClosedLeftX = 0.150;
-  const globeClosedRightX = 0.255;
-  const globeOpenShift = 0.09;
+  // 아이폰판: 반쪽 스프라이트를 study_b.png(지구본 있음) - study_b_plate.png(없음)
+  // 으로 잘라 다시 만들었다(tool/art_fix/remaster.py globe) — 원래는 색·크기가 다른
+  // 보라 지구본이었다. 닫히면 원래 그림과 픽셀까지 같고, 좌표도 잘라 낸 자리 그대로다.
+  const globeCenterX = 0.3096;
+  const globeTop = 0.3919;
+  const globeLeftW = 0.1338;
+  const globeRightW = 0.1357;
+  const globeHalfH = 0.1829;
+  const globeOpenShift = 0.06;
   bool globeOpen(GameState s) => s.flag('study_r_globe_taps') == 3;
   Rect globeLeftRect(GameState s) => Rect.fromLTWH(
-    globeClosedLeftX - (globeOpen(s) ? globeOpenShift : 0),
+    globeCenterX - globeLeftW - (globeOpen(s) ? globeOpenShift : 0),
     globeTop,
-    globeHalfW,
+    globeLeftW,
     globeHalfH,
   );
   Rect globeRightRect(GameState s) => Rect.fromLTWH(
-    globeClosedRightX + (globeOpen(s) ? globeOpenShift : 0),
+    globeCenterX + (globeOpen(s) ? globeOpenShift : 0),
     globeTop,
-    globeHalfW,
+    globeRightW,
     globeHalfH,
   );
   // 화살표(회전 탭) 핫스팟 — 반쪽 이동 범위 전체를 덮는 고정 영역(닫힘·열림
   // 어느 위치에서도 탭 가능).
-  const globeArrowArea = Rect.fromLTWH(0.11, 0.42, 0.36, 0.08);
+  const globeArrowArea = Rect.fromLTWH(0.11, 0.39, 0.40, 0.065);
   // 열렸을 때(taps==3)만 드러나는 중앙 틈 — 여기를 탭해야 열쇠를 꺼낸다.
   // 화살표와 달리 이 탭은 taps를 건드리지 않아, 화살표를 한 번 더 눌러
   // "4번째"를 만들어 버리는 실수와 분리된다.
-  const globeGapArea = Rect.fromLTWH(0.24, 0.51, 0.10, 0.12);
+  const globeGapArea = Rect.fromLTWH(0.25, 0.46, 0.12, 0.10);
 
   // 책 4권 공용: tapBook 진행 + 클릭음, 리셋되면 대사, nook 완성 순간 추가 피드백.
   void tapBookSpot(GameCtx c, int i) {
@@ -256,7 +259,7 @@ Room buildStudy() {
         overlays: [
           SceneOverlay(
             image: 'assets/scenes/study_b_door_open.png',
-            area: doorArea,
+            area: const Rect.fromLTWH(0.5938, 0.1745, 0.3516, 0.4648),
             when: flagSet('study_r_done'),
             motion: OverlayMotion.grow,
           ),

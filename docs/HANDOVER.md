@@ -45,9 +45,20 @@
 - [ ] 스토어 등록 — 스크린샷, 설명, 데이터 보안 신고.
 - [ ] 버전 관리 — pubspec `version` 올리기.
 
-### 3-4. iOS (준비됨, 미착수)
-- Xcode 환경에서 빌드만 하면 되는 상태를 유지 중 (순수 Flutter + 공식 플러그인,
-  Info.plist에 세로 고정 반영됨). Apple 개발자 계정 + 실기기 필요.
+### 3-4. iOS (빌드됨 — 2026-10-14, DEVLOG §13)
+- 맥에서 Flutter 3.44.9(윈도우와 같게 — 다르면 pubspec.lock 이 바뀐다). CocoaPods 불필요.
+- 번들 ID `com.yongmin.ghostmanor`, 팀 3276G27R59 자동 서명, **아이폰 전용**(`TARGETED_DEVICE_FAMILY = 1`),
+  홈 화면 이름 「유령 저택」, 개인정보 매니페스트(UserDefaults CA92.1, 수집 없음), 수출 규정 false.
+- 아이콘은 `Icon-1024.png` 한 장(`tool/art_fix/remaster.py icon` 이 만든다).
+- 시뮬레이터 화면 확인: 탭이 안 닿으므로 디버그 빌드의 `-SHOT` 실행 인자로 연다.
+  ```bash
+  flutter build ios --simulator --debug
+  python3 tool/art_check/shots.py <기기 UDID> <출력 폴더> title 'living/1' 'attic/2/chest'
+  ```
+  값 모양은 `lib/core/debug_shot.dart` 주석. 정식 빌드엔 없다(Dart `kDebugMode`, Swift `#if DEBUG`).
+- 진행 재생(정답 88탭을 한 장씩): `flutter test tool/art_check/play_record_test.dart` → `python3 tool/art_check/play.py <UDID> <폴더>` → `python3 tool/art_check/play_sheet.py <폴더> build/play.json`.
+- 그림 대조: `flutter test tool/art_check/scene_dump_test.dart` → `python3 tool/art_check/render.py build/scene_dump.json <폴더>`.
+- 남은 일: 실기기 완주, App Store Connect 등록·스크린샷·심사.
 
 ### 3-5. 챕터 2 (설계부터)
 - 방 추가 절차는 ARCHITECTURE.md의 레시피 10단계.

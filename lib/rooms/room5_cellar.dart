@@ -285,12 +285,13 @@ Room buildCellar() {
           // 원칙) — 어둠막 자체는 퓨즈와 무관하게 소등 내내 유지.
           SceneOverlay(
             image: 'assets/scenes/cellar_a_glow.png',
-            area: const Rect.fromLTWH(0.11, 0.50, 0.24, 0.24),
+            // 야광 네모가 탭할 상자(glow_box)를 감싸도록(아이폰판: 원래 상자 위 허공에 떠 있었다)
+            area: const Rect.fromLTWH(0.07, 0.58, 0.24, 0.24),
             when: (s) => dark(s) && s.flag('cellar_r_got_fuse') == 0,
           ),
           SceneOverlay(
             image: 'assets/scenes/cellar_a_key_floor.png',
-            area: const Rect.fromLTWH(0.40, 0.80, 0.12, 0.065),
+            area: const Rect.fromLTWH(0.4004, 0.8066, 0.1201, 0.0456),
             when: (s) =>
                 s.flag('cellar_r_key_dropped') == 1 &&
                 s.flag('cellar_r_got_key') == 0,
@@ -365,8 +366,10 @@ Room buildCellar() {
           SceneObject(
             image: 'assets/scenes/cellar_barrel_sprite.png',
             area: (s) => s.flag('cellar_r_barrel_moved') >= 1
-                ? const Rect.fromLTWH(0.80, 0.40, 0.50, 0.40)
-                : const Rect.fromLTWH(0.30, 0.40, 0.50, 0.40),
+                // 아이폰판: 통을 cellar_b.png 에서 그대로 오려 냈다(remaster.py barrel) —
+                // 닫힘 자리는 그 오린 자리, 밀면 오른쪽 벽으로 비켜 스위치는 가리지 않는다.
+                ? const Rect.fromLTWH(0.86, 0.3379, 0.5244, 0.4349)
+                : const Rect.fromLTWH(0.2822, 0.3379, 0.5244, 0.4349),
           ),
         ],
         overlays: [
@@ -374,12 +377,12 @@ Room buildCellar() {
           // 정상 디테일처럼 어둠에 덮인다(글로우류만 어둠 위에 그려짐).
           SceneOverlay(
             image: 'assets/scenes/cellar_b_fuse1.png',
-            area: const Rect.fromLTWH(0, 0, 1, 1),
+            area: const Rect.fromLTWH(0.127, 0.2995, 0.1953, 0.1432),
             when: (s) => s.flag('cellar_r_fuse_count') == 1,
           ),
           SceneOverlay(
             image: 'assets/scenes/cellar_b_fuse2.png',
-            area: const Rect.fromLTWH(0, 0, 1, 1),
+            area: const Rect.fromLTWH(0.127, 0.2995, 0.1953, 0.1432),
             when: (s) => s.flag('cellar_r_fuse_count') == 2,
           ),
           // 자물쇠를 딴 쪽문은 활짝 열려 통로가 드러난다. 풀프레임인
@@ -425,7 +428,7 @@ Room buildCellar() {
           ),
           Hotspot(
             id: 'small_door',
-            area: const Rect.fromLTWH(0.56, 0.30, 0.20, 0.30),
+            area: const Rect.fromLTWH(0.37, 0.29, 0.39, 0.47),
             when: flagSet('cellar_r_barrel_moved'),
             onTap: (c) {
               final s = c.s;

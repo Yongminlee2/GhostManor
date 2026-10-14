@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'core/audio_service.dart';
+import 'core/debug_play.dart';
+import 'core/debug_shot.dart';
 import 'core/game_state.dart';
 import 'core/hint_service.dart';
 import 'core/hint_sheet.dart';
@@ -15,6 +17,7 @@ import 'rooms/rooms.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  await loadDebugShot();
   runApp(const GhostManorApp());
 }
 
@@ -32,6 +35,8 @@ class _GhostManorAppState extends State<GhostManorApp> {
   late final audio = AudioService(enabled: widget.audioEnabled);
   late final rooms = buildAllRooms();
   GameState? playing; // null이면 타이틀
+  final _captureKey = GlobalKey(); // 디버그 재생이 화면을 찍는 경계
+  int _playSeq = 0;
   bool hasSave = false;
   bool loaded = false;
 
@@ -41,10 +46,23 @@ class _GhostManorAppState extends State<GhostManorApp> {
     // 저택 테마는 타이틀부터 흐른다 — 게임 진입 시 같은 곡이면 끊기지 않고
     // 이어진다(AudioService의 같은-곡 가드).
     audio.playBgm('bgm_manor');
-    if (widget.initialState != null) {
-      _start(widget.initialState!);
+    if (debugShot == 'play') {
       loaded = true;
-    } else {
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => runDebugPlay(
+          captureKey: _captureKey,
+          show: (s) => setState(() {
+            _playSeq++;
+            playing = s;
+          }),
+        ),
+      );
+    }
+    final shot = widget.initialState ?? debugShotState();
+    if (shot != null) {
+      _start(shot);
+      loaded = true;
+    } else if (!loaded) {
       _loadUsableSave().then((s) {
         setState(() {
           hasSave = s != null;
@@ -84,7 +102,9 @@ class _GhostManorAppState extends State<GhostManorApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return RepaintBoundary(
+      key: _captureKey,
+      child: MaterialApp(
       title: strAppTitle,
       debugShowCheckedModeBanner: false,
       theme: buildManorTheme(),
@@ -107,12 +127,14 @@ class _GhostManorAppState extends State<GhostManorApp> {
               },
             )
           : RoomScreen(
+              key: ValueKey(_playSeq),
               state: playing!,
               rooms: rooms,
               audio: audio,
               save: save,
               onExitToTitle: _toTitle,
             ),
+      ),
     );
   }
 }
@@ -379,6 +401,7 @@ class _RoomScreenState extends State<RoomScreen> {
   /// 바로 다음 방으로 넘긴다 (최종 리뷰 Finding 2b). goRoom 뒤엔 새 방이
   /// cleared가 아니라서 재호출돼도 더 진행하지 않는다 — 루프 없음.
   void _selfHealStrandedClear() {
+    if (debugPlaying) return;
     final s = widget.state;
     if (room.cleared(s) &&
         s.flag('cleared_shown_${room.id}') >= 1 &&
@@ -422,6 +445,7 @@ class _RoomScreenState extends State<RoomScreen> {
   }
 
   void _onStateChanged() {
+    if (debugPlaying) return;
     final s = widget.state;
     if (room.cleared(s) && s.flag('cleared_shown_${room.id}') == 0) {
       s.setFlag('cleared_shown_${room.id}', 1);

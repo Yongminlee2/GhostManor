@@ -374,7 +374,21 @@ Room buildSeal() {
       ]),
     ],
     closeups: {
-      'altar': Scene(id: 'altar', image: 'assets/scenes/f2_seal_altar.png', hotspots: [
+      'altar': Scene(id: 'altar', image: 'assets/scenes/f2_seal_altar.png', overlays: [
+        // 홈에 놓은 상징이 금빛으로 빛난다(아이폰판: 원래 클로즈업은 놓아도 그대로였다 —
+        // 벽면 f2_seal_a_sym 과 같은 진행).
+        for (var i = 0; i < 4; i++)
+          SceneOverlay(
+              image: 'assets/scenes/f2_seal_altar_glow$i.png',
+              area: [
+                const Rect.fromLTWH(0.0361, 0.3184, 0.2744, 0.2852),
+                const Rect.fromLTWH(0.2695, 0.3184, 0.2412, 0.2852),
+                const Rect.fromLTWH(0.4922, 0.3184, 0.248, 0.2852),
+                const Rect.fromLTWH(0.6982, 0.3184, 0.2686, 0.2852),
+              ][i],
+              when: (s) =>
+                  s.flag('f2_seal_altar_seq') > i || s.flag('f2_seal_altar_full') >= 1),
+      ], hotspots: [
         Hotspot(id: 'grooves', area: const Rect.fromLTWH(0, 0, 1, 1), onTap: tapAltarGrooves),
       ]),
       'memory': Scene(

@@ -54,7 +54,7 @@
 
 ## 기술 스택
 
-- Flutter 3.44 / Dart 3.12 — 세로 고정, Android(iOS 프로젝트 동시 유지)
+- Flutter 3.44 / Dart 3.12 — 세로 고정, Android · iOS(아이폰)
 - 의존성 3개만: `shared_preferences`(세이브) · `audioplayers`(사운드) ·
   `sensors_plus`(셰이크 감지)
 - 상태관리 라이브러리 없음 — `ChangeNotifier` + `AnimatedBuilder`로 충분하게 설계
@@ -127,5 +127,6 @@ docs/          아키텍처·방 설계·개발일지·테스트·인수인계 �
   스토리 전달 코어 탑재, 에드가 서사·유령 해방 엔딩, 11방 통합
 - [ ] 실기기 챕터 1·2 완주 검증
 - [ ] 출시: 서명 키, 스토어 등록, 앱 아이콘, APK 감량(WebP)
-- [ ] iOS 빌드·App Store (프로젝트 구조는 준비됨)
+- [x] iOS 빌드 — 아이폰 전용 세로, 아트 정합 손질 ([DEVLOG §13](docs/DEVLOG.md))
+- [ ] App Store 등록·심사
 - [ ] 챕터 3

@@ -87,10 +87,13 @@ Room buildHall() {
   const rugArea = Rect.fromLTWH(0.15, 0.58, 0.65, 0.34);
   const photoArea = Rect.fromLTWH(0.66, 0.36, 0.19, 0.14);
   const pendulumArea = Rect.fromLTWH(0.85, 0.40, 0.13, 0.10);
-  const plank1Area = Rect.fromLTWH(0.20, 0.68, 0.14, 0.22);
-  const plank2Area = Rect.fromLTWH(0.36, 0.68, 0.14, 0.22);
-  const plank3Area = Rect.fromLTWH(0.52, 0.68, 0.14, 0.22);
-  const plank4Area = Rect.fromLTWH(0.68, 0.68, 0.14, 0.22);
+  // 아이폰판: 걷힌 카펫 그림(f2_hall_c_rolled)에서 실제로 드러난 판자 위로 옮겼다 —
+  // 원래 2·3번이 카펫 위에 있었고, 구멍 그림(f2_hall_c_plank)은 카펫 왼쪽 판자에 뚫려
+  // 정답(3번) 자리와 달랐다. 왼쪽 판자 셋(3번 = 구멍 난 판자) + 카펫 오른쪽 판자 하나.
+  const plank1Area = Rect.fromLTWH(0.04, 0.70, 0.083, 0.17);
+  const plank2Area = Rect.fromLTWH(0.137, 0.70, 0.083, 0.17);
+  const plank3Area = Rect.fromLTWH(0.232, 0.70, 0.083, 0.17);
+  const plank4Area = Rect.fromLTWH(0.664, 0.70, 0.098, 0.17);
   const plankAreas = [plank1Area, plank2Area, plank3Area, plank4Area];
 
   void tapPortraitAt(GameCtx c, int i) {
